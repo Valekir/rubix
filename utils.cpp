@@ -2,13 +2,9 @@
 
 // Выводит вектор в окно консоли
 void print_vector(vector <Colors> vec) {
-    // SetConsoleOutputCP(CP_UTF8);
-    // char c = 254;                       // символ квадрата в Extended ASCII. Работает в Windows, не работает в Linux.
     for (auto item : vec) {
         set_background_color(item);
         cout << "  ";
-        // cout << u8"\u23F9";            // символ квадрата в Unicode. Не работает в Windows, работает в Linux. 
-        // cout << c;             
     }
     cout << "\033[0m";
 }
