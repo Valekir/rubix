@@ -14,11 +14,11 @@ enum class Colors {
     W = 15, G = 40, R = 196, O = 208, B = 12, Y = 11, K = 0
 };
 
-// Выводит вектор в окно консоли
+// Выводит набор цветов в окно консоли
 void print_vector(vector <Colors> vec);
 
-// Устанавливает 8-битный цвет текста с кодом n
-void set_color(Colors n);
+// Устанавливает 8-битный цвет заливки с кодом n
+void set_background_color(Colors n);
 
 // Формирует строку отступа длиной n, состоящую из пробелов
 string form_indent(int n);

@@ -2,25 +2,27 @@
 
 // Выводит вектор в окно консоли
 void print_vector(vector <Colors> vec) {
-    SetConsoleOutputCP(CP_UTF8);
+    // SetConsoleOutputCP(CP_UTF8);
     // char c = 254;                       // символ квадрата в Extended ASCII. Работает в Windows, не работает в Linux.
     for (auto item : vec) {
-        set_color(item);
-        cout << u8"\u23F9";            // символ квадрата в Unicode. Не работает в Windows, работает в Linux. 
+        set_background_color(item);
+        cout << "  ";
+        // cout << u8"\u23F9";            // символ квадрата в Unicode. Не работает в Windows, работает в Linux. 
         // cout << c;             
     }
+    cout << "\033[0m";
 }
 
-// Устанавливает 8-битный цвет текста с кодом n
-void set_color(Colors n) {
+// Устанавливает 8-битный цвет заливки с кодом n
+void set_background_color(Colors n) {
     string res;
-    cout << "\033[38;5;" << (int) n << "m";
+    cout << "\033[48;5;" << (int) n << "m";
 }
 
 // Формирует строку отступа длиной n, состоящую из пробелов
 string form_indent(int n) {
     string res;
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < 2*n; i++) {
         res += " ";
     }
     return res;
