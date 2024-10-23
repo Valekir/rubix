@@ -4,8 +4,7 @@
 #include <string>
 #define _USE_MATH_DEFINES
 #include <cmath>
-#include <windows.h>
-using std::vector, std::string, std::cout, std::cerr, std::cos, std::sin;
+using std::vector, std::string, std::cout, std::cerr, std::endl, std::cos, std::sin, std::swap;
 
 // Первый набор цветов. 
 // W - белый G - зеленый R - красный O - оранжевый 
@@ -42,3 +41,66 @@ vector <Colors> find_colors(int layer, int a, int n);
 // ось x направлена вправо, ось y вверх, ось z на зрителя
 vector <int> rotate_vector(vector<int> vec, char dir);
 
+// Поворачивает элементы квадратной матрицы против часовой стрелки
+template<typename T>
+void rotate_clockwise(std::vector<T>& matrix, int n) {
+    vector<T> result(n * n);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            result[j * n + i] = matrix[i * n + j];
+        }
+    }
+    matrix = result;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n / 2; j++) {
+            swap(matrix[i * n + j], matrix[i * n + (n - 1 - j)]);
+        }
+    }
+}
+
+// Поворачивает элементы квадратной матрицы по часовой стрелке
+template <typename T>
+void rotate_counter(vector<T>& matrix, int n) {
+    vector<T> result(n * n);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            result[j * n + i] = matrix[i * n + j];
+        }
+    }
+    matrix = result;
+    for (int i = 0; i < n / 2; i++) {
+        for (int j = 0; j < n; j++) {
+            swap(matrix[i * n + j], matrix[(n - 1 - i) * n + j]);
+        }
+    }
+}
+
+
+// Транспонирует квадратную матрицу
+template <typename T>
+void transpose(vector<T>& matrix, int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
+            swap(matrix[i][j], matrix[j][i]);
+        }
+    }
+}
+
+// Отражает квадратную матрицу по вертикали
+template <typename T>
+void reflect_vert(vector<vector <T>>& matrix, int n) {
+    for (int i = 0; i < n / 2; i++) {
+        for (int j = 0; j < n; j++) {
+            swap(matrix[i][j], matrix[n - 1 - i][j]);
+        }
+    }
+}
+
+template <typename T>
+void reflect_hor(vector<vector<T>>& matrix, int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n / 2; j++) {
+            swap(matrix[i][j], matrix[i][n - 1 - j]);
+        }
+    }
+}

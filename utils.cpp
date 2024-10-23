@@ -97,16 +97,17 @@ vector <int> rotate_vector(vector<int> vec, char dir) {
         angle = M_PI_2;
     else
         angle = -M_PI_2;
-
+    int c = cos(angle);
+    int s = sin(angle);
     if (dir == 'x' || dir == 'X') {
-        y = vec[1]*cos(angle) - vec[2]*sin(angle);
-        z = vec[1]*sin(angle) + vec[2]*cos(angle);
+        y = vec[1]*c - vec[2]*s;
+        z = vec[1]*s + vec[2]*c;
     } else if (dir == 'y' || dir == 'Y') {
-        x = vec[0]*cos(angle) - vec[2]*sin(angle);
-        z = vec[0]*sin(angle) + vec[2]*cos(angle);
+        x = vec[0]*c - vec[2]*s;
+        z = vec[0]*s + vec[2]*c;
     } else if (dir == 'z' || dir == 'Z') {
-        x = vec[0]*cos(angle) - vec[1]*sin(angle);
-        y = vec[0]*sin(angle) + vec[1]*cos(angle);
+        x = vec[0]*c - vec[1]*s;
+        y = vec[0]*s + vec[1]*c;
     } else {
         cerr << "Something went wrong!\n";
         return vec;
@@ -114,5 +115,3 @@ vector <int> rotate_vector(vector<int> vec, char dir) {
     vec = {x, y, z};
     return vec;
 }
-
-

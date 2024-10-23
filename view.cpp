@@ -154,4 +154,3 @@ void View::print_cube(Cube cube) {
     }
     cout << "\033[39m" << endl;
 }
-

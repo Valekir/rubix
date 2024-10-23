@@ -29,16 +29,16 @@ int main() {
     View window;
     vector <int> s = {1, 3, 5, 6};
     char c;
+    window.print_cube(cube);
+    
+    while (1) {
+        cin >> c;
+        cout << "\033[2J\033[1;1H";
 
-    for (auto item : s) {
-        window.clear();
-        window.set_style(item);
+        cube.rotate(c);
         window.print_cube(cube);
-        if (item != s[s.size()-1]) {
-            cout << "\nTo continue enter anything: ";
-            cin >> c;
-        }
     }
+
     return 0;
 }
 
