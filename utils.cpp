@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "utils.hpp"
 
 // Выводит вектор в окно консоли
 void print_vector(vector <Colors> vec) {

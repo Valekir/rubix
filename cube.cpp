@@ -1,4 +1,4 @@
-#include "cube.h"
+#include "cube.hpp"
 
 std::ostream& operator<<(std::ostream& out, Piece p) {
     out << "Type: " << p.get_type();
@@ -47,6 +47,12 @@ void Piece::rotate_piece(char dir) {
     } else if (tolower(dir) == 'z') {
         swap(color[0], color[1]);
     } 
+}
+
+Cube::Cube() {
+    dimension = 0;
+    vector <int> angles{};
+    vector <Colors> colors{};
 }
 
 // Конструктор кубика Рубика. Задает изначальное состояние кубика, размером NxNxN
@@ -139,7 +145,7 @@ vector <vector <Colors>> Cube::face_to_print(vector <int> direction) {
     return result;
 }
 
-void Cube::rotate(char side) {
+void Cube::rotate_side(char side) {
     switch (side) {
     case 'R':
         break;
@@ -208,4 +214,14 @@ void Cube::rotate(char side) {
     default:
         break;
     }
+}
+
+// TODO 
+// Поворачивает кубик целиком в пространстве, меняя направление взгляда
+// x - вокруг оси x по часовой стрелке (R и L не меняются) 
+// y - вокруг оси y по часовой стрелке (U и D не меняются) 
+// z - вокруг оси z по часовой стрелке (F и B не меняются)
+// X/Y/Z - поворот вокруг соответствующей оси против часовой стрелки 
+void Cube::change_direction(char dir) {
+
 }

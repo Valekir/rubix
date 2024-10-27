@@ -2,8 +2,8 @@
 #include <vector>
 using std::vector, std::cin, std::cout, std::endl;
 
-#include "cube.h"
-#include "view.h"
+#include "cube.hpp"
+#include "view.hpp"
 
 // 8-битные цвета
 // "\033[36;5;#m" # - номер цвета
@@ -35,7 +35,7 @@ int main() {
         cin >> c;
         cout << "\033[2J\033[1;1H";
 
-        cube.rotate(c);
+        cube.rotate_side(c);
         window.print_cube(cube);
     }
 

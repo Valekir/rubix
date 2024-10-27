@@ -28,25 +28,36 @@ void printFile(const char* filename) {
 
 
 queue <char> parse_input(string& str) {
-    regex pattern("([FBRLUDMxyz](2|')?)");
+    regex pattern1("([FBRLUDMXYZfbrludxyz]('2|2'|'|2)?)");
     queue <char> result;
-    auto begin = sregex_iterator(str.begin(), str.end(), pattern);
+    auto begin = sregex_iterator(str.begin(), str.end(), pattern1);
     auto end = sregex_iterator();
 
-    for (regex_iterator i = begin; i != end; ++i) {
-        smatch match = *i;
-        string temp = match.str();
+    if (begin == end) 
+        cout << 123;
 
-        if (temp.length() == 1) {
-            result.push(temp[0]);
+    for (regex_iterator i = begin; i != end; ++i) {
+        smatch s = *i;
+        string match = s.str();
+
+        // Для того, чтобы парсер не зависел от регистра ввода
+        char temp_char = tolower(match[0]);
+        if (temp_char == 'x' || temp_char == 'y' || temp_char == 'z')
+            match[0] = tolower(match[0]);
+        else 
+            match[0] = toupper(match[0]);
+        
+        if (match.length() != 1) {
+            if (match[1] == '\'' || match.length() == 3) {
+                if (match[0] < 'a')
+                    match[0] = match[0] + ('a'-'A');
+                else 
+                    match[0] = match[0] - ('a'-'A');
+            }
+            if (match[1] == '2' || match.length() == 3)
+                result.push(match[0]);
         }
-        else if (temp[1] == '2') {
-            result.push(temp[0]);
-            result.push(temp[0]);
-        }    
-        else if (temp[1] == '\''){
-            result.push(temp[0] + 32);
-        }
+        result.push(match[0]);
     }
     return result;
 }

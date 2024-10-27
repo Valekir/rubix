@@ -2,8 +2,10 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#define _USE_MATH_DEFINES
 #include <cmath>
+#ifndef M_PI_2
+float M_PI_2 = 1.57079632679489661923;
+#endif
 using std::vector, std::string, std::cout, std::cerr, std::endl, std::cos, std::sin, std::swap;
 
 // Первый набор цветов. 

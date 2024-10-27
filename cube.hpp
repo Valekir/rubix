@@ -3,7 +3,7 @@
 #include <iostream>
 using std::vector;
 
-#include "utils.h"
+#include "utils.hpp"
 
 // Класс, который хранит в себе цвета, направление по осям и тип (угол, ребро, центр) элемента
 class Piece{
@@ -30,9 +30,11 @@ class Cube {
  public:
     // Конструктор кубика Рубика. Задает изначальное состояние кубика, размером NxNxN
     explicit Cube(int);
+    Cube();
     vector<vector <Piece>> get_parts() { return parts; }
     // Формирует массив чисел для вывода одной сторону кубика, направленную в сторону direction
     int size() { return dimension; }
     vector <vector <Colors>> face_to_print(vector <int>);
-    void rotate(char side);
+    void rotate_side(char side);
+    void change_direction(char dir);
 };

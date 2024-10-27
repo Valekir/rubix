@@ -7,15 +7,14 @@
 
 using std::cout, std::endl, std::vector, std::ifstream, std::string;
 
-#include "cube.h"
-#include "utils.h"
+#include "cube.hpp"
+#include "utils.hpp"
 
 // Класс, ответственный за отрисовку кубика в окне консоли
 class View {
  private:
    int style;
    vector <int> main_direction;
-   
    // Выводит развертку для трех сторон
    void print_three_face(Cube);
    // Выводит развертку для пяти сторон
