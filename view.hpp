@@ -5,6 +5,7 @@
 #include <string>
 #include <cassert>
 
+#pragma GCC system_header
 using std::cout, std::endl, std::vector, std::ifstream, std::string;
 
 #include "cube.hpp"

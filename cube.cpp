@@ -223,5 +223,38 @@ void Cube::rotate_side(char side) {
 // z - вокруг оси z по часовой стрелке (F и B не меняются)
 // X/Y/Z - поворот вокруг соответствующей оси против часовой стрелки 
 void Cube::change_direction(char dir) {
-
+    switch (dir) {
+    case 'x':
+        rotate_side('R');
+        rotate_side('M');
+        rotate_side('L');
+        break;
+    case 'X':
+        rotate_side('r');
+        rotate_side('m');
+        rotate_side('l');
+        break;
+    case 'y':
+        rotate_side('U');
+        rotate_side('E');
+        rotate_side('D');
+        break;
+    case 'Y':
+        rotate_side('u');
+        rotate_side('e');
+        rotate_side('d');
+        break;
+    case 'z':
+        rotate_side('F');
+        rotate_side('S');
+        rotate_side('B');
+        break;
+    case 'Z':
+        rotate_side('f');
+        rotate_side('s');
+        rotate_side('b');
+        break;
+    default:
+        break;
+    }
 }

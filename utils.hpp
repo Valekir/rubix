@@ -3,9 +3,12 @@
 #include <vector>
 #include <string>
 #include <cmath>
+
 #ifndef M_PI_2
 float M_PI_2 = 1.57079632679489661923;
 #endif
+
+#pragma GCC system_header
 using std::vector, std::string, std::cout, std::cerr, std::endl, std::cos, std::sin, std::swap;
 
 // Первый набор цветов. 

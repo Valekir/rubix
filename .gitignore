@@ -4,3 +4,4 @@ test.cpp
 rotate.cpp
 parser.cpp
 *.exe
+colors.txt
