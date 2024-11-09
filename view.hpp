@@ -5,9 +5,6 @@
 #include <string>
 #include <cassert>
 
-#pragma GCC system_header
-using std::cout, std::endl, std::vector, std::ifstream, std::string;
-
 #include "cube.hpp"
 #include "utils.hpp"
 
@@ -15,7 +12,7 @@ using std::cout, std::endl, std::vector, std::ifstream, std::string;
 class View {
  private:
    int style;
-   vector <int> main_direction;
+   std::vector <int> main_direction;
    // Выводит развертку для трех сторон
    void print_three_face(Cube);
    // Выводит развертку для пяти сторон

@@ -1,5 +1,7 @@
 #include "utils.hpp"
 
+using std::cout, std::cerr, std::endl, std::cos, std::sin, std::string;
+
 // Выводит вектор в окно консоли
 void print_vector(vector <Colors> vec) {
     for (auto item : vec) {

@@ -1,5 +1,7 @@
 #include "view.hpp"
 
+using std::cout, std::endl, std::vector, std::ifstream, std::string;
+
 View::View() { 
     style = 6; 
     main_direction = {0, 1, 0}; 

@@ -1,11 +1,13 @@
 #include "controller.hpp"
 
+using std::regex, std::sregex_iterator, std::smatch, std::string;
+
 // Создает новый куб размера dim*dim*dim
 void Controller::new_cube(int dim) {
     current_cube = Cube(dim);
 }
 
-void Controller::parse_input(istream& in) {
+void Controller::parse_input(std::istream& in) {
     string input;
     std::getline(in, input);
     if (! parse_console_commands(input)) {
@@ -44,7 +46,6 @@ int Controller::parse_cube_commands(string& str) {
         }
         command_sequence.push(match[0]);
     }
-    cout << endl;
     return 1;
 }   
 
@@ -63,7 +64,7 @@ int Controller::parse_console_commands(string& str) {
     for (sregex_iterator i = begin; i != end; ++i) {
         smatch s = *i;
         string match = s.str();
-        transform(match.begin(), match.end(), match.begin(), 
+        std::transform(match.begin(), match.end(), match.begin(), 
             [](unsigned char c) { return tolower(c); });
 
         if (match.find("help") != string::npos) {
@@ -97,6 +98,7 @@ int Controller::parse_console_commands(string& str) {
 // Изменяет состояние кубика - вращает грани или сам кубик в пространстве
 void Controller::move(char command) {
     char temp = tolower(command);
+    std::cout << command << std::endl;
 
     if (temp == 'x' || temp == 'y' || temp == 'z')
         current_cube.change_direction(command);
@@ -114,8 +116,8 @@ void Controller::close_app() {
 void Controller::scramble() {
     current_cube = Cube(current_cube.size());
     vector <char> moves = {'U', 'D', 'F', 'B', 'R', 'L', 'u', 'd', 'f', 'b', 'r', 'l'};
-    srand(time(0));
+    std::srand(std::time(0));
     for (int i = 0; i < 20; i++) {
-        current_cube.rotate_side(moves[rand() % 12]);
+        current_cube.rotate_side(moves[std::rand() % 12]);
     }
 }

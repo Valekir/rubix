@@ -8,8 +8,7 @@
 float M_PI_2 = 1.57079632679489661923;
 #endif
 
-#pragma GCC system_header
-using std::vector, std::string, std::cout, std::cerr, std::endl, std::cos, std::sin, std::swap;
+using std::vector, std::swap;
 
 // Первый набор цветов. 
 // W - белый G - зеленый R - красный O - оранжевый 
@@ -25,7 +24,7 @@ void print_vector(vector <Colors> vec);
 void set_background_color(Colors n);
 
 // Формирует строку отступа длиной n, состоящую из пробелов
-string form_indent(int n);
+std::string form_indent(int n);
 
 // Функция определяет направление по осям xyz, в котором будет направлен элемент,
 // в зависимости от его расположения на кубике в изначальном положении. Оси направлены

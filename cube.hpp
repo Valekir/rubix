@@ -37,4 +37,5 @@ class Cube {
     vector <vector <Colors>> face_to_print(vector <int>);
     void rotate_side(char side);
     void change_direction(char dir);
+    void rotate_x_axis(char dir);
 };
