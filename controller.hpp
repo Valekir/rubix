@@ -24,4 +24,5 @@ class Controller {
     void parse_input(std::istream& in);
     void close_app();
     void scramble();
+    void hello();
 };

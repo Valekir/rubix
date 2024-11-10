@@ -27,6 +27,9 @@ class Cube {
  private:
     vector<vector <Piece>> parts;
     int dimension;
+    void rotate_x_axis(char face, int start_offset=0);
+    void rotate_y_axis(char face, int start_offset=0);
+    void rotate_z_axis(char face, int start_offset=0); 
  public:
     // Конструктор кубика Рубика. Задает изначальное состояние кубика, размером NxNxN
     explicit Cube(int);
@@ -37,5 +40,4 @@ class Cube {
     vector <vector <Colors>> face_to_print(vector <int>);
     void rotate_side(char side);
     void change_direction(char dir);
-    void rotate_x_axis(char dir);
 };

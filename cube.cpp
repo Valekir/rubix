@@ -15,11 +15,11 @@ std::ostream& operator<<(std::ostream& out, Piece p) {
 }
 
 Piece::Piece() {
-        for (int i = 0; i < 3; i++) {
-            color.push_back(Colors::K);
-            angles.push_back(0);
-        }
-        type = '0';
+    for (int i = 0; i < 3; i++) {
+        color.push_back(Colors::K);
+        angles.push_back(0);
+    }
+    type = '0';
 }
 
 Piece::Piece(vector <Colors> _color, vector <int> _angles, char _type, int id) {
@@ -147,260 +147,156 @@ vector <vector <Colors>> Cube::face_to_print(vector <int> direction) {
 
 void Cube::rotate_side(char side) {
     int n = dimension;
-    switch (side) {
-    case 'R':
-        for (int i = 1; i < n + 1; i++) {
-            for (int j = i + 1; j < n + 1; j++) {
-                swap(parts[i - 1][j*n - 1], parts[j - 1][i*n - 1]);
-            }
+    char t_side = tolower(side);
+    
+    if (t_side == 'f' || t_side == 'b') {
+        rotate_z_axis(side);
+    } else if (t_side == 's') {
+        char t_dir = side == 's' ? 'F': 'f';
+        for (int i = 1; i <= n-2; i++) {
+            rotate_z_axis(t_dir, i);
         }
-
-        for (int i = 1; i <= n/2; i++) {
-            for (int j = 1; j <= n; j++) {
-                swap(parts[i - 1][j*n - 1], parts[n - i][j*n - 1]);
-            }
+    } else if (t_side == 'r' || t_side == 'l') {
+        rotate_x_axis(side);
+    } else if (t_side == 'm') {
+        char t_dir = side == 'm' ? 'r': 'R';
+        for (int i = 1; i <= n-2; i++) {
+            rotate_x_axis(t_dir, i);
         }
-
-        for (int i = 0; i < n; i++) {
-            for (int j = 1; j <= n; j++) {
-                parts[i][j*n - 1].rotate_piece('x');
-            }
+    } else if (t_side == 'u' || t_side == 'd') {
+        rotate_y_axis(side);
+    } else if (t_side == 'e') {
+        char t_dir = side == 'e' ? 'u': 'U';
+        for (int i = 1; i <= n-2; i++) {
+            rotate_y_axis(t_dir, i);
         }
-        break;
-    case 'r':
-        for (int i = 1; i < n + 1; i++) {
-            for (int j = i + 1; j < n + 1; j++) {
-                swap(parts[i - 1][j*n - 1], parts[j - 1][i*n - 1]);
-            }
-        }
-
-        for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= n/2; j++) {
-                swap(parts[i - 1][j*n - 1], parts[i - 1][n*n - j]);
-            }
-        }
-
-        for (int i = 0; i < n; i++) {
-            for (int j = 1; j <= n; j++) {
-                parts[i][j*n - 1].rotate_piece('X');
-            }
-        }
-        break;
-    case 'L':
-
-       for (int i = 1; i < n + 1; i++) {
-            for (int j = i; j < n; j++) {
-                swap(parts[i - 1][j * n], parts[j][(i - 1) * n]);
-            }
-        }
-
-        for (int i = 1; i <= n/2; i++) {
-            for (int j = 1; j <= n; j++) {
-                swap(parts[j-1][i-1], parts[j-1][(n-i)*n]);
-            }
-        }
-
-        for (int i = 0; i < n; i++) {
-            for (int j = 1; j <= n; j++) {
-                parts[i][(j - 1) * n].rotate_piece('x');
-            }
-        }
-        break;
-    case 'l':
-       for (int i = 1; i < n + 1; i++) {
-            for (int j = i; j < n; j++) {
-                swap(parts[i - 1][j * n], parts[j][(i - 1) * n]);
-            }
-        }
-
-        for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= n/2; j++) {
-                swap(parts[j - 1][(i - 1) * n], parts[n-j][(i - 1) * n]);
-            }
-        }
-
-        for (int i = 0; i < n; i++) {
-            for (int j = 1; j <= n; j++) {
-                parts[i][(j - 1) * n].rotate_piece('X');
-            }
-        }
-        break;
-    case 'M':
-        break;
-    case 'm':
-        break;
-    case 'U':
-        rotate_clockwise(parts[0], n);
-        for (int i = 0; i < n*n; i++) {
-            parts[0][i].rotate_piece('y');
-        }
-        break;
-    case 'u':
-        rotate_counter(parts[0], n);
-        for (int i = 0; i < n*n; i++) {
-            parts[0][i].rotate_piece('Y');
-        }
-        break;
-    case 'D':
-        rotate_counter(parts[n-1], n);
-        for (int i = 0; i < n*n; i++) {
-            parts[n-1][i].rotate_piece('y');
-        }
-        break;
-    case 'd':
-        rotate_clockwise(parts[n-1], n);
-        for (int i = 0; i < n*n; i++) {
-            parts[n-1][i].rotate_piece('Y');
-        }
-        break;
-    case 'E':
-        for (int i = 1; i < n - 1; i++) {
-            rotate_clockwise(parts[i], n);
-            for (int j = 0; j < n*n; j++) {
-                parts[i][j].rotate_piece('y');
-            }
-        }
-        break;
-    case 'e':
-        for (int i = 1; i < n - 1; i++) {
-            rotate_counter(parts[i], n);
-            for (int j = 0; j < n*n; j++) {
-                parts[i][j].rotate_piece('Y');
-            }
-        }
-        break;
-    case 'F':
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                swap(parts[i][n*n - n + j], parts[j][n*n - n + i]);
-            }
-        }
-
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n/2; j++) {
-                swap(parts[i][n*n - j - 1], parts[i][n*n - n + j]);
-            }
-        }
-        for (int i = 0; i < n; i++) {
-            for (int j = n*n - n; j < n*n; j++) {
-                parts[i][j].rotate_piece('z');
-            }
-        }
-        break;
-    case 'f':
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                swap(parts[i][n*n - n + j], parts[j][n*n - n + i]);
-            }
-        }
-
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n/2; j++) {
-                swap(parts[j][n*n - n + i], parts[n - j - 1][n*n - n + i]);
-            }
-        }
-
-        for (int i = 0; i < n; i++) {
-            for (int j = n*n - n; j < n*n; j++) {
-                parts[i][j].rotate_piece('Z');
-            }
-        }
-        break;
-    case 'B':
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                swap(parts[i][j], parts[j][i]);
-            }
-        }
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n/2; j++) {
-                swap(parts[j][i], parts[n-j-1][i]);
-            }
-        }
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                parts[i][j].rotate_piece('Z');
-            }
-        }
-        break;
-    case 'b':
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                swap(parts[i][j], parts[j][i]);
-            }
-        }
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n/2; j++) {
-                swap(parts[i][j], parts[i][n-1-j]);
-            }
-        }
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                parts[i][j].rotate_piece('Z');
-            }
-        }
-        break;
-    case 'S':
-        break;
-    case 's':
-        break;
-    default:
-        break;
     }
 }
 
 void Cube::change_direction(char dir) {
-    switch (dir) {
-    case 'x':
-        rotate_side('R');
-        rotate_side('M');
-        rotate_side('L');
-        break;
-    case 'X':
-        rotate_side('r');
-        rotate_side('m');
-        rotate_side('l');
-        break;
-    case 'y':
-        rotate_side('U');
-        rotate_side('E');
-        rotate_side('D');
-        break;
-    case 'Y':
-        rotate_side('u');
-        rotate_side('e');
-        rotate_side('d');
-        break;
-    case 'z':
-        rotate_side('F');
-        rotate_side('S');
-        rotate_side('B');
-        break;
-    case 'Z':
-        rotate_side('f');
-        rotate_side('s');
-        rotate_side('b');
-        break;
-    default:
-        break;
+    if (tolower(dir) == 'x') {
+        char t_dir = dir == 'x' ? 'R' : 'r';
+        for (int i = 0; i < dimension; i++) {
+            rotate_x_axis(t_dir, i);
+        }
+    } else if(tolower(dir) == 'y') {
+        char t_dir = dir == 'y' ? 'U' : 'u';
+        for (int i = 0; i < dimension; i++) {
+            rotate_y_axis(t_dir, i);
+        } 
+    } else if(tolower(dir) == 'z') {
+        char t_dir = dir == 'z' ? 'F' : 'f';
+        for (int i = 0; i < dimension; i++) {
+            rotate_z_axis(t_dir, i);
+        } 
     }
 }
 
-void Cube::rotate_x_axis(char dir) {
-    int n = dimension;
-    int offsetX = 0, offsetY = 0, offsetZ = 0;
-    if (tolower(dir) == 'r') {
-        offsetX = 2;
-    } else if (tolower(dir) == 'l') {
-        offsetY = -2;
-    } else if (tolower(dir) == 'm') {
-        offsetZ = 0;
+void Cube::rotate_x_axis(char face, int start_offset) {
+    int n = dimension, offset = 0, k = 0;
+
+    if (face == 'r' || face == 'R') {
+        offset = n - 1 - start_offset;
+    } else {
+        offset = 0;
     }
 
-    // Транспонирование
-    for (int i = 1; i <= n; i++) {
-        for (int j = i; j < n; j++) {
-            printf("(%d;%d) (%d;%d)\n", i - 1, j*n + offsetX, j, i*n - 1 + offsetY);
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
+            swap(parts[i][n*j + offset], parts[j][n*i + offset]);
+        }
+    }
+
+    if (face == 'r' || face == 'L') {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n/2; j++) {
+                swap(parts[i][n*j + offset], parts[i][(n - 1 - j) * n + offset]);
+            }
+        }
+    } else if (face == 'R' || face == 'l') {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n/2; j++) {
+                swap(parts[j][(n-i-1)*n + offset], parts[n - 1 - j][(n-i-1)*n + offset]);
+            }
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            parts[i][n*j + offset].rotate_piece('x');
+        }
+    }
+}
+
+
+void Cube::rotate_y_axis(char face, int start_offset) {
+    int n = dimension;
+    int slice = 0;
+    int so = start_offset;
+
+    if (tolower(face) == 'u') {
+        slice = 0;
+    } else if (tolower(face) == 'd') {
+        slice = n - 1;
+    } 
+
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
+            swap(parts[so+slice][j*n + i], parts[so+slice][i*n + j]);
+        }
+    }
+
+    if (face == 'U' || face == 'd') {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n / 2; j++) {
+                swap(parts[so+slice][i * n + j], parts[so+slice][i * n + (n - 1 - j)]);
+            }
+        }
+    } else if (face == 'u' || face == 'D') {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n / 2; j++) {
+                swap(parts[so+slice][i], parts[so+slice][(n - 1 - j) * n + i]);
+            }
+        }
+    }
+
+    for (int i = 0; i < n*n; i++) {
+        parts[so+slice][i].rotate_piece('y');
+    }
+}
+
+void Cube::rotate_z_axis(char face, int start_offset) {
+    int n = dimension, offset = 0;
+
+    if (tolower(face) == 'f') {
+        offset = n*n - n - n*start_offset;
+    } else if (tolower(face) == 'b') {
+        offset = 0 + n*start_offset;
+    }
+
+    for (int i = 0; i < n; i++) {
+         for (int j = i + 1; j < n; j++) {
+             swap(parts[i][j + offset], parts[j][i + offset]);
+         }
+    }
+
+    if (face == 'f' || face == 'B')  {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n/2; j++) {
+                swap(parts[j][i + offset], parts[n - j - 1][i + offset]);
+            }
+        }
+    } else if (face == 'F' || face == 'b') {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n/2; j++) {
+                swap(parts[i][j+offset], parts[i][n - 1 + j + offset]);
+            }
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = offset; j < offset + n; j++) {
+            parts[i][j].rotate_piece('z');
         }
     }
 }

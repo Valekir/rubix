@@ -68,7 +68,7 @@ int Controller::parse_console_commands(string& str) {
             [](unsigned char c) { return tolower(c); });
 
         if (match.find("help") != string::npos) {
-            console.help();
+            console.help("command_list");
         } 
         if (match.find("clear") != string::npos) {
             console.clear();
@@ -86,7 +86,9 @@ int Controller::parse_console_commands(string& str) {
             console.print_cube(current_cube);
         } 
         if (match.find("new") != string::npos) {
+            console.clear();
             current_cube = Cube((int) (match[4] - '0'));
+            console.print_cube(current_cube);
         } 
         if (match.find("style") != string::npos) {
             console.set_style((int) (match[6] - '0'));
@@ -120,4 +122,9 @@ void Controller::scramble() {
     for (int i = 0; i < 20; i++) {
         current_cube.rotate_side(moves[std::rand() % 12]);
     }
+}
+
+// Выводит приветственное сообщение
+void Controller::hello() {
+    console.help("start_message");
 }

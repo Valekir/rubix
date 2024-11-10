@@ -26,7 +26,7 @@ class View {
    // Очищает окно консоли
    void clear();
    // Выводит в консоль справку по приложению
-   void help();
+   void help(std::string file_name);
    // Выводит развертку кубика, в зависимости от выбранного режима развертки
    void print_cube(Cube);
 };

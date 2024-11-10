@@ -16,8 +16,8 @@ void View::clear() {
     cout << "\033[2J\033[1;1H";
 }
 
-void View::help() {
-    ifstream file("command_list");
+void View::help(string file_name) {
+    ifstream file(file_name);
     assert(file);
     string line;
 

@@ -1,0 +1,6 @@
+To create new cube use: "new n" where 2 <= n <= 5
+To scramble cube use: "scramble"
+To rotate sides or cube enter commands into terminal: ex. RUR'U'
+To read full information about moves notation use: "help"
+To clear terminal use: "clear"
+To close app use: "end"
