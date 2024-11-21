@@ -7,6 +7,8 @@ View::View() {
     main_direction = {0, 1, 0}; 
 }
 
+/// @brief Изменяет количество сторон, отображаемых в развертке
+/// @param n Новое количество сторон в развертке
 void View::set_style(int n) {
     if (n < style) {
         clear();
@@ -18,16 +20,18 @@ void View::set_style(int n) {
         cout << "Invalid style!" << endl;
 }
 
+/// @brief Полностью очищает окно консоли
 void View::clear() {
     cout << "\033[2J\033[1;1H";
 }
 
-
-void View::clear_command_line() {
+/// @brief Очищает одну строку консоли
+void View::clear_line() {
     cout << "\033[1A\033[2K\r";
 }
 
-void View::help(string file_name) {
+/// @brief Выводит описание языка вращений кубика
+void View::help() {
     std::cout << "Cube rotations:" << std::endl << std::endl;
     std::cout << "F (front): the face facing the solver.\nB (back): the back face." << std::endl;
     std::cout << "R (right): the right face.\nL (left): the left face." << std::endl;
@@ -157,6 +161,8 @@ void View::print_six_face(Cube cube) {
     }
 }
 
+/// @brief Выводит на экран развертку кубика
+/// @param cube Кубик, который нужно отрисовать
 void View::print_cube(Cube cube) {
     cout << "\033[H";
     switch (style) {
@@ -181,4 +187,3 @@ void View::print_cube(Cube cube) {
     }
     cout << "\033[39m" << endl;
 }
-

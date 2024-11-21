@@ -4,6 +4,8 @@
 int main() {
     Controller _main;
     
-    _main.hello();
-    _main.game();
+    while (1) {
+        _main.menu();
+        _main.game();
+    }
 }

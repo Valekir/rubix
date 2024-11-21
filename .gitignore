@@ -1,5 +1,7 @@
 **/build
 **/.vscode
+**/html
+
 *.exe
 test.cpp
 colors.txt

@@ -10,7 +10,6 @@ std::ostream& operator<<(std::ostream& out, Piece p) {
     for (auto i : p.get_pos()) {
         out << i;
     }
-    out << "\tID: " << p.get_id() << std::endl;
     return out;
 }
 
@@ -22,13 +21,16 @@ Piece::Piece() {
     type = '0';
 }
 
-Piece::Piece(vector <Colors> _color, vector <int> _angles, char _type, int id) {
+/// @brief Создает объект класса Piece
+/// @param _color Массив, задающий цвета элемента (3 цвета, если у элемента должно быть меньше цветов - вместо них будет черный)
+/// @param _angles Массив, задающий направление элемента (3 координаты)
+/// @param _type Тип элемента (угол, ребро, центр)
+Piece::Piece(vector <Colors> _color, vector <int> _angles, char _type) {
     for (int i = 0; i < 3; i++) {
         color.push_back(_color[i]);
         angles.push_back(_angles[i]);
     }
     type = _type;
-    ID = id;
 }
 
 vector <int> Piece::get_pos() { return angles; }
@@ -37,6 +39,8 @@ vector <Colors> Piece::get_color() { return color; }
 
 char Piece::get_type() { return type; }
 
+/// @brief Поворачивает элемент в направлении dir
+/// @param dir Направление поворота
 void Piece::rotate_piece(char dir) {
     angles = rotate_vector(angles, dir);   
 
@@ -55,7 +59,8 @@ Cube::Cube() {
     vector <Colors> colors{};
 }
 
-// Конструктор кубика Рубика. Задает изначальное состояние кубика, размером NxNxN
+/// @brief Конструктор кубика Рубика. Задает изначальное состояние кубика
+/// @param n Размер кубика 
 Cube::Cube(int n) {
     dimension = n;
     vector <int> angles;
@@ -68,19 +73,19 @@ Cube::Cube(int n) {
             angles = find_angles(layer, i, n);
             if (i == 0 || i == n-1 || i == n*n-n|| i == n*n-1) {
                 if (layer == 0 || layer == n-1)
-                    new_piece = Piece(colors, angles, 'C', layer*9+i);
+                    new_piece = Piece(colors, angles, 'C');
                 else
-                    new_piece = Piece(colors, angles, 'E', layer*9+i);
+                    new_piece = Piece(colors, angles, 'E');
             } else if (i < n-1 || i > n*n-n || i % n == 0 || i % n == n-1) {
                 if (layer == 0 || layer == n-1)
-                    new_piece = Piece(colors, angles, 'E', layer*9+i);
+                    new_piece = Piece(colors, angles, 'E');
                 else
-                    new_piece = Piece(colors, angles, 'M', layer*9+i);
+                    new_piece = Piece(colors, angles, 'M');
             } else {
                 if (layer == 0 || layer == n-1)
-                    new_piece = Piece(colors, angles, 'M', layer*9+i);
+                    new_piece = Piece(colors, angles, 'M');
                 else
-                    new_piece = Piece(colors, angles, '0', layer*9+i);
+                    new_piece = Piece(colors, angles, '0');
             }
             temp.push_back(new_piece);
         }
@@ -88,7 +93,8 @@ Cube::Cube(int n) {
     }
 }
 
-// Формирует массив чисел для вывода одной сторону кубика, направленную в сторону direction
+/// @brief Формирует массив чисел для вывода одной сторонs кубика
+/// @param direction Сторона кубика, которую нужно вывести
 vector <vector <Colors>> Cube::face_to_print(vector <int> direction) {
     vector <Colors> colors, temp;
     vector <vector <Colors>> result;
@@ -145,6 +151,8 @@ vector <vector <Colors>> Cube::face_to_print(vector <int> direction) {
     return result;
 }
 
+/// @brief Поворачивает сторону кубика
+/// @param side Сторона, которую нужно повернуть
 void Cube::rotate_side(char side) {
     int n = dimension;
     char t_side = tolower(side);
@@ -173,6 +181,8 @@ void Cube::rotate_side(char side) {
     }
 }
 
+/// @brief Поворачивает кубик в пространстве
+/// @param dir Направление поворота
 void Cube::change_direction(char dir) {
     if (tolower(dir) == 'x') {
         char t_dir = dir == 'x' ? 'R' : 'r';
@@ -192,6 +202,9 @@ void Cube::change_direction(char dir) {
     }
 }
 
+/// @brief Поворачивает сторону, направленную по оси х
+/// @param face Поворачиваемая сторона
+/// @param start_offset Отступ от начала массива 
 void Cube::rotate_x_axis(char face, int start_offset) {
     int n = dimension, offset = 0, k = 0;
 
@@ -228,7 +241,9 @@ void Cube::rotate_x_axis(char face, int start_offset) {
     }
 }
 
-
+/// @brief Поворачивает сторону, направленную по оси y
+/// @param face Поворачиваемая сторона
+/// @param start_offset Отступ от начала массива 
 void Cube::rotate_y_axis(char face, int start_offset) {
     int n = dimension;
     int slice = 0;
@@ -265,6 +280,9 @@ void Cube::rotate_y_axis(char face, int start_offset) {
     }
 }
 
+/// @brief Поворачивает сторону, направленную по оси z
+/// @param face Поворачиваемая сторона
+/// @param start_offset Отступ от начала массива 
 void Cube::rotate_z_axis(char face, int start_offset) {
     int n = dimension, offset = 0;
 
