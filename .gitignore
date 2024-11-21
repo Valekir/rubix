@@ -1,7 +1,5 @@
 **/build
 **/.vscode
-test.cpp
-rotate.cpp
-parser.cpp
 *.exe
+test.cpp
 colors.txt

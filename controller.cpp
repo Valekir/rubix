@@ -7,6 +7,7 @@ void Controller::new_cube(int dim) {
     current_cube = Cube(dim);
 }
 
+// Ищет в входном потоке команды для кубика и команды для консоли
 void Controller::parse_input(std::istream& in) {
     string input;
     std::getline(in, input);
@@ -16,10 +17,10 @@ void Controller::parse_input(std::istream& in) {
                 move(command_sequence.front());
                 command_sequence.pop();
             }
-            console.clear();
             console.print_cube(current_cube);
         }
     }    
+    console.clear_command_line();
 }
 
 // Проверяет входной поток на наличие команд, изменящих кубик
@@ -51,10 +52,8 @@ int Controller::parse_cube_commands(string& str) {
 
 // Команды: clear, end, help, style n, new n, 
 // Проверяет входной поток на наличие команд, связанных с окном консоли
-// ([cC][lL][eE][aA][rR])|([eE][nN][dD])|([hH][eE][lL][pP])
-// ([sS][tT][yY][lL][eE] [1356]))|([nN][eE][wW] ((1[0-7])|[1-9]))
 int Controller::parse_console_commands(string& str) {
-    regex pattern1("([cC][lL][eE][aA][rR])|([eE][nN][dD])|([hH][eE][lL][pP])|([sS][tT][yY][lL][eE] [1356])|[nN][eE][wW] (([1-5]))|([sS][cC][rR][aA][mM][bB][lL][eE])|([sS][hH][oO][wW])");
+    regex pattern1("(clear)|(exit)|(help)|(style [1356])|(new [2-5])|(scramble)|(show)", std::regex_constants::icase);
     auto begin = sregex_iterator(str.begin(), str.end(), pattern1);
     auto end = sregex_iterator();
 
@@ -68,17 +67,18 @@ int Controller::parse_console_commands(string& str) {
             [](unsigned char c) { return tolower(c); });
 
         if (match.find("help") != string::npos) {
+            console.clear();
             console.help("command_list");
         } 
         if (match.find("clear") != string::npos) {
             console.clear();
         } 
-        if (match.find("end") != string::npos) {
+        if (match.find("exit") != string::npos) {
             close_app();
         } 
         if (match.find("scramble") != string::npos) {
-            console.clear();
             scramble();
+            console.clear();
             console.print_cube(current_cube);
         } 
         if (match.find("show") != string::npos) {
@@ -92,6 +92,7 @@ int Controller::parse_console_commands(string& str) {
         } 
         if (match.find("style") != string::npos) {
             console.set_style((int) (match[6] - '0'));
+            console.print_cube(current_cube);
         }
     }
     return 1;
@@ -100,8 +101,6 @@ int Controller::parse_console_commands(string& str) {
 // Изменяет состояние кубика - вращает грани или сам кубик в пространстве
 void Controller::move(char command) {
     char temp = tolower(command);
-    std::cout << command << std::endl;
-
     if (temp == 'x' || temp == 'y' || temp == 'z')
         current_cube.change_direction(command);
     else
@@ -124,7 +123,24 @@ void Controller::scramble() {
     }
 }
 
-// Выводит приветственное сообщение
 void Controller::hello() {
-    console.help("start_message");
+    std::cout << "\033[2J\033[1;1H";
+    std::cout << "To create new cube use: \"new n\" where 2 <= n <= 5" << std::endl;
+    std::cout << "To rotate sides or cube enter commands into terminal: ex. RUR'U'" << std::endl;
+    std::cout << "To read full information about moves notation use: \"help\"" << std::endl;
+    std::cout << "To scramble cube use: \"scramble\"" << std::endl;
+    std::cout << "To clear terminal use: \"clear\"" << std::endl;
+    std::cout << "To print cube again use : \"show\"" << std::endl;
+    std::cout << "To close app use: \"exit\"" << std::endl;
+}
+
+void Controller::game() {
+    while (1) {
+        parse_input(std::cin);
+        sleep(0.2);
+    }
+}
+
+void Controller::menu() {
+
 }

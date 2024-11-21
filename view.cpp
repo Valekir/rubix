@@ -8,23 +8,47 @@ View::View() {
 }
 
 void View::set_style(int n) {
+    if (n < style) {
+        clear();
+    }
+
     if (n == 1 || n == 3 || n == 5 || n == 6)
         style = n;
+    else
+        cout << "Invalid style!" << endl;
 }
 
 void View::clear() {
     cout << "\033[2J\033[1;1H";
 }
 
-void View::help(string file_name) {
-    ifstream file(file_name);
-    assert(file);
-    string line;
 
-    while (getline(file, line)) {
-        cout << line << endl;
-    }
-    file.close();
+void View::clear_command_line() {
+    cout << "\033[1A\033[2K\r";
+}
+
+void View::help(string file_name) {
+    std::cout << "Cube rotations:" << std::endl << std::endl;
+    std::cout << "F (front): the face facing the solver.\nB (back): the back face." << std::endl;
+    std::cout << "R (right): the right face.\nL (left): the left face." << std::endl;
+    std::cout << "U (up): the upper face.\nD (down): the face opposite to the upper face." << std::endl;
+    std::cout << "M (middle): the middle layer parallel to the R & L faces." << std::endl;
+    std::cout << "E (equator): the middle layer parallel to the U & D faces." << std::endl;
+    std::cout << "S (side): the middle layer parallel to the F & B faces." << std::endl << std::endl;
+    std::cout << "The letter means turning a single turn, (90 degrees), clockwise, the corresponding face." << std::endl << std::endl;
+    std::cout << "Letter followed by an apostrophe mark (') means turning the corresponding face a single turn, (90 degrees), counter-clockwise." << std::endl;
+    std::cout << "ex. R' U'" << std::endl << std::endl;
+    std::cout << "Letter followed by \"2\" means turning the corresponding face 2 single turns (180 degrees)" << std::endl;
+    std::cout << "ex. R2 = R R" << std::endl << std::endl;
+    std::cout << "Command can be written with or without delimitters" << std::endl;
+    std::cout << "ex. RURU = R U R U = R_U_R_U" << std::endl << std::endl;
+    std::cout << "Cube Rotations" << std::endl;
+    std::cout << "These are not actual turns, and is meant to instruct a rotation of whole the cube." << std::endl;
+    std::cout << "There are 3 possible axes to rotate the cube on: The X, Y & Z axes." << std::endl;
+    std::cout << "x : rotating the cube on the X axis. (R & L faces remain intact)" << std::endl;
+    std::cout << "y : rotating the cube on the Y axis. (U & D faces remain intact)" << std::endl;
+    std::cout << "z : rotating the cube on the Z axis. (F & B faces remain intact)" << std::endl << std::endl;
+    std::cout << "any characters EXCEPT [FBRLUDMxyz'2] will be ignored" << std::endl;
 }
 
 void View::print_three_face(Cube cube) {
@@ -134,6 +158,7 @@ void View::print_six_face(Cube cube) {
 }
 
 void View::print_cube(Cube cube) {
+    cout << "\033[H";
     switch (style) {
     case 1: {
         vector <vector <Colors>> faceU = cube.face_to_print(main_direction);
@@ -156,3 +181,4 @@ void View::print_cube(Cube cube) {
     }
     cout << "\033[39m" << endl;
 }
+

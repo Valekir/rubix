@@ -11,22 +11,26 @@
 // Класс, ответственный за отрисовку кубика в окне консоли
 class View {
  private:
-   int style;
-   std::vector <int> main_direction;
-   // Выводит развертку для трех сторон
-   void print_three_face(Cube);
-   // Выводит развертку для пяти сторон
-   void print_five_face(Cube);
-   // Выводит развертку для шести сторон
-   void print_six_face(Cube);
+    // Количество отображаемых сторон
+    int style;
+    // Направление взгляда на кубик
+    std::vector <int> main_direction;
+    // Выводит развертку для трех сторон
+    void print_three_face(Cube);
+    // Выводит развертку для пяти сторон
+    void print_five_face(Cube);
+    // Выводит развертку для шести сторон
+    void print_six_face(Cube);
  public:
-   View();
-   // изменяет количество сторон, отображаемых в развертке
-   void set_style(int);
-   // Очищает окно консоли
-   void clear();
-   // Выводит в консоль справку по приложению
-   void help(std::string file_name);
-   // Выводит развертку кубика, в зависимости от выбранного режима развертки
-   void print_cube(Cube);
+    View();
+    // изменяет количество сторон, отображаемых в развертке
+    void set_style(int);
+    // Очищает окно консоли
+    void clear();
+    // Выводит в консоль справку по приложению
+    void help(std::string file_name);
+    // Выводит развертку кубика, в зависимости от выбранного режима развертки
+    void print_cube(Cube);
+    // Очищает строку ввода команд
+    void clear_command_line();
 };

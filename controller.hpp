@@ -5,6 +5,7 @@
 #include <regex>
 #include <algorithm>
 #include <cstdlib>
+#include <unistd.h>
 
 #include "cube.hpp"
 #include "utils.hpp"
@@ -19,10 +20,13 @@ class Controller {
     int parse_cube_commands(std::string& str);
     int parse_console_commands(std::string& str);
   public:
-    Controller() {current_cube = Cube(); console = View(); }
+    Controller() {current_cube = Cube(1); console = View(); }
     void new_cube(int dim);
     void parse_input(std::istream& in);
     void close_app();
     void scramble();
+
+    void game();
+    void menu();
     void hello();
 };
