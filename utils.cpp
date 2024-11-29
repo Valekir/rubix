@@ -2,6 +2,25 @@
 
 using std::cout, std::cerr, std::endl, std::cos, std::sin, std::string;
 
+
+void Stopwatch::start() {
+    if (!running) {
+        start_time = std::chrono::high_resolution_clock::now();
+        running = true;
+    }
+}
+
+void Stopwatch::stop() {
+    if (running) {
+        end_time = std::chrono::high_resolution_clock::now();
+        running = false;
+
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+        std::cout << "Time: " << duration.count() << " ms.\n";
+    }
+}
+
+
 // Выводит вектор в окно консоли
 void print_vector(vector <Colors> vec) {
     for (auto item : vec) {
@@ -107,4 +126,38 @@ vector <int> rotate_vector(vector<int> vec, char dir) {
     }
     vec = {x, y, z};
     return vec;
+}
+
+/// @brief Читает содержимое файла .config
+/// @param filename 
+/// @return 
+std::unordered_map<std::string, std::string> read_config(const std::string& filename) {
+    std::unordered_map<std::string, std::string> config;
+    std::ifstream file(filename);
+
+    if (!file.is_open()) {
+        std::cerr << "Ошибка: не удалось открыть файл " << filename << "\n";
+        return config;
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {
+        // Пропуск пустых строк и комментариев
+        if (line.empty() || line[0] == '#') continue;
+
+        // Поиск символа '='
+        size_t pos = line.find('=');
+        if (pos != std::string::npos) {
+            std::string key = line.substr(0, pos);
+            std::string value = line.substr(pos + 1);
+
+            // Удаление пробелов (если есть)
+            key.erase(remove_if(key.begin(), key.end(), isspace), key.end());
+            value.erase(remove_if(value.begin(), value.end(), isspace), value.end());
+
+            config[key] = value;
+        }
+    }
+    file.close();
+    return config;
 }

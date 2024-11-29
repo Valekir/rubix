@@ -1,6 +1,7 @@
 #pragma once
 
 #include <queue>
+#include <unordered_map>
 #include <iostream>
 #include <regex>
 #include <algorithm>
@@ -18,29 +19,47 @@ class Controller {
     Cube current_cube;
     View console;
     std::queue <char> command_sequence;
-    void move(char command);
+
+	// Флаги для управления состоянием игры
+	std::unordered_map <std::string, bool> flags {
+		{"show_help", true}, 
+		{"show_scramble", true},
+		{"timer", false}
+	};
+	
+	// Отступ от верха консоли, если отображается справка по игре
+	int help_indent = 10;
+	Stopwatch timer;
+	int difficulty = 20;
+    
+	// Поворот грани кубика / кубика полностью
+	void move(char command);
     // Ищет в строке команды для вращения кубика 
     int parse_cube_commands(std::string& str);
     // Ищет в строке команды для взаимодействия с консолью
     int parse_console_commands(std::string& str);
+	// Ищет в строке команды для задания настроек
+	int parse_settings(std::string& str);
+
   public:
-    Controller() {current_cube = Cube(3); console = View(); }
+    Controller() {current_cube = Cube(3); console = View();}
 	// Ищет в строке команды управления меню
 	int parse_menu_commands(std::string& in);
 	// Создает новый кубик
 	void new_cube(int dim);
-    //  Завершает работу программы
-    void close_app();
     // Запутывает кубик
     void scramble();
+
     // Запускает игру
     void game();
     // Запускает меню
     void menu();
+	// Запускает меню настроек
+	void settings();
 
     // При старте игры выводит сообщение, описывающее возможные команды для взаимодействия с кубиком
     void hello_game();
     // При запуске приложения выводит сообщение, описывающее возможные команды для управления меню
-	  void hello_menu();
-
+	void hello_menu();
+	// Открывает настройки игры
 };

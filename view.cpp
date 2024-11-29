@@ -53,6 +53,8 @@ void View::help() {
     std::cout << "y : rotating the cube on the Y axis. (U & D faces remain intact)" << std::endl;
     std::cout << "z : rotating the cube on the Z axis. (F & B faces remain intact)" << std::endl << std::endl;
     std::cout << "any characters EXCEPT [FBRLUDMxyz'2] will be ignored" << std::endl;
+    std::cout << "\nTo exit this menu write anything in console: ";
+    getchar();
 }
 
 void View::print_three_face(Cube cube) {
@@ -163,8 +165,8 @@ void View::print_six_face(Cube cube) {
 
 /// @brief Выводит на экран развертку кубика
 /// @param cube Кубик, который нужно отрисовать
-void View::print_cube(Cube cube) {
-    cout << "\033[H";
+void View::print_cube(Cube cube, int n) {
+    cout << "\033[" << n << ";0H";
     switch (style) {
     case 1: {
         vector <vector <Colors>> faceU = cube.face_to_print(main_direction);

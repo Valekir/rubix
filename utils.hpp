@@ -2,7 +2,11 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <unordered_map>
 #include <cmath>
+#include <chrono>
+#include <algorithm>
+#include <fstream>
 
 #ifndef M_PI_2
 float M_PI_2 = 1.57079632679489661923;
@@ -10,11 +14,40 @@ float M_PI_2 = 1.57079632679489661923;
 
 using std::vector, std::swap;
 
+
 /// @brief набор цветов. 
 /// @details W - белый G - зеленый R - красный O - оранжевый 
 /// B - синий Y - желтый K - key - черный.
 enum class Colors {
     W = 15, G = 40, R = 196, O = 208, B = 12, Y = 11, K = 0
+};
+
+/// @brief Класс секундомера
+class Stopwatch {
+ private:
+	// Время начала
+    std::chrono::high_resolution_clock::time_point start_time;
+	// Время окончания
+    std::chrono::high_resolution_clock::time_point end_time;
+    // Состояние секундомера
+	bool running;
+
+ public:
+    Stopwatch() : running(false) {}
+
+    // Метод для старта секундомера
+    void start();
+
+    // Метод для остановки секундомера и вывода времени
+    void stop() {
+        if (running) {
+            end_time = std::chrono::high_resolution_clock::now();
+            running = false;
+
+            auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+            std::cout << "Time: " << duration.count() << " ms.\n";
+        }
+    }
 };
 
 /// @brief Выводит набор цветов в окно консоли
