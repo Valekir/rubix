@@ -8,6 +8,26 @@ void Controller::new_cube(int dim) {
     current_cube = Cube(dim);
 }
 
+/// @brief Поворачивает грань кубика, или весь кубик
+/// @param command Команда для поворота кубика
+void Controller::move(char command) {
+    char temp = tolower(command);
+    if (temp == 'x' || temp == 'y' || temp == 'z')
+        current_cube.change_direction(command);
+    else
+        current_cube.rotate_side(command);
+}
+
+/// @brief Случайно перемешивает кубик
+void Controller::scramble() {
+    current_cube = Cube(current_cube.size());
+    vector <char> moves = {'U', 'D', 'F', 'B', 'R', 'L', 'u', 'd', 'f', 'b', 'r', 'l'};
+    std::srand(std::time(0));
+    for (int i = 0; i < difficulty; i++) {
+        current_cube.rotate_side(moves[std::rand() % 12]);
+    }
+}
+
 /// @brief Проверяет строку на наличие команд, изменящих кубик
 /// @param str Строка для поиска
 /// @return Если команды найдены, возвращает 1, иначе 0
@@ -37,32 +57,10 @@ int Controller::parse_cube_commands(string& str) {
     return 1;
 }   
 
-
-/// @brief Поворачивает грань кубика, или весь кубик
-/// @param command Команда для поворота кубика
-void Controller::move(char command) {
-    char temp = tolower(command);
-    if (temp == 'x' || temp == 'y' || temp == 'z')
-        current_cube.change_direction(command);
-    else
-        current_cube.rotate_side(command);
-}
-
-/// @brief Случайно перемешивает кубик
-void Controller::scramble() {
-    current_cube = Cube(current_cube.size());
-    vector <char> moves = {'U', 'D', 'F', 'B', 'R', 'L', 'u', 'd', 'f', 'b', 'r', 'l'};
-    std::srand(std::time(0));
-    for (int i = 0; i < difficulty; i++) {
-        current_cube.rotate_side(moves[std::rand() % 12]);
-    }
-}
-
 // Команды: clear, exit, help, style n, new n, 
 /// @brief Проверяет строку на наличие команд, связанных с окном консоли
 /// @param str Строка для поиска
 /// @return 0 - если нет новой информации для вывода на экран. 1 - если нужно выйти в меню. 2 - если нужно заново отрисовать кубик
-
 int Controller::parse_console_commands(string& str) {
     regex pattern("(help)|(exit)|(scramble)|(hide)|(moves)", std::regex_constants::icase);
     auto begin = sregex_iterator(str.begin(), str.end(), pattern);
@@ -107,62 +105,83 @@ int Controller::parse_console_commands(string& str) {
     return 0;
 }
 
-// Старая версия -> DELETE
-// int Controller::parse_console_commands(string& str) {
-//     // regex pattern1("(clear)|(exit)|(help)|(style [1356])|(new [2-5])|(scramble)|(show)|(hide)", std::regex_constants::icase);
-//     regex pattern("(clear)|(exit)|(help)|(style [1356])|(new [2-5])|(scramble)|(show)|(hide)", std::regex_constants::icase);
-//     auto begin = sregex_iterator(str.begin(), str.end(), pattern);
-//     auto end = sregex_iterator();
+// Команды: start, exit, settings
+int Controller::parse_menu_commands(std::string& str) {
+    regex pattern1("(start)|(exit)|(settings)(load)", std::regex_constants::icase);
+    auto begin = sregex_iterator(str.begin(), str.end(), pattern1);
+    auto end = sregex_iterator();
 
-//     if (begin == end)
-//         return 0;
+    if (begin == end)
+        return 0;
 
-//     for (sregex_iterator i = begin; i != end; ++i) {
-//         smatch s = *i;
-//         string match = s.str();
-//         std::transform(match.begin(), match.end(), match.begin(), 
-//             [](unsigned char c) { return tolower(c); });
+    for (sregex_iterator i = begin; i != end; ++i) {
+        smatch s = *i;
+        string match = s.str();
+        std::transform(match.begin(), match.end(), match.begin(), [](unsigned char c) { return tolower(c); });
+        if (match.find("exit") != string::npos) {
+            console.clear();
+            exit(0);
+        } 
+        if (match.find("start") != string::npos) {
+            console.clear();
+            return 1;
+        }
+        if (match.find("settings") != string::npos) {
+            settings();
+        }
+    }
+    console.clear_line();
+    return 0;
+}
 
-//         if (match.find("help") != string::npos) {
-//             console.clear();
-//             console.help();
-//             if (flags["show_help"])
-//                 hello_game();
-//             // console.print_cube(current_cube, help_indent);
-//             return 2;
-//         } 
-//         if (match.find("clear") != string::npos) {
-//             console.clear();
-//             return 2;
-//         } 
-//         if (match.find("exit") != string::npos) {
-//             return 1;
-//             // close_app();
-//         } 
-//         if (match.find("scramble") != string::npos) {
-//             scramble();
-//             console.clear();
-//             // console.print_cube(current_cube, help_indent);
-//         } 
-//         if (match.find("show") != string::npos) {
-//             console.clear();
-//             // console.print_cube(current_cube, help_indent);
-//         } 
-//         if (match.find("style") != string::npos) {
-//             console.set_style((int) (match[6] - '0'));
-//             // console.print_cube(current_cube, help_indent);
-//         }
-//         if (match.find("hide") != string::npos) {
-//             flags["show_help"] = false;
-//         }
-//     }
-//     return 0;
-// }
+// Настройки: размер кубика, цвета, отображение справки, таймер, 
+// настройка сложности (количество ходов в scramble)
+/// @brief Ищет в входной строке команды для изменения настроек
+/// @param str Строка для поиска команд
+/// @return 
+int Controller::parse_settings(std::string& str) {
+    regex pattern1("(show_help)|(timer)|(difficulty)|(size)|(color_(top|bottom|right|left|front|back))|(exit)", std::regex_constants::icase);
+    auto begin = sregex_iterator(str.begin(), str.end(), pattern1);
+    auto end = sregex_iterator();
+
+    if (begin == end)
+        return 0;
+
+    std::unordered_map<std::string, std::string> updates;
+    std::string line;
+    updates = load_config("game.config");
+
+    for (sregex_iterator i = begin; i != end; ++i) {
+        smatch s = *i;
+        string line = s.str();
+        size_t pos = line.find('=');
+
+        std::transform(line.begin(), line.end(), line.begin(), [](unsigned char c) { return tolower(c); });
+
+        if (pos != std::string::npos) {
+            std::string key = line.substr(0, pos);
+            std::string value = line.substr(pos + 1);
+
+            key.erase(remove_if(key.begin(), key.end(), ::isspace), key.end());
+            value.erase(remove_if(value.begin(), value.end(), ::isspace), value.end());
+
+            updates[key] = value;
+        } else if (line.find("exit") != string::npos) {
+            return 1;
+        }
+    }
+
+    update_config("game.config", updates);
+    console.clear_line();
+    return 0;
+}
 
 /// @brief Запускает игру
 void Controller::game() {
     if (flags["show_help"]) {
         hello_game();
+    } else {
+        std::cout << "\033[2J\033[1;1H";
     }
 
     int parse_console = 2;
@@ -189,54 +208,6 @@ void Controller::game() {
     }
 }
 
-/// @brief Выводит приветственное сообщение при старте игры
-void Controller::hello_game() {
-    std::cout << "\033[2J\033[1;1H";
-    std::cout << "To rotate sides enter commands: ex. RUR'U'" << std::endl;
-    std::cout << "To read full information about moves notation use: \"moves\"" << std::endl;
-    std::cout << "To scramble cube use: \"scramble\"" << std::endl;
-    std::cout << "To exit to menu use: \"exit\"" << std::endl;
-    std::cout << "To hide this text use \"hide\"" << std::endl;
-    std::cout << "To see this text again use \"help\"" << std::endl;
-}
-
-/// @brief При запуске приложения выводит сообщение, описывающее возможные команды для управления меню
-void Controller::hello_menu() {
-    std::cout << "\033[2J\033[1;1H";
-    std::cout << "To start new game use: \"start\"" << std::endl;
-    std::cout << "To exit app use: \"exit\"" << std::endl;
-    std::cout << "To change settings use: \"settings\"" << std::endl;
-}
-
-// Команды: start, exit, settings
-int Controller::parse_menu_commands(std::string& str) {
-    regex pattern1("(start)|(exit)|(settings)(load)", std::regex_constants::icase);
-    auto begin = sregex_iterator(str.begin(), str.end(), pattern1);
-    auto end = sregex_iterator();
-
-    if (begin == end)
-        return 0;
-
-    for (sregex_iterator i = begin; i != end; ++i) {
-        smatch s = *i;
-        string match = s.str();
-        std::transform(match.begin(), match.end(), match.begin(), [](unsigned char c) { return tolower(c); });
-        if (match.find("exit") != string::npos) {
-            console.clear();
-            exit(0);
-        } 
-        if (match.find("start") != string::npos) {
-            console.clear();
-            return 1;
-        }
-        if (match.find("settings") != string::npos) {
-
-        }
-    }
-    console.clear_line();
-    return 0;
-}
-
 /// @brief Запускает меню
 void Controller::menu() {
     hello_menu();
@@ -257,41 +228,41 @@ void Controller::menu() {
 }
 
 
-// Настройки: размер кубика, цвета, отображение справки, таймер, 
-// настройка сложности (количество ходов в scramble), вывод ходов в scramble
-/// @brief Ищет в входной строке команды для изменения настроек
-/// @param str Строка для поиска команд
-/// @return 
-int Controller::parse_settings(std::string& str) {
-    regex pattern1("(start)|(exit)|(settings)(load)", std::regex_constants::icase);
-    auto begin = sregex_iterator(str.begin(), str.end(), pattern1);
-    auto end = sregex_iterator();
-
-    if (begin == end)
-        return 0;
-
-    for (sregex_iterator i = begin; i != end; ++i) {
-        smatch s = *i;
-        string match = s.str();
-        std::transform(match.begin(), match.end(), match.begin(), [](unsigned char c) { return tolower(c); });
-        if (match.find("exit") != string::npos) {
-            console.clear();
-            exit(0);
-        } 
-        if (match.find("start") != string::npos) {
-            console.clear();
-            return 1;
-        }
-        if (match.find("settings") != string::npos) {
-
-        }
-    }
-    console.clear_line();
-    return 0;
-}
-
-
 /// @brief Открывает настроки игры
 void Controller::settings() {
+    hello_settings();
 
+    std::string line = "";
+    while (!parse_settings(line)) {
+        std::getline(std::cin, line);
+    }
+}
+
+/// @brief Выводит приветственное сообщение при старте игры
+void Controller::hello_game() {
+    std::cout << "\033[2J\033[1;1H";
+    std::cout << "To rotate sides enter commands: ex. RUR'U'" << std::endl;
+    std::cout << "To read full information about moves notation use: \"moves\"" << std::endl;
+    std::cout << "To scramble cube use: \"scramble\"" << std::endl;
+    std::cout << "To exit to menu use: \"exit\"" << std::endl;
+    std::cout << "To hide this text use \"hide\"" << std::endl;
+    std::cout << "To see this text again use \"help\"" << std::endl;
+}
+
+/// @brief При запуске приложения выводит сообщение, описывающее возможные команды для управления меню
+void Controller::hello_menu() {
+    std::cout << "\033[2J\033[1;1H";
+    std::cout << "To start new game use: \"start\"" << std::endl;
+    std::cout << "To exit app use: \"exit\"" << std::endl;
+    std::cout << "To change settings use: \"settings\"" << std::endl;
+}
+
+void Controller::hello_settings() {
+    std::cout << "\033[2J\033[1;1H";
+    std::unordered_map<std::string, std::string> config;
+    config = load_config("game.config");
+        
+        for (const auto& [key, value] : config) {
+        std::cout << key << " = " << value << std::endl;
+    }
 }

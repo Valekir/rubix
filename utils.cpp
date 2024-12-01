@@ -128,36 +128,74 @@ vector <int> rotate_vector(vector<int> vec, char dir) {
     return vec;
 }
 
-/// @brief Читает содержимое файла .config
-/// @param filename 
-/// @return 
-std::unordered_map<std::string, std::string> read_config(const std::string& filename) {
+// Функция для чтения конфиг-файла
+std::unordered_map<std::string, std::string> load_config(const std::string& filename) {
     std::unordered_map<std::string, std::string> config;
-    std::ifstream file(filename);
 
-    if (!file.is_open()) {
-        std::cerr << "Ошибка: не удалось открыть файл " << filename << "\n";
-        return config;
+    std::ifstream file(filename);
+    if (file.is_open()) {
+        std::string line;
+        while (std::getline(file, line)) {
+            if (line.empty() || line[0] == '#') continue;
+
+            size_t pos = line.find('=');
+            if (pos != std::string::npos) {
+                std::string key = line.substr(0, pos);
+                std::string value = line.substr(pos + 1);
+
+                key.erase(remove_if(key.begin(), key.end(), ::isspace), key.end());
+                value.erase(remove_if(value.begin(), value.end(), ::isspace), value.end());
+
+                config[key] = value;
+            }
+        }
+        file.close();
+    } else {
+        config["size"] = "3";
+        config["color_front"] = "40";
+        config["color_back"] = "12";
+        config["color_left"] = "208";
+        config["color_right"] = "196";
+        config["color_top"] = "15";
+        config["color_bottom"] = "11";
+        config["difficulty"] = "5";
+        config["timer"] = "false";
+        config["show_help"] = "false";
+
+        std::ofstream outFile(filename, std::ios::out);
+        for (const auto& [key, value] : config) {
+            outFile << key << "=" << value << "\n";
+        }
+        outFile.close();
     }
 
-    std::string line;
-    while (std::getline(file, line)) {
-        // Пропуск пустых строк и комментариев
-        if (line.empty() || line[0] == '#') continue;
+    return config;
+}
 
-        // Поиск символа '='
-        size_t pos = line.find('=');
-        if (pos != std::string::npos) {
-            std::string key = line.substr(0, pos);
-            std::string value = line.substr(pos + 1);
+// Функция для обновления конфиг файла
+void update_config(const std::string& filename, const std::unordered_map<std::string, std::string>& updates) {
+    auto config = load_config(filename);
+    std::string tempFilename = filename + ".tmp";
+    std::ofstream tempFile(tempFilename, std::ios::out);
+    
+    if (!tempFile.is_open()) {
+        std::cerr << "Failed to create temporary file" << tempFilename << std::endl;
+        return;
+    }
+    for (const auto& [key, value] : updates) {
+        config[key] = value;
+    }
 
-            // Удаление пробелов (если есть)
-            key.erase(remove_if(key.begin(), key.end(), isspace), key.end());
-            value.erase(remove_if(value.begin(), value.end(), isspace), value.end());
+    for (const auto& [key, value] : config) {
+        tempFile << key << "=" << value << "\n";
+    }
+    tempFile.close();
 
-            config[key] = value;
+    if (std::remove(filename.c_str()) != 0) {
+        std::cerr << "Failed to remove old config file" << std::endl;
+    } else {
+        if (std::rename(tempFilename.c_str(), filename.c_str()) != 0) {
+            std::cerr << "Failed to rename temporary file to config file" << std::endl;
         }
     }
-    file.close();
-    return config;
 }
