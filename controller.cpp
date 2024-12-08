@@ -78,6 +78,7 @@ int Controller::parse_console_commands(string& str) {
         if (match.find("moves") != string::npos) {
             console.clear();
             console.help();
+            console.clear();
             if (flags["show_help"])
                 hello_game();
             return 2;
@@ -107,8 +108,8 @@ int Controller::parse_console_commands(string& str) {
 
 // Команды: start, exit, settings
 int Controller::parse_menu_commands(std::string& str) {
-    regex pattern1("(start)|(exit)|(settings)(load)", std::regex_constants::icase);
-    auto begin = sregex_iterator(str.begin(), str.end(), pattern1);
+    regex pattern("(start)|(exit)|(settings)|(load)", std::regex_constants::icase);
+    auto begin = sregex_iterator(str.begin(), str.end(), pattern);
     auto end = sregex_iterator();
 
     if (begin == end)
@@ -118,6 +119,7 @@ int Controller::parse_menu_commands(std::string& str) {
         smatch s = *i;
         string match = s.str();
         std::transform(match.begin(), match.end(), match.begin(), [](unsigned char c) { return tolower(c); });
+        std::cout << match << std::endl;
         if (match.find("exit") != string::npos) {
             console.clear();
             exit(0);
@@ -128,6 +130,9 @@ int Controller::parse_menu_commands(std::string& str) {
         }
         if (match.find("settings") != string::npos) {
             settings();
+            console.clear();
+            hello_menu();
+            std::cout << std::endl;
         }
     }
     console.clear_line();
@@ -140,7 +145,7 @@ int Controller::parse_menu_commands(std::string& str) {
 /// @param str Строка для поиска команд
 /// @return 
 int Controller::parse_settings(std::string& str) {
-    regex pattern1("(show_help)|(timer)|(difficulty)|(size)|(color_(top|bottom|right|left|front|back))|(exit)", std::regex_constants::icase);
+    regex pattern1("(((show_help)|(timer)|(difficulty)|(size)|(color_(top|bottom|right|left|front|back)))[ \t]*=[ \t]*[a-z0-9]+)|(exit)", std::regex_constants::icase);
     auto begin = sregex_iterator(str.begin(), str.end(), pattern1);
     auto end = sregex_iterator();
 
@@ -164,24 +169,25 @@ int Controller::parse_settings(std::string& str) {
 
             key.erase(remove_if(key.begin(), key.end(), ::isspace), key.end());
             value.erase(remove_if(value.begin(), value.end(), ::isspace), value.end());
-
             updates[key] = value;
-        } else if (line.find("exit") != string::npos) {
+        } 
+
+        update_config("game.config", updates);
+
+        if (line.find("exit") != string::npos) {
             return 1;
         }
     }
-
-    update_config("game.config", updates);
-    console.clear_line();
     return 0;
 }
 
 /// @brief Запускает игру
 void Controller::game() {
+    load_settings();
     if (flags["show_help"]) {
         hello_game();
     } else {
-        std::cout << "\033[2J\033[1;1H";
+        console.clear();
     }
 
     int parse_console = 2;
@@ -189,7 +195,8 @@ void Controller::game() {
     while (parse_console != 1) {
         if (parse_console == 2 || parse_cube == 1) {
             console.print_cube(current_cube, help_indent * flags["show_help"]);
-        }        string input;
+        }        
+        string input;
         
         std::getline(std::cin, input);
         parse_console = parse_console_commands(input);
@@ -230,10 +237,9 @@ void Controller::menu() {
 
 /// @brief Открывает настроки игры
 void Controller::settings() {
-    hello_settings();
-
     std::string line = "";
     while (!parse_settings(line)) {
+        print_settings();
         std::getline(std::cin, line);
     }
 }
@@ -257,12 +263,34 @@ void Controller::hello_menu() {
     std::cout << "To change settings use: \"settings\"" << std::endl;
 }
 
-void Controller::hello_settings() {
+void Controller::print_settings() {
     std::cout << "\033[2J\033[1;1H";
     std::unordered_map<std::string, std::string> config;
     config = load_config("game.config");
-        
-        for (const auto& [key, value] : config) {
-        std::cout << key << " = " << value << std::endl;
+
+    std::map<std::string, std::string> sorted_map(config.begin(), config.end());
+
+    std::cout << "Current settings:" << std::endl;
+    for (const auto& pair : sorted_map) {
+        std::cout << pair.first << " = " << pair.second << '\n';
     }
+}
+
+void Controller::load_settings() {
+    std::unordered_map<std::string, std::string> config;
+    config = load_config("game.config");
+    if (config["show_help"] == "true") {
+        flags["show_help"] = true;
+    } else if (config["show_help"] == "false") {
+        flags["show_help"] = false;
+    }
+
+    if (config["timer"] == "true") {
+        flags["timer"] = true;
+    } else if (config["timer"] == "false") {
+        flags["timer"] = false;
+    }
+    
+    current_cube = Cube(std::stoi(config["size"]));
+    
 }

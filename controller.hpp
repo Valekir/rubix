@@ -23,7 +23,6 @@ class Controller {
 	// Флаги для управления состоянием игры
 	std::unordered_map <std::string, bool> flags {
 		{"show_help", true}, 
-		{"show_scramble", true},
 		{"timer", false}
 	};
 	
@@ -40,6 +39,8 @@ class Controller {
     int parse_console_commands(std::string& str);
 	// Ищет в строке команды для задания настроек
 	int parse_settings(std::string& str);
+
+	void load_settings();
 
   public:
     Controller() {current_cube = Cube(3); console = View();}
@@ -62,5 +63,5 @@ class Controller {
     // При запуске приложения выводит сообщение, описывающее возможные команды для управления меню
 	void hello_menu();
 	// При открытии настроек выводит сообщение со всеми текущими настройками
-	void hello_settings();
+	void print_settings();
 };

@@ -160,7 +160,7 @@ std::unordered_map<std::string, std::string> load_config(const std::string& file
         config["color_bottom"] = "11";
         config["difficulty"] = "5";
         config["timer"] = "false";
-        config["show_help"] = "false";
+        config["show_help"] = "true";
 
         std::ofstream outFile(filename, std::ios::out);
         for (const auto& [key, value] : config) {
