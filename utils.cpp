@@ -22,17 +22,16 @@ void Stopwatch::stop() {
 
 
 // Выводит вектор в окно консоли
-void print_vector(vector <Colors> vec) {
+void print_vector(vector <Colors> vec, std::map<Colors, int> color) {
     for (auto item : vec) {
-        set_background_color(item);
+        set_background_color(color[item]);
         cout << "  ";
     }
     cout << "\033[0m";
 }
 
 // Устанавливает 8-битный цвет заливки с кодом n
-void set_background_color(Colors n) {
-    string res;
+void set_background_color(int n) {
     cout << "\033[48;5;" << (int) n << "m";
 }
 

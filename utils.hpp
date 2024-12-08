@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <map>
 #include <cmath>
 #include <chrono>
 #include <algorithm>
@@ -30,16 +31,16 @@ void update_config(const std::string& filename, const std::unordered_map<std::st
 /// @details W - белый G - зеленый R - красный O - оранжевый 
 /// B - синий Y - желтый K - key - черный.
 enum class Colors {
-    W = 15, G = 40, R = 196, O = 208, B = 12, Y = 11, K = 0
+    W, G, R, O, B, Y, K
 };
 
 /// @brief Выводит набор цветов в окно консоли
 /// @param vec Исходный вектор 
-void print_vector(vector <Colors> vec);
+void print_vector(vector <Colors> vec, std::map<Colors, int> color);
 
 /// @brief Устанавливает 8-битный цвет заливки 
 /// @param n Код цвета
-void set_background_color(Colors n);
+void set_background_color(int n);
 
 /// @brief Формирует строку отступа, состоящую из пробелов
 /// @param n Длина строки

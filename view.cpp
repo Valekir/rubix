@@ -69,13 +69,13 @@ void View::print_three_face(Cube cube) {
     faceF = cube.face_to_print(direction);          // передняя сторона
 
     for (int i = 0; i < cube.size(); i++) {
-        print_vector(faceU[i]);
-        print_vector(faceR[i]);
+        print_vector(faceU[i], cube_colors);
+        print_vector(faceR[i], cube_colors);
         cout << endl;
     }
 
     for (auto row : faceF) {
-        print_vector(row);
+        print_vector(row, cube_colors);
         cout << endl;
     }
 }
@@ -101,20 +101,20 @@ void View::print_five_face(Cube cube) {
 
     for (int i = 0; i < cube.size(); i++) {
         cout << indent;
-        print_vector(faceB[i]);
+        print_vector(faceB[i], cube_colors);
         cout << endl;
     }
 
     for (int i = 0; i < cube.size(); i++) {
-        print_vector(faceL[i]);
-        print_vector(faceU[i]);
-        print_vector(faceR[i]);
+        print_vector(faceL[i], cube_colors);
+        print_vector(faceU[i], cube_colors);
+        print_vector(faceR[i], cube_colors);
         cout << endl;
     }
 
        for (int i = 0; i < cube.size(); i++) {
         cout << indent;
-        print_vector(faceF[i]);
+        print_vector(faceF[i], cube_colors);
         cout << endl;
     }
 }
@@ -144,21 +144,21 @@ void View::print_six_face(Cube cube) {
 
     for (int i = 0; i < cube.size(); i++) {
         cout << indent;
-        print_vector(faceB[i]);
+        print_vector(faceB[i], cube_colors);
         cout << endl;
     }
 
     for (int i = 0; i < cube.size(); i++) {
-        print_vector(faceL[i]);
-        print_vector(faceU[i]);
-        print_vector(faceR[i]);
-        print_vector(faceD[i]);
+        print_vector(faceL[i], cube_colors);
+        print_vector(faceU[i], cube_colors);
+        print_vector(faceR[i], cube_colors);
+        print_vector(faceD[i], cube_colors);
         cout << endl;
     }
 
        for (int i = 0; i < cube.size(); i++) {
         cout << indent;
-        print_vector(faceF[i]);
+        print_vector(faceF[i], cube_colors);
         cout << endl;
     }
 }
@@ -171,7 +171,7 @@ void View::print_cube(Cube cube, int n) {
     case 1: {
         vector <vector <Colors>> faceU = cube.face_to_print(main_direction);
         for (auto row : faceU) {
-            print_vector(row);
+            print_vector(row, cube_colors);
             cout << endl;
         }
         break;
@@ -188,4 +188,8 @@ void View::print_cube(Cube cube, int n) {
         break;
     }
     cout << "\033[39m" << endl;
+}
+
+void View::set_colors(std::map<Colors, int> new_colors) {
+    cube_colors = new_colors;
 }

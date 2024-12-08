@@ -28,8 +28,8 @@ class Controller {
 	
 	// Отступ от верха консоли, если отображается справка по игре
 	int help_indent = 10;
-	Stopwatch timer;
 	int difficulty = 20;
+	Stopwatch timer;
     
 	// Поворот грани кубика / кубика полностью
 	void move(char command);

@@ -223,19 +223,10 @@ void Controller::menu() {
     while (!parse_menu_commands(input)) {
         std::getline(std::cin, input);
     }
-
-    int size = 0;
-    std::cout << "Choose cube size from 2 to 5: " << std::endl;
-    std::cin >> size;
-    while (size < 2 || size > 5) {
-        std::cout << "Invalid size! Try again: " << std::endl;
-        std::cin >> size;
-    }
-    current_cube = Cube(size);
 }
 
 
-/// @brief Открывает настроки игры
+/// @brief Открывает настройки игры
 void Controller::settings() {
     std::string line = "";
     while (!parse_settings(line)) {
@@ -265,6 +256,10 @@ void Controller::hello_menu() {
 
 void Controller::print_settings() {
     std::cout << "\033[2J\033[1;1H";
+    std::cout << "Color is integer between 0 and 255" << std::endl;
+    std::cout << "Size is integer between 2 and 5" << std::endl;
+    std::cout << "Flags can be true/false" << std::endl;
+    std::cout << "To exit to menu use \"exit\"" << std::endl;
     std::unordered_map<std::string, std::string> config;
     config = load_config("game.config");
 
@@ -292,5 +287,15 @@ void Controller::load_settings() {
     }
     
     current_cube = Cube(std::stoi(config["size"]));
-    
+
+    std::map<Colors, int> cube_color{
+      {Colors::W, stoi(config["color_top"])},  {Colors::G, stoi(config["color_front"])},
+      {Colors::R, stoi(config["color_right"])}, {Colors::O, stoi(config["color_left"])},
+      {Colors::B, stoi(config["color_back"])},  {Colors::Y, stoi(config["color_bottom"])},
+      {Colors::K, 0}
+    };
+
+    console.set_colors(cube_color);
+    difficulty = std::stoi(config["difficulty"]);
+
 }
