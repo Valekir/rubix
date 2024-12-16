@@ -19,12 +19,10 @@ using std::vector, std::swap;
 /// @param filename Файл, содержащий конфиг игры
 /// @return Набор параметров, задающих настройки игры
 /// При отсутствии файла создает новый, с параметрами по умолчанию
-std::unordered_map<std::string, std::string> load_config(const std::string& filename);
 
 /// @brief Функция для обновления конфиг файла
 /// @param filename Файл, содержащий конфиг игры
 /// @param updates Набор измененных параметров
-void update_config(const std::string& filename, const std::unordered_map<std::string, std::string>& updates);
 
 
 /// @brief набор цветов. 
@@ -34,9 +32,11 @@ enum class Colors {
     W, G, R, O, B, Y, K
 };
 
-/// @brief Выводит набор цветов в окно консоли
+/// @brief Выводит вектор (vec*scale) цветов в окно консоли
 /// @param vec Исходный вектор 
-void print_vector(vector <Colors> vec, std::map<Colors, int> color);
+/// @param color Набор цветов
+/// @param scale Коэффициент "растягивания" вектора
+void print_vector(vector <Colors> vec, std::map<Colors, int> color, int scale);
 
 /// @brief Устанавливает 8-битный цвет заливки 
 /// @param n Код цвета
@@ -112,7 +112,7 @@ void reflect_hor(vector<vector<T>>& matrix, int n) {
 }
 
 /// @brief Класс секундомера
-class Stopwatch {
+class Timer {
  private:
 	// Время начала
     std::chrono::high_resolution_clock::time_point start_time;
@@ -122,7 +122,7 @@ class Stopwatch {
 	bool running;
 
  public:
-    Stopwatch() : running(false) {}
+    Timer() : running(false) {}
 
     // Метод для старта секундомера
     void start();

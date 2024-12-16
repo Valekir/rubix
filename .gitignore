@@ -3,7 +3,7 @@
 **/html
 
 *.exe
+*.config
+*.tmp
 test.cpp
 colors.txt
-game.config
-game.config.tmp

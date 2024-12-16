@@ -29,7 +29,7 @@ class Controller {
 	// Отступ от верха консоли, если отображается справка по игре
 	int help_indent = 10;
 	int difficulty = 20;
-	Stopwatch timer;
+	Timer timer;
     
 	// Поворот грани кубика / кубика полностью
 	void move(char command);
@@ -40,6 +40,12 @@ class Controller {
 	// Ищет в строке команды для задания настроек
 	int parse_settings(std::string& str);
 
+	// Функция для обновления конфиг файла
+	void update_config(const std::string& filename, const std::unordered_map<std::string, std::string>& updates);
+	// Читает настройки из конфиг файла
+	std::unordered_map<std::string, std::string> load_config(const std::string& filename);
+
+	// Применяет настройки из конфиг файла
 	void load_settings();
 
   public:

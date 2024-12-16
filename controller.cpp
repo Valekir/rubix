@@ -57,7 +57,7 @@ int Controller::parse_cube_commands(string& str) {
     return 1;
 }   
 
-// Команды: clear, exit, help, style n, new n, 
+// Команды: help, exit, scramble, hide, moves 
 /// @brief Проверяет строку на наличие команд, связанных с окном консоли
 /// @param str Строка для поиска
 /// @return 0 - если нет новой информации для вывода на экран. 1 - если нужно выйти в меню. 2 - если нужно заново отрисовать кубик
@@ -72,8 +72,7 @@ int Controller::parse_console_commands(string& str) {
     for (sregex_iterator i = begin; i != end; ++i) {
         smatch s = *i;
         string match = s.str();
-        std::transform(match.begin(), match.end(), match.begin(), 
-            [](unsigned char c) { return tolower(c); });
+        std::transform(match.begin(), match.end(), match.begin(), [](unsigned char c) { return tolower(c); });
 
         if (match.find("moves") != string::npos) {
             console.clear();
@@ -145,7 +144,7 @@ int Controller::parse_menu_commands(std::string& str) {
 /// @param str Строка для поиска команд
 /// @return 
 int Controller::parse_settings(std::string& str) {
-    regex pattern1("(((show_help)|(timer)|(difficulty)|(size)|(color_(top|bottom|right|left|front|back)))[ \t]*=[ \t]*[a-z0-9]+)|(exit)", std::regex_constants::icase);
+    regex pattern1("(size[ \t]*=[ \t]*[3-5]+)|((show_help|timer)[ \t]*=[ \t]*(false|true))|(color_(top|bottom|right|left|front|back)[ \t]*=[ \t]*(2[0-4][0-9]|25[0-5]|1[0-9]{2}|[1-9][0-9]{0,1}|0))|(window[ \t]*=[ \t]*(default|scalable))|(exit)|(reset)", std::regex_constants::icase);
     auto begin = sregex_iterator(str.begin(), str.end(), pattern1);
     auto end = sregex_iterator();
 
@@ -172,11 +171,25 @@ int Controller::parse_settings(std::string& str) {
             updates[key] = value;
         } 
 
-        update_config("game.config", updates);
-
         if (line.find("exit") != string::npos) {
             return 1;
         }
+
+        if (line.find("reset") != string::npos) {
+            updates["size"] = "3";
+            updates["color_front"] = "40";
+            updates["color_back"] = "12";
+            updates["color_left"] = "208";
+            updates["color_right"] = "196";
+            updates["color_top"] = "15";
+            updates["color_bottom"] = "11";
+            updates["difficulty"] = "5";
+            updates["timer"] = "false";
+            updates["show_help"] = "true";
+            updates["window"] = "scalable";   
+
+        }
+        update_config("game.config", updates);
     }
     return 0;
 }
@@ -259,6 +272,8 @@ void Controller::print_settings() {
     std::cout << "Color is integer between 0 and 255" << std::endl;
     std::cout << "Size is integer between 2 and 5" << std::endl;
     std::cout << "Flags can be true/false" << std::endl;
+    std::cout << "Window can be default/scalable" << std::endl;
+    std::cout << "To set default settings use: \"reset\"" << std::endl;
     std::cout << "To exit to menu use \"exit\"" << std::endl;
     std::unordered_map<std::string, std::string> config;
     config = load_config("game.config");
@@ -271,6 +286,7 @@ void Controller::print_settings() {
     }
 }
 
+/// @brief  Применяет настройки игры
 void Controller::load_settings() {
     std::unordered_map<std::string, std::string> config;
     config = load_config("game.config");
@@ -284,7 +300,13 @@ void Controller::load_settings() {
         flags["timer"] = true;
     } else if (config["timer"] == "false") {
         flags["timer"] = false;
-    }
+    } 
+    
+    // if (config["window"] == "scalable") {
+    //     console = ScalableWindow();
+    // } else if (config["window"] == "default") {
+    //     console = View();
+    // }
     
     current_cube = Cube(std::stoi(config["size"]));
 
@@ -297,5 +319,80 @@ void Controller::load_settings() {
 
     console.set_colors(cube_color);
     difficulty = std::stoi(config["difficulty"]);
+}
 
+/// @brief Читает настройки из файла filename
+/// @return 
+std::unordered_map<std::string, std::string> Controller::load_config(const std::string& filename) {
+    std::unordered_map<std::string, std::string> config;
+
+    std::ifstream file(filename);
+    if (file.is_open()) {
+        std::string line;
+        while (std::getline(file, line)) {
+            if (line.empty() || line[0] == '#') continue;
+
+            size_t pos = line.find('=');
+            if (pos != std::string::npos) {
+                std::string key = line.substr(0, pos);
+                std::string value = line.substr(pos + 1);
+
+                key.erase(remove_if(key.begin(), key.end(), ::isspace), key.end());
+                value.erase(remove_if(value.begin(), value.end(), ::isspace), value.end());
+
+                config[key] = value;
+            }
+        }
+        file.close();
+    } else {
+        config["size"] = "3";
+        config["color_front"] = "40";
+        config["color_back"] = "12";
+        config["color_left"] = "208";
+        config["color_right"] = "196";
+        config["color_top"] = "15";
+        config["color_bottom"] = "11";
+        config["difficulty"] = "5";
+        config["timer"] = "false";
+        config["show_help"] = "true";
+        config["window"] = "scalable";
+
+        std::ofstream outFile(filename, std::ios::out);
+        for (const auto& [key, value] : config) {
+            outFile << key << "=" << value << "\n";
+        }
+        outFile.close();
+    }
+
+    return config;
+}
+
+/// @brief Обновляет настройки в конфиг файле
+/// @param filename Название конфиг файла 
+/// @param updates Список измененных настроек
+void Controller::update_config(const std::string& filename, const std::unordered_map<std::string, std::string>& updates) {
+    auto config = load_config(filename);
+    std::string tempFilename = filename + ".tmp";
+    std::ofstream tempFile(tempFilename, std::ios::out);
+    
+    if (!tempFile.is_open()) {
+        std::cerr << "Failed to create temporary file" << tempFilename << std::endl;
+        return;
+    }
+    for (const auto& [key, value] : updates) {
+        config[key] = value;
+    }
+
+    for (const auto& [key, value] : config) {
+        tempFile << key << "=" << value << "\n";
+    }
+    tempFile.close();
+
+    if (std::remove(filename.c_str()) != 0) {
+        std::cerr << "Failed to remove old config file" << std::endl;
+    } else {
+        if (std::rename(tempFilename.c_str(), filename.c_str()) != 0) {
+            std::cerr << "Failed to rename temporary file to config file" << std::endl;
+        }
+    }
 }

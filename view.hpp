@@ -14,7 +14,7 @@
 /// @brief Класс, ответственный за отрисовку кубика в окне консоли
 /// @details В приватных полях хранит текущий режим развертки - style и направление взгляда - main_direction
 class View {
- private:
+ protected:
     // Количество отображаемых сторон
     int style;
     // Направление взгляда на кубик
@@ -32,6 +32,8 @@ class View {
     void print_five_face(Cube);
     // Выводит развертку для шести сторон
     void print_six_face(Cube);
+    // Выводит вектор цветов
+    void print_vector(vector <Colors> vec);
  public:
     View();
     // изменяет количество сторон, отображаемых в развертке
@@ -47,3 +49,16 @@ class View {
    // Устанавливает новые цвета для кубика
    void set_colors(std::map<Colors, int>);
 };
+
+
+// class ScalableWindow : public View {
+//  private:
+//     int scale_factor = 1;
+//     // Находит максимально возможное разрешение картинки в зависимости от размера консоли
+//     int find_scale();
+//     // Выводит вектор цветов, растягивая его в зависимости от размера окна
+//     void print_vector(vector <Colors> vec);
+//  public:
+//     // Выводит кубик с размерами, зависящими от размера окна
+// };
+
