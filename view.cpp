@@ -2,8 +2,6 @@
 
 using std::cout, std::endl, std::vector, std::ifstream, std::string;
 
-
-
 //___________________________________________________View______________________________________________________________
 
 View::View() { 
@@ -112,8 +110,8 @@ void View::print_cube(Cube cube, int n) {
     print_face(faces[1], 1, y + height, cell_size);
     print_face(faces[2], 1 + width, y + height, cell_size);
     print_face(faces[3], 1 + width * 2, y + height, cell_size);
-    print_face(faces[4], 1 + width * 3, y + height, cell_size);
-    print_face(faces[5], 1 + width, y + height * 2, cell_size);
+    print_face(faces[5], 1 + width * 3, y + height, cell_size);
+    print_face(faces[4], 1 + width, y + height * 2, cell_size);
     cout << endl;
 }
 
@@ -121,8 +119,8 @@ void View::set_colors(std::map<Colors, int> new_colors) {
     cube_colors = new_colors;
 }
 
-void View::set_help(bool n) {
-    show_help = n;
+void View::set_help(bool help) {
+    show_help = help;
 }
 
 //_____________________________________________ScalableWindow________________________________________________
@@ -164,4 +162,3 @@ int x = 0, y = 1, size = cube.size();
     print_face(faces[5], 1 + width, y + height * 2, cell_size);
     cout << endl;
 }
-

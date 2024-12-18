@@ -2,11 +2,6 @@
 
 using std::regex, std::sregex_iterator, std::smatch, std::string;
 
-/// @brief Создает новый кубик
-/// @param dim Размер кубика (dim*dim*dim)
-void Controller::new_cube(int dim) {
-    current_cube = Cube(dim);
-}
 
 /// @brief Поворачивает грань кубика, или весь кубик
 /// @param command Команда для поворота кубика
@@ -105,95 +100,6 @@ int Controller::parse_console_commands(string& str) {
     return 0;
 }
 
-// Команды: start, exit, settings
-int Controller::parse_menu_commands(std::string& str) {
-    regex pattern("(start)|(exit)|(settings)|(load)", std::regex_constants::icase);
-    auto begin = sregex_iterator(str.begin(), str.end(), pattern);
-    auto end = sregex_iterator();
-
-    if (begin == end)
-        return 0;
-
-    for (sregex_iterator i = begin; i != end; ++i) {
-        smatch s = *i;
-        string match = s.str();
-        std::transform(match.begin(), match.end(), match.begin(), [](unsigned char c) { return tolower(c); });
-        std::cout << match << std::endl;
-        if (match.find("exit") != string::npos) {
-            console->clear();
-            exit(0);
-        } 
-        if (match.find("start") != string::npos) {
-            console->clear();
-            return 1;
-        }
-        if (match.find("settings") != string::npos) {
-            settings();
-            console->clear();
-            hello_menu();
-            std::cout << std::endl;
-        }
-    }
-    console->clear_line();
-    return 0;
-}
-
-// Настройки: размер кубика, цвета, отображение справки, таймер, 
-// настройка сложности (количество ходов в scramble)
-/// @brief Ищет в входной строке команды для изменения настроек
-/// @param str Строка для поиска команд
-/// @return 
-int Controller::parse_settings(std::string& str) {
-    regex pattern1("(size[ \t]*=[ \t]*[2-5]+)|((show_help|timer)[ \t]*=[ \t]*(false|true))|(color_(top|bottom|right|left|front|back)[ \t]*=[ \t]*(2[0-4][0-9]|25[0-5]|1[0-9]{2}|[1-9][0-9]{0,1}|0))|(window[ \t]*=[ \t]*(default|scalable))|(exit)|(reset)", std::regex_constants::icase);
-    auto begin = sregex_iterator(str.begin(), str.end(), pattern1);
-    auto end = sregex_iterator();
-
-    if (begin == end)
-        return 0;
-
-    std::unordered_map<std::string, std::string> updates;
-    std::string line;
-    updates = load_config("game.config");
-
-    for (sregex_iterator i = begin; i != end; ++i) {
-        smatch s = *i;
-        string line = s.str();
-        size_t pos = line.find('=');
-
-        std::transform(line.begin(), line.end(), line.begin(), [](unsigned char c) { return tolower(c); });
-
-        if (pos != std::string::npos) {
-            std::string key = line.substr(0, pos);
-            std::string value = line.substr(pos + 1);
-
-            key.erase(remove_if(key.begin(), key.end(), ::isspace), key.end());
-            value.erase(remove_if(value.begin(), value.end(), ::isspace), value.end());
-            updates[key] = value;
-        } 
-
-        if (line.find("exit") != string::npos) {
-            return 1;
-        }
-
-        if (line.find("reset") != string::npos) {
-            updates["size"] = "3";
-            updates["color_front"] = "40";
-            updates["color_back"] = "12";
-            updates["color_left"] = "208";
-            updates["color_right"] = "196";
-            updates["color_top"] = "15";
-            updates["color_bottom"] = "11";
-            updates["difficulty"] = "5";
-            updates["timer"] = "false";
-            updates["show_help"] = "true";
-            updates["window"] = "scalable";   
-
-        }
-        update_config("game.config", updates);
-    }
-    return 0;
-}
-
 /// @brief Запускает игру
 void Controller::game() {
     load_settings();
@@ -226,26 +132,7 @@ void Controller::game() {
             console->clear_line();
         }
     }
-}
-
-/// @brief Запускает меню
-void Controller::menu() {
-    hello_menu();
-    string input = "";
-
-    while (!parse_menu_commands(input)) {
-        std::getline(std::cin, input);
-    }
-}
-
-
-/// @brief Открывает настройки игры
-void Controller::settings() {
-    std::string line = "";
-    while (!parse_settings(line)) {
-        print_settings();
-        std::getline(std::cin, line);
-    }
+    command_sequence = std::queue<char>();  
 }
 
 /// @brief Выводит приветственное сообщение при старте игры
@@ -257,33 +144,6 @@ void Controller::hello_game() {
     std::cout << "To exit to menu use: \"exit\"" << std::endl;
     std::cout << "To hide this text use \"hide\"" << std::endl;
     std::cout << "To see this text again use \"help\"" << std::endl;
-}
-
-/// @brief При запуске приложения выводит сообщение, описывающее возможные команды для управления меню
-void Controller::hello_menu() {
-    std::cout << "\033[2J\033[1;1H";
-    std::cout << "To start new game use: \"start\"" << std::endl;
-    std::cout << "To exit app use: \"exit\"" << std::endl;
-    std::cout << "To change settings use: \"settings\"" << std::endl;
-}
-
-void Controller::print_settings() {
-    std::cout << "\033[2J\033[1;1H";
-    std::cout << "Color is integer between 0 and 255" << std::endl;
-    std::cout << "Size is integer between 2 and 5" << std::endl;
-    std::cout << "Flags can be true/false" << std::endl;
-    std::cout << "Window can be default/scalable" << std::endl;
-    std::cout << "To set default settings use: \"reset\"" << std::endl;
-    std::cout << "To exit to menu use \"exit\"" << std::endl;
-    std::unordered_map<std::string, std::string> config;
-    config = load_config("game.config");
-
-    std::map<std::string, std::string> sorted_map(config.begin(), config.end());
-
-    std::cout << "Current settings:" << std::endl;
-    for (const auto& pair : sorted_map) {
-        std::cout << pair.first << " = " << pair.second << '\n';
-    }
 }
 
 /// @brief  Применяет настройки игры
@@ -323,7 +183,6 @@ void Controller::load_settings() {
     difficulty = std::stoi(config["difficulty"]);
 }
 
-///
 void Controller::rescale() {
     console->clear();
     if (flags["show_help"]) {hello_game();}

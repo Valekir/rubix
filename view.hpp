@@ -19,8 +19,8 @@
 class View {
  protected:
     // Количество отображаемых сторон
-    int style;
-    bool show_help;
+    int style = 1;
+    bool show_help = true;
     // Направление взгляда на кубик
     std::vector <int> main_direction;
     // Набор цветов кубика
@@ -47,7 +47,7 @@ class View {
 	void help();
 	// Устанавливает новые цвета для кубика
 	void set_colors(std::map<Colors, int>);
-   void set_help(bool);
+   void set_help(bool help);
 };
 
 
@@ -60,4 +60,3 @@ class ScalableWindow : public View {
     // Выводит кубик с размерами, зависящими от размера окна
 	void print_cube(Cube, int) override;
 };
-
