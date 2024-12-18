@@ -6,6 +6,9 @@
 #include <string>
 #include <cassert>
 
+#include <sys/ioctl.h>
+#include <unistd.h>
+
 #include "cube.hpp"
 #include "utils.hpp"
 
@@ -16,7 +19,8 @@
 class View {
  protected:
     // Количество отображаемых сторон
-    int style;
+    int style = 1;
+    bool show_help = true;
     // Направление взгляда на кубик
     std::vector <int> main_direction;
     // Набор цветов кубика
@@ -26,14 +30,9 @@ class View {
       {Colors::B, 12},  {Colors::Y, 11},
       {Colors::K, 0}
     };
-    // Выводит развертку для трех сторон
-    void print_three_face(Cube);
-    // Выводит развертку для пяти сторон
-    void print_five_face(Cube);
-    // Выводит развертку для шести сторон
-    void print_six_face(Cube);
-    // Выводит вектор цветов
-    void print_vector(vector <Colors> vec);
+	// Выводит одну сторону кубика начиная из координат (x, y)
+	virtual void print_face(vector <vector<Colors>> face, int x, int y, int size);
+	vector <vector <vector <Colors>>> find_faces(Cube);
  public:
     View();
     // изменяет количество сторон, отображаемых в развертке
@@ -41,24 +40,23 @@ class View {
     // Очищает окно консоли
     void clear();
     // Рисует развертку кубика в консоли, начиная с строки n
-    void print_cube(Cube, int);
+    virtual void print_cube(Cube, int);
     // Очищает строку ввода команд
     void clear_line();
 	// Выводит описание языка вращений кубика
 	void help();
-   // Устанавливает новые цвета для кубика
-   void set_colors(std::map<Colors, int>);
+	// Устанавливает новые цвета для кубика
+	void set_colors(std::map<Colors, int>);
+   void set_help(bool help);
 };
 
 
-// class ScalableWindow : public View {
-//  private:
-//     int scale_factor = 1;
-//     // Находит максимально возможное разрешение картинки в зависимости от размера консоли
-//     int find_scale();
-//     // Выводит вектор цветов, растягивая его в зависимости от размера окна
-//     void print_vector(vector <Colors> vec);
-//  public:
-//     // Выводит кубик с размерами, зависящими от размера окна
-// };
-
+class ScalableWindow : public View {
+ private:
+    int scale_factor = 3;
+    // Находит максимально возможное разрешение картинки в зависимости от размера консоли
+    int find_scale();
+ public:
+    // Выводит кубик с размерами, зависящими от размера окна
+	void print_cube(Cube, int) override;
+};
