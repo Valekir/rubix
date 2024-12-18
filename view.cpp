@@ -268,3 +268,15 @@ void View::print_vector(vector <Colors> vec) {
 //     }
 // }
 
+<<<<<<< Updated upstream
+=======
+    print_face(faces[0], 1 + width, y, cell_size);
+    print_face(faces[1], 1, y + height, cell_size);
+    print_face(faces[2], 1 + width, y + height, cell_size);
+    print_face(faces[3], 1 + width * 2, y + height, cell_size);
+    print_face(faces[5], 1 + width * 3, y + height, cell_size);
+    print_face(faces[4], 1 + width, y + height * 2, cell_size);
+    cout << endl;
+}
+
+>>>>>>> Stashed changes
