@@ -27,7 +27,7 @@ class Controller {
 	};
 	
 	// Отступ от верха консоли, если отображается справка по игре
-	int help_indent = 10;
+	int help_indent = 7;
 	int difficulty = 20;
 	Timer timer;
     
@@ -49,7 +49,7 @@ class Controller {
 	void load_settings();
 
   public:
-    Controller() {current_cube = Cube(3); console = View();}
+    Controller() {current_cube = Cube(3); console = ScalableWindow();}
 	// Ищет в строке команды управления меню
 	int parse_menu_commands(std::string& in);
 	// Создает новый кубик

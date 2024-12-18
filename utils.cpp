@@ -116,3 +116,17 @@ vector <int> rotate_vector(vector<int> vec, char dir) {
     vec = {x, y, z};
     return vec;
 }
+
+/// @brief Заполняет участок консоли цветом color
+/// @param x Начальная координата x
+/// @param y Начальная координата y
+/// @param n Размер квадрата
+void fill_area(int x, int y, int n, int color) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n * 2; j++) {
+            cout << "\033[" << y + i << ";" << x + j << "H";		    // Перемещает курсор
+            cout << "\033[48;5;" << (int) color << "m" << " ";			// Красит одну ячейку консоли
+        }
+    }
+	cout << "\033[0m";
+}
