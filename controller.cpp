@@ -290,25 +290,25 @@ void Controller::print_settings() {
 void Controller::load_settings() {
     std::unordered_map<std::string, std::string> config;
     config = load_config("game.config");
-    if (config["show_help"] == "true") {
-        flags["show_help"] = true;
-        console->set_help(true);
-    } else if (config["show_help"] == "false") {
-        flags["show_help"] = false;
-        console->set_help(false);
+
+    if (config["window"] == "scalable") {
+        console = new ScalableWindow();
+    } else if (config["window"] == "default") {
+        console = new View();
     }
+
+    bool help = false;
+    if (config["show_help"] == "true") {
+        help = !help;
+    }
+    flags["show_help"] = help;
+    console->set_help(help);
 
     if (config["timer"] == "true") {
         flags["timer"] = true;
     } else if (config["timer"] == "false") {
         flags["timer"] = false;
     } 
-    
-    if (config["window"] == "scalable") {
-        console = new ScalableWindow();
-    } else if (config["window"] == "default") {
-        console = new View();
-    }
 
     current_cube = Cube(std::stoi(config["size"]));
 
