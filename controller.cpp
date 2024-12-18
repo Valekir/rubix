@@ -75,9 +75,9 @@ int Controller::parse_console_commands(string& str) {
         std::transform(match.begin(), match.end(), match.begin(), [](unsigned char c) { return tolower(c); });
 
         if (match.find("moves") != string::npos) {
-            console.clear();
-            console.help();
-            console.clear();
+            console->clear();
+            console->help();
+            console->clear();
             if (flags["show_help"])
                 hello_game();
             return 2;
@@ -87,16 +87,16 @@ int Controller::parse_console_commands(string& str) {
         } 
         if (match.find("scramble") != string::npos) {
             scramble();
-            console.clear_line();
+            console->clear_line();
             return 2;
         } 
         if (match.find("hide") != string::npos && flags["show_help"] == true) {
-            console.clear();
+            console->clear();
             flags["show_help"] = false;
             return 2;
         }
         if (match.find("help") != string::npos && flags["show_help"] == false) {
-            console.clear();
+            console->clear();
             flags["show_help"] = true;
             hello_game();
             return 2;
@@ -120,21 +120,21 @@ int Controller::parse_menu_commands(std::string& str) {
         std::transform(match.begin(), match.end(), match.begin(), [](unsigned char c) { return tolower(c); });
         std::cout << match << std::endl;
         if (match.find("exit") != string::npos) {
-            console.clear();
+            console->clear();
             exit(0);
         } 
         if (match.find("start") != string::npos) {
-            console.clear();
+            console->clear();
             return 1;
         }
         if (match.find("settings") != string::npos) {
             settings();
-            console.clear();
+            console->clear();
             hello_menu();
             std::cout << std::endl;
         }
     }
-    console.clear_line();
+    console->clear_line();
     return 0;
 }
 
@@ -144,7 +144,7 @@ int Controller::parse_menu_commands(std::string& str) {
 /// @param str Строка для поиска команд
 /// @return 
 int Controller::parse_settings(std::string& str) {
-    regex pattern1("(size[ \t]*=[ \t]*[3-5]+)|((show_help|timer)[ \t]*=[ \t]*(false|true))|(color_(top|bottom|right|left|front|back)[ \t]*=[ \t]*(2[0-4][0-9]|25[0-5]|1[0-9]{2}|[1-9][0-9]{0,1}|0))|(window[ \t]*=[ \t]*(default|scalable))|(exit)|(reset)", std::regex_constants::icase);
+    regex pattern1("(size[ \t]*=[ \t]*[2-5]+)|((show_help|timer)[ \t]*=[ \t]*(false|true))|(color_(top|bottom|right|left|front|back)[ \t]*=[ \t]*(2[0-4][0-9]|25[0-5]|1[0-9]{2}|[1-9][0-9]{0,1}|0))|(window[ \t]*=[ \t]*(default|scalable))|(exit)|(reset)", std::regex_constants::icase);
     auto begin = sregex_iterator(str.begin(), str.end(), pattern1);
     auto end = sregex_iterator();
 
@@ -200,14 +200,14 @@ void Controller::game() {
     if (flags["show_help"]) {
         hello_game();
     } else {
-        console.clear();
+        console->clear();
     }
 
     int parse_console = 2;
     int parse_cube = 1;
     while (parse_console != 1) {
         if (parse_console == 2 || parse_cube == 1) {
-            console.print_cube(current_cube, help_indent * flags["show_help"]);
+            console->print_cube(current_cube, help_indent * flags["show_help"]);
         }        
         string input;
         
@@ -223,7 +223,7 @@ void Controller::game() {
         }
 
         if (parse_console != 2 || parse_cube == 1) {
-            console.clear_line();
+            console->clear_line();
         }
     }
 }
@@ -302,12 +302,12 @@ void Controller::load_settings() {
         flags["timer"] = false;
     } 
     
-    // if (config["window"] == "scalable") {
-    //     console = ScalableWindow();
-    // } else if (config["window"] == "default") {
-    //     console = View();
-    // }
-    
+    if (config["window"] == "scalable") {
+        console = new ScalableWindow();
+    } else if (config["window"] == "default") {
+        console = new View();
+    }
+
     current_cube = Cube(std::stoi(config["size"]));
 
     std::map<Colors, int> cube_color{
@@ -317,7 +317,7 @@ void Controller::load_settings() {
       {Colors::K, 0}
     };
 
-    console.set_colors(cube_color);
+    console->set_colors(cube_color);
     difficulty = std::stoi(config["difficulty"]);
 }
 

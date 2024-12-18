@@ -26,16 +26,9 @@ class View {
       {Colors::B, 12},  {Colors::Y, 11},
       {Colors::K, 0}
     };
-    // Выводит развертку для трех сторон
-    void print_three_face(Cube);
-    // Выводит развертку для пяти сторон
-    void print_five_face(Cube);
-    // Выводит развертку для шести сторон
-    void print_six_face(Cube);
-    // Выводит вектор цветов
-    virtual void print_vector(vector <Colors> vec);
 	// Выводит одну сторону кубика начиная из координат (x, y)
 	virtual void print_face(vector <vector<Colors>> face, int x, int y, int size);
+	vector <vector <vector <Colors>>> find_faces(Cube);
  public:
     View();
     // изменяет количество сторон, отображаемых в развертке
@@ -48,8 +41,8 @@ class View {
     void clear_line();
 	// Выводит описание языка вращений кубика
 	void help();
-   // Устанавливает новые цвета для кубика
-   void set_colors(std::map<Colors, int>);
+	// Устанавливает новые цвета для кубика
+	void set_colors(std::map<Colors, int>);
 };
 
 
@@ -58,8 +51,6 @@ class ScalableWindow : public View {
     int scale_factor = 2;
     // Находит максимально возможное разрешение картинки в зависимости от размера консоли
     int find_scale();
-    // Выводит вектор цветов, растягивая его в зависимости от размера окна
-    void print_vector(vector <Colors> vec) override;
  public:
     // Выводит кубик с размерами, зависящими от размера окна
 	void print_cube(Cube, int) override;

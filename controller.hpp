@@ -17,13 +17,14 @@
 class Controller {
   private:
     Cube current_cube;
-    View console;
+    View* console;
     std::queue <char> command_sequence;
 
 	// Флаги для управления состоянием игры
 	std::unordered_map <std::string, bool> flags {
 		{"show_help", true}, 
-		{"timer", false}
+		{"timer", false},
+		{"scalable", false},
 	};
 	
 	// Отступ от верха консоли, если отображается справка по игре
@@ -49,7 +50,8 @@ class Controller {
 	void load_settings();
 
   public:
-    Controller() {current_cube = Cube(3); console = ScalableWindow();}
+    Controller() {current_cube = Cube(3); }
+	~Controller() { delete console; }
 	// Ищет в строке команды управления меню
 	int parse_menu_commands(std::string& in);
 	// Создает новый кубик
