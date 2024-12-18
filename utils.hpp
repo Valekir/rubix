@@ -15,6 +15,12 @@ float M_PI_2 = 1.57079632679489661923;
 
 using std::vector, std::swap;
 
+// Функция для обновления конфиг файла
+void update_config(const std::string& filename, const std::unordered_map<std::string, std::string>& updates);
+
+// Читает настройки из конфиг файла
+std::unordered_map<std::string, std::string> load_config(const std::string& filename);
+
 /// @brief Заполняет участок консоли цветом color
 /// @param x Начальная координата x
 /// @param y Начальная координата y

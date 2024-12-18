@@ -79,22 +79,22 @@ vector<vector<vector<Colors>>> View::find_faces(Cube cube) {
     string indent = form_indent(cube.size());
 
     direction = rotate_vector(main_direction, 'X');
-    faces.push_back(cube.face_to_print(direction));			// задняя сторона
+    faces.push_back(cube.face_to_print(direction));				// задняя сторона
 
     direction = rotate_vector(main_direction, 'z');
-    faces.push_back(cube.face_to_print(direction));			// левая сторона
+    faces.push_back(cube.face_to_print(direction));				// левая сторона
 
-    faces.push_back(cube.face_to_print(main_direction));			// верхняя сторона
+    faces.push_back(cube.face_to_print(main_direction));		// верхняя сторона
 
     direction = rotate_vector(main_direction, 'Z');
-    faces.push_back(cube.face_to_print(direction));			// правая сторона
+    faces.push_back(cube.face_to_print(direction));				// правая сторона
 
     direction = rotate_vector(main_direction, 'x');
-    faces.push_back(cube.face_to_print(direction));			// передняя сторона
+    faces.push_back(cube.face_to_print(direction));				// передняя сторона
 
     direction = rotate_vector(main_direction, 'x');
     direction = rotate_vector(direction, 'x');
-    faces.push_back(cube.face_to_print(direction));			// нижняя сторона
+    faces.push_back(cube.face_to_print(direction));				// нижняя сторона
 
 	return faces;
 }
@@ -104,16 +104,16 @@ void View::print_cube(Cube cube, int n) {
     if (n > 0) { y += n; }
 	vector <vector<vector<Colors>>> faces = find_faces(cube);
     
-    int s = 1;
-    int width = (size * (s + 1)) * 2;
-    int height = size * (s + 1);
+    int cell_size = 1;
+    int width = (size * (cell_size + 1)) * 2;
+    int height = size * (cell_size + 1);
 
-    print_face(faces[0], 1 + width, y, s);
-    print_face(faces[1], 1, y + height, s);
-    print_face(faces[2], 1 + width, y + height, s);
-    print_face(faces[3], 1 + width * 2, y + height, s);
-    print_face(faces[4], 1 + width * 3, y + height, s);
-    print_face(faces[5], 1 + width, y + height * 2, s);
+    print_face(faces[0], 1 + width, y, cell_size);
+    print_face(faces[1], 1, y + height, cell_size);
+    print_face(faces[2], 1 + width, y + height, cell_size);
+    print_face(faces[3], 1 + width * 2, y + height, cell_size);
+    print_face(faces[4], 1 + width * 3, y + height, cell_size);
+    print_face(faces[5], 1 + width, y + height * 2, cell_size);
     cout << endl;
 }
 
@@ -121,15 +121,47 @@ void View::set_colors(std::map<Colors, int> new_colors) {
     cube_colors = new_colors;
 }
 
+void View::set_help(bool n) {
+    show_help = n;
+}
+
 //_____________________________________________ScalableWindow________________________________________________
 
 
+/// @brief Находит максимальный размер ячеек для вывода в зависимости от размера окна
+/// @return Размер ячейки
 int ScalableWindow::find_scale() {
-	return 1;
+    struct winsize w;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+    int x = w.ws_col;
+    int y = w.ws_row - 7 * show_help;
+
+    int new_scale_factor = 1;
+    while ((12 * new_scale_factor + 22 < x) && (9 * new_scale_factor + 8 < y)) {
+        new_scale_factor++;
+    };
+    scale_factor = new_scale_factor - 1;
+	return scale_factor;
 }
+
+
 /// @brief Выводит на экран развертку кубика
 /// @param cube Кубик, который нужно отрисовать
 void ScalableWindow::print_cube(Cube cube, int n) {
+int x = 0, y = 1, size = cube.size();
+    if (n > 0) { y += n; }
+	vector <vector<vector<Colors>>> faces = find_faces(cube);
+    
+    int cell_size = find_scale();
+    int width = (size * (cell_size + 1)) * 2;
+    int height = size * (cell_size + 1);
 
+    print_face(faces[0], 1 + width, y, cell_size);
+    print_face(faces[1], 1, y + height, cell_size);
+    print_face(faces[2], 1 + width, y + height, cell_size);
+    print_face(faces[3], 1 + width * 2, y + height, cell_size);
+    print_face(faces[4], 1 + width * 3, y + height, cell_size);
+    print_face(faces[5], 1 + width, y + height * 2, cell_size);
+    cout << endl;
 }
 

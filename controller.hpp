@@ -41,13 +41,10 @@ class Controller {
 	// Ищет в строке команды для задания настроек
 	int parse_settings(std::string& str);
 
-	// Функция для обновления конфиг файла
-	void update_config(const std::string& filename, const std::unordered_map<std::string, std::string>& updates);
-	// Читает настройки из конфиг файла
-	std::unordered_map<std::string, std::string> load_config(const std::string& filename);
 
-	// Применяет настройки из конфиг файла
 	void load_settings();
+	// Обновляет окно консоли при изменении размера окна
+	void rescale();
 
   public:
     Controller() {current_cube = Cube(3); }
@@ -72,4 +69,5 @@ class Controller {
 	void hello_menu();
 	// При открытии настроек выводит сообщение со всеми текущими настройками
 	void print_settings();
+	void clear() {console->clear();}
 };

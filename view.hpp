@@ -6,6 +6,9 @@
 #include <string>
 #include <cassert>
 
+#include <sys/ioctl.h>
+#include <unistd.h>
+
 #include "cube.hpp"
 #include "utils.hpp"
 
@@ -17,6 +20,7 @@ class View {
  protected:
     // Количество отображаемых сторон
     int style;
+    bool show_help;
     // Направление взгляда на кубик
     std::vector <int> main_direction;
     // Набор цветов кубика
@@ -43,12 +47,13 @@ class View {
 	void help();
 	// Устанавливает новые цвета для кубика
 	void set_colors(std::map<Colors, int>);
+   void set_help(bool);
 };
 
 
 class ScalableWindow : public View {
  private:
-    int scale_factor = 2;
+    int scale_factor = 3;
     // Находит максимально возможное разрешение картинки в зависимости от размера консоли
     int find_scale();
  public:

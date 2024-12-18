@@ -292,8 +292,10 @@ void Controller::load_settings() {
     config = load_config("game.config");
     if (config["show_help"] == "true") {
         flags["show_help"] = true;
+        console->set_help(true);
     } else if (config["show_help"] == "false") {
         flags["show_help"] = false;
+        console->set_help(false);
     }
 
     if (config["timer"] == "true") {
@@ -321,78 +323,9 @@ void Controller::load_settings() {
     difficulty = std::stoi(config["difficulty"]);
 }
 
-/// @brief Читает настройки из файла filename
-/// @return 
-std::unordered_map<std::string, std::string> Controller::load_config(const std::string& filename) {
-    std::unordered_map<std::string, std::string> config;
-
-    std::ifstream file(filename);
-    if (file.is_open()) {
-        std::string line;
-        while (std::getline(file, line)) {
-            if (line.empty() || line[0] == '#') continue;
-
-            size_t pos = line.find('=');
-            if (pos != std::string::npos) {
-                std::string key = line.substr(0, pos);
-                std::string value = line.substr(pos + 1);
-
-                key.erase(remove_if(key.begin(), key.end(), ::isspace), key.end());
-                value.erase(remove_if(value.begin(), value.end(), ::isspace), value.end());
-
-                config[key] = value;
-            }
-        }
-        file.close();
-    } else {
-        config["size"] = "3";
-        config["color_front"] = "40";
-        config["color_back"] = "12";
-        config["color_left"] = "208";
-        config["color_right"] = "196";
-        config["color_top"] = "15";
-        config["color_bottom"] = "11";
-        config["difficulty"] = "5";
-        config["timer"] = "false";
-        config["show_help"] = "true";
-        config["window"] = "scalable";
-
-        std::ofstream outFile(filename, std::ios::out);
-        for (const auto& [key, value] : config) {
-            outFile << key << "=" << value << "\n";
-        }
-        outFile.close();
-    }
-
-    return config;
-}
-
-/// @brief Обновляет настройки в конфиг файле
-/// @param filename Название конфиг файла 
-/// @param updates Список измененных настроек
-void Controller::update_config(const std::string& filename, const std::unordered_map<std::string, std::string>& updates) {
-    auto config = load_config(filename);
-    std::string tempFilename = filename + ".tmp";
-    std::ofstream tempFile(tempFilename, std::ios::out);
-    
-    if (!tempFile.is_open()) {
-        std::cerr << "Failed to create temporary file" << tempFilename << std::endl;
-        return;
-    }
-    for (const auto& [key, value] : updates) {
-        config[key] = value;
-    }
-
-    for (const auto& [key, value] : config) {
-        tempFile << key << "=" << value << "\n";
-    }
-    tempFile.close();
-
-    if (std::remove(filename.c_str()) != 0) {
-        std::cerr << "Failed to remove old config file" << std::endl;
-    } else {
-        if (std::rename(tempFilename.c_str(), filename.c_str()) != 0) {
-            std::cerr << "Failed to rename temporary file to config file" << std::endl;
-        }
-    }
+///
+void Controller::rescale() {
+    console->clear();
+    if (flags["show_help"]) {hello_game();}
+    console->print_cube(current_cube, 7);
 }
