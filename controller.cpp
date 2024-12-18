@@ -86,19 +86,25 @@ int Controller::parse_console_commands(string& str) {
             return 2;
         } 
         if (match.find("hide") != string::npos && flags["show_help"] == true) {
+<<<<<<< HEAD
             std::unordered_map<std::string, std::string> updates;
             flags["show_help"] = "false";
             update_config("game.config", updates)
 
+=======
+>>>>>>> 41ea5cfaaddacb7f76ffc090fa7adff39281a846
             console->clear();
             flags["show_help"] = false;
             return 2;
         }
         if (match.find("help") != string::npos && flags["show_help"] == false) {
+<<<<<<< HEAD
             std::unordered_map<std::string, std::string> updates;
             flags["show_help"] = "true";
             update_config("game.config", updates)
 
+=======
+>>>>>>> 41ea5cfaaddacb7f76ffc090fa7adff39281a846
             console->clear();
             flags["show_help"] = true;
             hello_game();
