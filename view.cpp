@@ -125,7 +125,7 @@ void View::set_help(bool help) {
     show_help = help;
 }
 
-int View::find_scale() {
+int View::find_scale(int n) {
     return 1;
 }
 
@@ -134,14 +134,14 @@ int View::find_scale() {
 
 /// @brief Находит максимальный размер ячеек для вывода в зависимости от размера окна
 /// @return Размер ячейки
-int ScalableWindow::find_scale() {
+int ScalableWindow::find_scale(int size) {
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
     int x = w.ws_col;
     int y = w.ws_row - 7 * show_help;
 
     int new_scale_factor = 1;
-    while (((12 * new_scale_factor * 2 + 22) < x) && ((9 * new_scale_factor + 7) < y)) {
+    while ((((4 * size) * new_scale_factor * 2 + 22) < x) && (((4 * size) * new_scale_factor + 7) < y)) {
         new_scale_factor++;
     };
     new_scale_factor -= 1;
@@ -157,7 +157,7 @@ int x = 0, y = 1, size = cube.size();
     if (n > 0) { y += n; }
 	vector <vector<vector<Colors>>> faces = find_faces(cube);
     
-    int cell_size = find_scale();
+    int cell_size = find_scale(cube.size());
     int width = (size * (cell_size + 1)) * 2;
     int height = size * (cell_size + 1);
 

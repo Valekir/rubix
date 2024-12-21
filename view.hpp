@@ -42,7 +42,7 @@ class View {
     // Рисует развертку кубика в консоли, начиная с строки n
     virtual void print_cube(Cube, int);
     // Находит максимально возможное разрешение картинки в зависимости от размера консоли
-    virtual int find_scale();
+    virtual int find_scale(int);
     // Очищает строку ввода команд
     void clear_line();
 	// Выводит описание языка вращений кубика
@@ -57,7 +57,7 @@ class ScalableWindow : public View {
  private:
     int scale_factor = 3;
     // Находит максимально возможное разрешение картинки в зависимости от размера консоли
-    int find_scale() override;
+    int find_scale(int) override;
  public:
     // Выводит кубик с размерами, зависящими от размера окна
 	void print_cube(Cube, int) override;

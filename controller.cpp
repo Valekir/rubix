@@ -95,7 +95,7 @@ int Controller::parse_console_commands(string& str) {
             updates["show_help"] = "false";
             update_config("game.config", updates);
             console->clear();
-            console->find_scale();
+            console->find_scale(current_cube.size());
             return 2;
         }
         if (match.find("help") != string::npos && flags["show_help"] == false) {
@@ -105,7 +105,7 @@ int Controller::parse_console_commands(string& str) {
             update_config("game.config", updates);
             console->clear();
             hello_game();
-            console->find_scale();
+            console->find_scale(current_cube.size());
             return 2;
         }
     }
