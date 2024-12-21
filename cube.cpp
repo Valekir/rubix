@@ -89,7 +89,7 @@ Cube::Cube(int n) {
             }
             temp.push_back(new_piece);
         }
-    parts.push_back(temp);
+        parts.push_back(temp);
     }
 }
 
@@ -234,9 +234,10 @@ void Cube::rotate_x_axis(char face, int start_offset) {
         }
     }
 
+    char dir = (face == 'R' || face == 'l') ? 'X' : 'x';
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            parts[i][n*j + offset].rotate_piece('x');
+            parts[i][n*j + offset].rotate_piece(dir);
         }
     }
 }
@@ -264,7 +265,7 @@ void Cube::rotate_y_axis(char face, int start_offset) {
     if (face == 'U' || face == 'd') {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n / 2; j++) {
-                swap(parts[so+slice][i * n + j], parts[so+slice][i * n + (n - 1 - j)]);
+                swap(parts[so+slice][i*n + j], parts[so+slice][i*n + (n - 1 - j)]);
             }
         }
     } else if (face == 'u' || face == 'D') {
@@ -275,8 +276,9 @@ void Cube::rotate_y_axis(char face, int start_offset) {
         }
     }
 
+    char dir = (face == 'U' || face == 'd') ? 'Y' : 'y';
     for (int i = 0; i < n*n; i++) {
-        parts[so+slice][i].rotate_piece('y');
+        parts[so+slice][i].rotate_piece(dir);
     }
 }
 
@@ -307,14 +309,15 @@ void Cube::rotate_z_axis(char face, int start_offset) {
     } else if (face == 'F' || face == 'b') {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n/2; j++) {
-                swap(parts[i][j+offset], parts[i][n - 1 + j + offset]);
+                swap(parts[i][offset + j], parts[i][offset + n - 1 - j]);
             }
         }
     }
 
+    char dir = (face == 'F' || face == 'b') ? 'z' : 'Z';
     for (int i = 0; i < n; i++) {
         for (int j = offset; j < offset + n; j++) {
-            parts[i][j].rotate_piece('z');
+            parts[i][j].rotate_piece(dir);
         }
     }
 }

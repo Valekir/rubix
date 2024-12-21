@@ -78,11 +78,9 @@ void settings_menu() {
         mvprintw(startY + 10, startX, "F4. Color Left: %d", color_left);
         mvprintw(startY + 11, startX, "F5. Color Front: %d", color_front);
         mvprintw(startY + 12, startX, "F6. Color Back: %d", color_back);
-        
-        mvprintw(startY + 13, startX, "Press 'q' to quit or navigate using the numbers");
-        
-        mvprintw(startY + 13, startX, "Press 'q' to quit");
 
+        mvprintw(startY + 13, startX, "Press 'r' to reset settings");
+        mvprintw(startY + 14, startX, "Press 'q' to quit");
         refresh();
 
         int ch = getch();
@@ -168,6 +166,21 @@ void settings_menu() {
                 update_config("game.config", config);
                 return;
                 }
+            case 'r': {
+                std::unordered_map<std::string, std::string> updates;
+                size = 3;
+                color_front = 40;
+                color_back = 12;
+                color_left = 208;
+                color_right = 196;
+                color_top = 15;
+                color_bottom = 11;
+                difficulty = 5;
+                timer = false;
+                show_help = true;
+                window = "scalable";
+                break;
+            }
             default:
                 break;
         }

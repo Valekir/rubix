@@ -2,11 +2,7 @@
 
 using std::regex, std::sregex_iterator, std::smatch, std::string;
 
-/// @brief Создает новый кубик
-/// @param dim Размер кубика (dim*dim*dim)
-// void Controller::new_cube(int dim) {
-//     current_cube = Cube(dim);
-// }
+
 
 /// @brief Поворачивает грань кубика, или весь кубик
 /// @param command Команда для поворота кубика
@@ -20,11 +16,12 @@ void Controller::move(char command) {
 
 /// @brief Случайно перемешивает кубик
 void Controller::scramble() {
-    current_cube = Cube(current_cube.size());
     vector <char> moves = {'U', 'D', 'F', 'B', 'R', 'L', 'u', 'd', 'f', 'b', 'r', 'l'};
+    char move;
     std::srand(std::time(0));
     for (int i = 0; i < difficulty; i++) {
-        current_cube.rotate_side(moves[std::rand() % 12]);
+        move = moves[std::rand() % 12];
+        current_cube.rotate_side(move);
     }
 }
 
