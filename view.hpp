@@ -41,13 +41,15 @@ class View {
     void clear();
     // Рисует развертку кубика в консоли, начиная с строки n
     virtual void print_cube(Cube, int);
+    // Находит максимально возможное разрешение картинки в зависимости от размера консоли
+    virtual int find_scale();
     // Очищает строку ввода команд
     void clear_line();
 	// Выводит описание языка вращений кубика
 	void help();
 	// Устанавливает новые цвета для кубика
 	void set_colors(std::map<Colors, int>);
-   void set_help(bool help);
+	void set_help(bool help);
 };
 
 
@@ -55,8 +57,9 @@ class ScalableWindow : public View {
  private:
     int scale_factor = 3;
     // Находит максимально возможное разрешение картинки в зависимости от размера консоли
-    int find_scale();
+    int find_scale() override;
  public:
     // Выводит кубик с размерами, зависящими от размера окна
 	void print_cube(Cube, int) override;
 };
+

@@ -10,6 +10,7 @@ int main() {
 
     while (true) {
         int choice = menu_control();
+
         switch (choice) {
             case 0:
                 endwin();               // Завершаем работу с ncurses
@@ -29,6 +30,7 @@ int main() {
                 break;
         }
     }
-    endwin();
+
+    endwin();               // Завершаем работу с ncurses
     return 0;
 }

@@ -2,6 +2,11 @@
 
 using std::regex, std::sregex_iterator, std::smatch, std::string;
 
+/// @brief Создает новый кубик
+/// @param dim Размер кубика (dim*dim*dim)
+// void Controller::new_cube(int dim) {
+//     current_cube = Cube(dim);
+// }
 
 /// @brief Поворачивает грань кубика, или весь кубик
 /// @param command Команда для поворота кубика
@@ -75,39 +80,32 @@ int Controller::parse_console_commands(string& str) {
             console->clear();
             if (flags["show_help"])
                 hello_game();
-            return 2;
+            return 3;
         }
         if (match.find("exit") != string::npos) {
             return 1;
         } 
         if (match.find("scramble") != string::npos) {
             scramble();
-            console->clear_line();
             return 2;
         } 
         if (match.find("hide") != string::npos && flags["show_help"] == true) {
-<<<<<<< HEAD
             std::unordered_map<std::string, std::string> updates;
-            flags["show_help"] = "false";
-            update_config("game.config", updates)
-
-=======
->>>>>>> 41ea5cfaaddacb7f76ffc090fa7adff39281a846
-            console->clear();
             flags["show_help"] = false;
+            updates["show_help"] = "false";
+            update_config("game.config", updates);
+            console->clear();
+            console->find_scale();
             return 2;
         }
         if (match.find("help") != string::npos && flags["show_help"] == false) {
-<<<<<<< HEAD
             std::unordered_map<std::string, std::string> updates;
-            flags["show_help"] = "true";
-            update_config("game.config", updates)
-
-=======
->>>>>>> 41ea5cfaaddacb7f76ffc090fa7adff39281a846
-            console->clear();
             flags["show_help"] = true;
+            updates["show_help"] = "true";
+            update_config("game.config", updates);
+            console->clear();
             hello_game();
+            console->find_scale();
             return 2;
         }
     }
@@ -126,25 +124,23 @@ void Controller::game() {
     int parse_console = 2;
     int parse_cube = 1;
     while (parse_console != 1) {
-        if (parse_console == 2 || parse_cube == 1) {
-            console->print_cube(current_cube, help_indent * flags["show_help"]);
+        if (parse_console == 2 || parse_console == 3 || parse_cube == 1) {
+            console->print_cube(current_cube, 7 * flags["show_help"]);
         }        
-        string input;
         
+        string input;
         std::getline(std::cin, input);
         parse_console = parse_console_commands(input);
-        parse_cube = parse_cube_commands(input);
+        if (parse_console == 0)
+            parse_cube = parse_cube_commands(input);
 
-        if (parse_cube == 1 && parse_console == 0) {
-            while (! command_sequence.empty()) {
-                move(command_sequence.front());
-                command_sequence.pop();
-            }
+        while (! command_sequence.empty()) {
+            move(command_sequence.front());
+            command_sequence.pop();
         }
 
-        if (parse_console != 2 || parse_cube == 1) {
+        if (parse_console != 3)
             console->clear_line();
-        }
     }
     command_sequence = std::queue<char>();  
 }
@@ -195,10 +191,4 @@ void Controller::load_settings() {
 
     console->set_colors(cube_color);
     difficulty = std::stoi(config["difficulty"]);
-}
-
-void Controller::rescale() {
-    console->clear();
-    if (flags["show_help"]) {hello_game();}
-    console->print_cube(current_cube, 7);
 }

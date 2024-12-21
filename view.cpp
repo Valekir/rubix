@@ -2,6 +2,8 @@
 
 using std::cout, std::endl, std::vector, std::ifstream, std::string;
 
+
+
 //___________________________________________________View______________________________________________________________
 
 View::View() { 
@@ -123,6 +125,10 @@ void View::set_help(bool help) {
     show_help = help;
 }
 
+int View::find_scale() {
+    return 1;
+}
+
 //_____________________________________________ScalableWindow________________________________________________
 
 
@@ -135,10 +141,11 @@ int ScalableWindow::find_scale() {
     int y = w.ws_row - 7 * show_help;
 
     int new_scale_factor = 1;
-    while ((12 * new_scale_factor + 22 < x) && (9 * new_scale_factor + 8 < y)) {
+    while (((12 * new_scale_factor * 2 + 22) < x) && ((9 * new_scale_factor + 7) < y)) {
         new_scale_factor++;
     };
-    scale_factor = new_scale_factor - 1;
+    new_scale_factor -= 1;
+    scale_factor = new_scale_factor;
 	return scale_factor;
 }
 
@@ -154,25 +161,12 @@ int x = 0, y = 1, size = cube.size();
     int width = (size * (cell_size + 1)) * 2;
     int height = size * (cell_size + 1);
 
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> 41ea5cfaaddacb7f76ffc090fa7adff39281a846
     print_face(faces[0], 1 + width, y, cell_size);
     print_face(faces[1], 1, y + height, cell_size);
     print_face(faces[2], 1 + width, y + height, cell_size);
     print_face(faces[3], 1 + width * 2, y + height, cell_size);
-<<<<<<< HEAD
     print_face(faces[5], 1 + width * 3, y + height, cell_size);
     print_face(faces[4], 1 + width, y + height * 2, cell_size);
     cout << endl;
 }
 
->>>>>>> Stashed changes
-=======
-    print_face(faces[4], 1 + width * 3, y + height, cell_size);
-    print_face(faces[5], 1 + width, y + height * 2, cell_size);
-    cout << endl;
-}
->>>>>>> 41ea5cfaaddacb7f76ffc090fa7adff39281a846
