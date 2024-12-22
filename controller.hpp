@@ -26,6 +26,7 @@ class Controller {
 		{"show_help", true}, 
 		{"timer", false},
 		{"scalable", false},
+		{"scrambled", false}
 	};
 	
 	int difficulty = 20;

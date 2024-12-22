@@ -142,15 +142,27 @@ class Timer {
     std::chrono::high_resolution_clock::time_point start_time;
 	// Время окончания
     std::chrono::high_resolution_clock::time_point end_time;
-    // Состояние секундомера
 	bool running;
 
  public:
+    // Состояние секундомера
     Timer() : running(false) {}
-
     // Метод для старта секундомера
     void start();
-
     // Метод для остановки секундомера и вывода времени
-    void stop();
+    void stop(bool print=true);
+    bool is_running() { return running; }
 };
+
+template <typename T>
+bool is_equal(vector<vector<T>> vec) {
+    int n = vec.size();
+    T first = vec[0][0];
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (vec[i][j] != first)
+                return false;
+        }
+    }
+    return true;
+}

@@ -16,8 +16,8 @@ void Controller::move(char command) {
 
 /// @brief Случайно перемешивает кубик
 void Controller::scramble() {
-    vector <char> moves = {'U', 'F', 'B', 'R', 'L', 'd', 'f', 'b', 'r', 'l'};
-    // vector <char> moves = {'U', 'D', 'F', 'B', 'R', 'L', 'u', 'd', 'f', 'b', 'r', 'l'};
+    // vector <char> moves = {'U', 'F', 'B', 'R', 'L', 'd', 'f', 'b', 'r', 'l'};
+    vector <char> moves = {'U', 'D', 'F', 'B', 'R', 'L', 'u', 'd', 'f', 'b', 'r', 'l'};
     char move;
     std::srand(std::time(0));
     for (int i = 0; i < difficulty; i++) {
@@ -112,6 +112,9 @@ void Controller::game(bool from_save, std::string filename) {
         switch (parse_console_commands(input)) {
         case 0: { // parse cube commands
             parse_cube_commands(input);
+            if (! command_sequence.empty() && flags["timer"] && !timer.is_running())
+                timer.start();
+
             while (! command_sequence.empty()) {
                 move(command_sequence.front());
                 command_sequence.pop();
@@ -123,6 +126,7 @@ void Controller::game(bool from_save, std::string filename) {
             command_sequence = std::queue<char>();  
             console->clear();
             save();
+            timer.stop(false);
             return;
         }
         case 2: {   // moves
@@ -164,6 +168,13 @@ void Controller::game(bool from_save, std::string filename) {
             break;
         }
         console->print_cube(current_cube, 7 * flags["show_help"]);
+        if (current_cube.is_solved() && timer.is_running()) {
+            timer.stop();
+            std::cout << "To continue write anything in console: ";
+            getchar();
+            console->clear_line();
+            console->clear_line();
+        }
     }
 }
 

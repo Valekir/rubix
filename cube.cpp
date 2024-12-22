@@ -355,3 +355,34 @@ void Cube::rotate_z_axis(char face, int start_offset) {
         }
     }
 }
+
+bool Cube::is_solved() {
+    vector <vector <Colors>> face;
+    vector <int> main_direction = {0, 1, 0};
+    vector <int> direction = {0, 1, 0};
+
+    direction = rotate_vector(main_direction, 'X');
+    face = face_to_print(direction);				// задняя сторона
+    if (!is_equal(face)) return false;
+
+    direction = rotate_vector(main_direction, 'z');
+    face = face_to_print(direction);				// задняя сторона
+    if (!is_equal(face)) return false;
+
+    face = face_to_print(main_direction);		// верхняя сторона
+    if (!is_equal(face)) return false;
+
+    direction = rotate_vector(main_direction, 'Z');
+    face = face_to_print(direction);				// задняя сторона
+    if (!is_equal(face)) return false;
+
+    direction = rotate_vector(main_direction, 'x');
+    face = face_to_print(direction);				// задняя сторона
+    if (!is_equal(face)) return false;
+
+    direction = rotate_vector(main_direction, 'x');
+    direction = rotate_vector(direction, 'x');
+    face = face_to_print(direction);				// задняя сторона
+    if (!is_equal(face)) return false;
+    return true;
+}

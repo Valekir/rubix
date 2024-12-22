@@ -33,7 +33,6 @@ class View {
     };
 	// Выводит одну сторону кубика начиная из координат (x, y)
 	virtual void print_face(vector <vector<Colors>> face, int x, int y, int size);
-	vector <vector <vector <Colors>>> find_faces(Cube);
  public:
     View();
     // изменяет количество сторон, отображаемых в развертке
@@ -51,6 +50,7 @@ class View {
 	// Устанавливает новые цвета для кубика
 	void set_colors(std::map<Colors, int>);
 	void set_help(bool help);
+   vector<vector<vector<Colors>>> find_faces(Cube cube);
 };
 
 

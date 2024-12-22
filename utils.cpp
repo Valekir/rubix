@@ -10,50 +10,18 @@ void Timer::start() {
     }
 }
 
-void Timer::stop() {
+void Timer::stop(bool print) {
     if (running) {
         end_time = std::chrono::high_resolution_clock::now();
         running = false;
 
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-        std::cout << "Time: " << duration.count() << " ms.\n";
+        if (print)
+            std::cout << "Your time to solve: " << duration.count() / 1000 << "." << duration.count() % 1000 << " s.\n";
     }
 }
 
-// Colors -> char
-char colortochar(Colors col) {
-    if (col == Colors::W)
-        return 'W';
-    else if (col == Colors::G)
-        return 'G';
-    else if (col == Colors::R)
-        return 'R';
-    else if (col == Colors::O)
-        return 'O';
-    else if (col == Colors::B)
-        return 'B';
-    else if (col == Colors::Y)
-        return 'Y';
-    return 'K';
-}
-
-// char -> Colors
-Colors chartocolor(char col) {
-    if (col == 'W')
-        return Colors::W;
-    else if (col == 'G')
-        return Colors::G;
-    else if (col == 'R')
-        return Colors::R;
-    else if (col == 'O')
-        return Colors::O;
-    else if (col == 'B')
-        return Colors::B;
-    else if (col == 'Y')
-        return Colors::Y;
-    return Colors::K;
-}
-
+//_________________________________________Cube printing_________________________________________________
 
 // Устанавливает 8-битный цвет заливки с кодом n
 void set_background_color(int n) {
@@ -69,6 +37,21 @@ string form_indent(int n) {
     return res;
 }
 
+/// @brief Заполняет участок консоли цветом color
+/// @param x Начальная координата x
+/// @param y Начальная координата y
+/// @param n Размер квадрата
+void fill_area(int x, int y, int n, int color) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n * 2; j++) {
+            cout << "\033[" << y + i << ";" << x + j << "H";		    // Перемещает курсор
+            cout << "\033[48;5;" << (int) color << "m" << " ";			// Красит одну ячейку консоли
+        }
+    }
+	cout << "\033[0m";
+}
+
+//__________________________________________Cube creation________________________________________________
 // Функция определяет направление по осям xyz, в котором будет направлен элемент
 vector <int> find_angles(int layer, int i, int dim) {
     vector <int> angles;
@@ -152,19 +135,8 @@ vector <int> rotate_vector(vector<int> vec, char dir) {
     return vec;
 }
 
-/// @brief Заполняет участок консоли цветом color
-/// @param x Начальная координата x
-/// @param y Начальная координата y
-/// @param n Размер квадрата
-void fill_area(int x, int y, int n, int color) {
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n * 2; j++) {
-            cout << "\033[" << y + i << ";" << x + j << "H";		    // Перемещает курсор
-            cout << "\033[48;5;" << (int) color << "m" << " ";			// Красит одну ячейку консоли
-        }
-    }
-	cout << "\033[0m";
-}
+//______________________________________________Config___________________________________________________
+
 
 /// @brief Читает настройки из файла filename
 /// @return 
@@ -242,6 +214,8 @@ void update_config(const std::string& filename, const std::unordered_map<std::st
     }
 }
 
+//______________________________________________Saves___________________________________________________
+
 // Функция для чтения сохранений из файла
 std::vector<std::string> load_saves() {
     std::vector<std::string> saves;
@@ -298,3 +272,37 @@ bool file_exists(std::string filename) {
     return file.good();
 }
 
+
+// Colors -> char
+char colortochar(Colors col) {
+    if (col == Colors::W)
+        return 'W';
+    else if (col == Colors::G)
+        return 'G';
+    else if (col == Colors::R)
+        return 'R';
+    else if (col == Colors::O)
+        return 'O';
+    else if (col == Colors::B)
+        return 'B';
+    else if (col == Colors::Y)
+        return 'Y';
+    return 'K';
+}
+
+// char -> Colors
+Colors chartocolor(char col) {
+    if (col == 'W')
+        return Colors::W;
+    else if (col == 'G')
+        return Colors::G;
+    else if (col == 'R')
+        return Colors::R;
+    else if (col == 'O')
+        return Colors::O;
+    else if (col == 'B')
+        return Colors::B;
+    else if (col == 'Y')
+        return Colors::Y;
+    return Colors::K;
+}

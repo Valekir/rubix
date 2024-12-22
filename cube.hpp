@@ -46,4 +46,5 @@ class Cube {
     vector <vector <Colors>> face_to_print(vector <int> direction);
     void rotate_side(char side);
     void change_direction(char dir);
+    bool is_solved();
 };

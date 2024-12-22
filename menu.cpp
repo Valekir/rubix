@@ -66,7 +66,7 @@ void settings_menu() {
         int startY = (LINES - 10) / 2;  // 10 - количество строк меню
 
         mvprintw(startY, startX, "Settings Menu");
-        mvprintw(startY + 2, startX, "1. Cube size (2-5): %d", size);
+        // mvprintw(startY + 2, startX, "1. Cube size (2-5): %d", size);
         mvprintw(startY + 3, startX, "2. Difficulty (1-20): %d", difficulty);
         mvprintw(startY + 4, startX, "3. Window: %s", window.c_str());
         mvprintw(startY + 5, startX, "4. Show Help: [%s]", show_help ? "X" : " ");
@@ -86,16 +86,16 @@ void settings_menu() {
         int ch = getch();
 
         switch (ch) {
-            case '1':  // Изменение размера
-            try {
-                    size = std::stoi(prompt_input("Enter Size (2-5)", std::to_string(size)));
-                    if (size < 1) size = 1;
-                    if (size > 5) size = 5;
-                }
-                catch(const std::exception& e) {
-                    error_message();
-                }
-                break;
+            // case '1':  // Изменение размера
+            // try {
+            //         size = std::stoi(prompt_input("Enter Size (2-5)", std::to_string(size)));
+            //         if (size < 1) size = 1;
+            //         if (size > 5) size = 5;
+            //     }
+            //     catch(const std::exception& e) {
+            //         error_message();
+            //     }
+            //     break;
             case '2':  // Изменение сложности
                 try {
                     difficulty = std::stoi(prompt_input("Enter Difficulty (1-20)", std::to_string(difficulty)));
