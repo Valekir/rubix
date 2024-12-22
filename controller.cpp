@@ -1,4 +1,5 @@
 #include "controller.hpp"
+#include <unistd.h>
 
 using std::regex, std::sregex_iterator, std::smatch, std::string;
 
@@ -16,11 +17,13 @@ void Controller::move(char command) {
 
 /// @brief Случайно перемешивает кубик
 void Controller::scramble() {
-    vector <char> moves = {'U', 'D', 'F', 'B', 'R', 'L', 'u', 'd', 'f', 'b', 'r', 'l'};
+    vector <char> moves = {'U', 'F', 'B', 'R', 'L', 'd', 'f', 'b', 'r', 'l'};
+    // vector <char> moves = {'U', 'D', 'F', 'B', 'R', 'L', 'u', 'd', 'f', 'b', 'r', 'l'};
     char move;
     std::srand(std::time(0));
     for (int i = 0; i < difficulty; i++) {
-        move = moves[std::rand() % 12];
+        // move = moves[std::rand() % 12];
+        move = moves[std::rand() % 10];
         current_cube.rotate_side(move);
     }
 }
@@ -57,45 +60,97 @@ int Controller::parse_cube_commands(string& str) {
 // Команды: help, exit, scramble, hide, moves 
 /// @brief Проверяет строку на наличие команд, связанных с окном консоли
 /// @param str Строка для поиска
-/// @return 0 - если нет новой информации для вывода на экран. 1 - если нужно выйти в меню. 2 - если нужно заново отрисовать кубик
+/// @return 
 int Controller::parse_console_commands(string& str) {
     regex pattern("(help)|(exit)|(scramble)|(hide)|(moves)", std::regex_constants::icase);
     auto begin = sregex_iterator(str.begin(), str.end(), pattern);
     auto end = sregex_iterator();
 
-    if (begin == end)
+    if (begin == end) {
         return 0;
+    }
 
     for (sregex_iterator i = begin; i != end; ++i) {
         smatch s = *i;
         string match = s.str();
         std::transform(match.begin(), match.end(), match.begin(), [](unsigned char c) { return tolower(c); });
 
+        if (match.find("exit") != string::npos) {
+            return 1;
+        } 
         if (match.find("moves") != string::npos) {
+            return 2;
+        }
+        if (match.find("scramble") != string::npos) {
+            return 3;
+        } 
+        if (match.find("hide") != string::npos && flags["show_help"] == true) {
+            return 4;
+        }
+        if (match.find("help") != string::npos && flags["show_help"] == false) {
+            return 5;
+        }
+    }
+    return 0;
+}
+
+/// @brief Запускает игру
+void Controller::game(bool from_save, std::string filename) {
+    // if (from_save) {
+    //     load_saved_cube(filename);
+    // }
+    load_settings();
+    if (flags["show_help"]) {
+        hello_game();
+    } else {
+        console->clear();
+    }
+    console->print_cube(current_cube, 7 * flags["show_help"]);
+
+    sleep(1);
+    while (true) {
+        string input;
+        std::getline(std::cin, input);
+        switch (parse_console_commands(input)) {
+        case 0: { // parse cube commands
+            parse_cube_commands(input);
+            while (! command_sequence.empty()) {
+                move(command_sequence.front());
+                command_sequence.pop();
+            }
+            console->clear_line();
+            break;
+        }
+        case 1: {   // exit
+            command_sequence = std::queue<char>();  
+            console->clear();
+            save();
+            return;
+        }
+        case 2: {   // moves
             console->clear();
             console->help();
             console->clear();
             if (flags["show_help"])
                 hello_game();
-            return 3;
-        }
-        if (match.find("exit") != string::npos) {
-            return 1;
-        } 
-        if (match.find("scramble") != string::npos) {
+            break;
+            }
+        case 3: {   // scramble
             scramble();
-            return 2;
-        } 
-        if (match.find("hide") != string::npos && flags["show_help"] == true) {
+            console->clear_line();
+            break;
+        }
+        case 4: {   // hide
             std::unordered_map<std::string, std::string> updates;
             flags["show_help"] = false;
             updates["show_help"] = "false";
             update_config("game.config", updates);
             console->clear();
             console->find_scale(current_cube.size());
-            return 2;
+            console->clear_line();
+            break;
         }
-        if (match.find("help") != string::npos && flags["show_help"] == false) {
+        case 5: { // help
             std::unordered_map<std::string, std::string> updates;
             flags["show_help"] = true;
             updates["show_help"] = "true";
@@ -103,43 +158,15 @@ int Controller::parse_console_commands(string& str) {
             console->clear();
             hello_game();
             console->find_scale(current_cube.size());
-            return 2;
-        }
-    }
-    return 0;
-}
-
-/// @brief Запускает игру
-void Controller::game() {
-    load_settings();
-    if (flags["show_help"]) {
-        hello_game();
-    } else {
-        console->clear();
-    }
-
-    int parse_console = 2;
-    int parse_cube = 1;
-    while (parse_console != 1) {
-        if (parse_console == 2 || parse_console == 3 || parse_cube == 1) {
-            console->print_cube(current_cube, 7 * flags["show_help"]);
-        }        
-        
-        string input;
-        std::getline(std::cin, input);
-        parse_console = parse_console_commands(input);
-        if (parse_console == 0)
-            parse_cube = parse_cube_commands(input);
-
-        while (! command_sequence.empty()) {
-            move(command_sequence.front());
-            command_sequence.pop();
-        }
-
-        if (parse_console != 3)
             console->clear_line();
+            break;
+        }
+        default:
+            console->clear_line();
+            break;
+        }
+        console->print_cube(current_cube, 7 * flags["show_help"]);
     }
-    command_sequence = std::queue<char>();  
 }
 
 /// @brief Выводит приветственное сообщение при старте игры
@@ -189,3 +216,48 @@ void Controller::load_settings() {
     console->set_colors(cube_color);
     difficulty = std::stoi(config["difficulty"]);
 }
+
+void Controller::save() {
+    std::cout << "Do you want to save game? [y/n]" << std:: endl;
+    char ans = 'n';
+    std::cin >> ans;
+    if (ans == 'n' || ans == 'N')
+        return;
+
+    std::string filename;
+    std::cout << "Enter save name: ";
+    std::cin >> filename;
+
+    std::ofstream savefile(filename);
+
+    if (!savefile) {
+        std::cerr << "Unable to  open file: " << filename << std::endl;
+    }
+    savefile << current_cube.size() << std::endl;
+
+    std::vector<std::vector<Piece>> parts = current_cube.get_parts();
+
+    for (auto slice : parts) {
+        for (auto item : slice) {
+            std::vector <int> angles = item.get_pos();
+            std::vector <Colors> color = item.get_color();
+            for (int ang : angles) {
+                savefile << ang << ' ';
+            }
+            for (Colors col : color) {
+                savefile << colortochar(col) << ' ';
+            }
+            savefile << std::endl;
+        }
+    }
+    savefile.close();
+
+    std::ofstream output("saves");
+    if (!output) {
+        std::cerr << "Unable to open file: saves" << std::endl;
+    }
+    output << filename << std::endl;
+    output.close();
+}
+
+

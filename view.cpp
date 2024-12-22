@@ -26,7 +26,8 @@ void View::set_style(int n) {
 
 /// @brief Полностью очищает окно консоли
 void View::clear() {
-    cout << "\033[2J\033[1;1H";
+    system("clear");
+    // cout << "\033[1J\033[H";
 }
 
 /// @brief Очищает одну строку консоли
@@ -36,6 +37,7 @@ void View::clear_line() {
 
 /// @brief Выводит описание языка вращений кубика
 void View::help() {
+    clear();
     std::cout << "Cube rotations:" << std::endl << std::endl;
     std::cout << "F (front): the face facing the solver.\nB (back): the back face." << std::endl;
     std::cout << "R (right): the right face.\nL (left): the left face." << std::endl;
@@ -59,6 +61,7 @@ void View::help() {
     std::cout << "any characters EXCEPT [FBRLUDMxyz'2] will be ignored" << std::endl;
     std::cout << "\nTo exit this menu write anything in console: ";
     getchar();
+    clear();
 }
 
 void View::print_face(vector <vector<Colors>> face, int x, int y, int cell_size) {
@@ -108,12 +111,12 @@ void View::print_cube(Cube cube, int n) {
     int width = (size * (cell_size + 1)) * 2;
     int height = size * (cell_size + 1);
 
-    print_face(faces[0], 1 + width, y, cell_size);
+    print_face(faces[0], 2 + width, y, cell_size);
     print_face(faces[1], 1, y + height, cell_size);
-    print_face(faces[2], 1 + width, y + height, cell_size);
-    print_face(faces[3], 1 + width * 2, y + height, cell_size);
-    print_face(faces[5], 1 + width * 3, y + height, cell_size);
-    print_face(faces[4], 1 + width, y + height * 2, cell_size);
+    print_face(faces[2], 2 + width, y + height, cell_size);
+    print_face(faces[3], 3 + width * 2, y + height, cell_size);
+    print_face(faces[5], 4 + width * 3, y + height, cell_size);
+    print_face(faces[4], 2 + width, y + height * 2, cell_size);
     cout << endl;
 }
 
@@ -141,7 +144,7 @@ int ScalableWindow::find_scale(int size) {
     int y = w.ws_row - 7 * show_help;
 
     int new_scale_factor = 1;
-    while ((((4 * size) * new_scale_factor * 2 + 22) < x) && (((4 * size) * new_scale_factor + 7) < y)) {
+    while ((((4 * size) * new_scale_factor * 2 + 25) < x) && (((4 * size) * new_scale_factor + 7) < y)) {
         new_scale_factor++;
     };
     new_scale_factor -= 1;
@@ -161,12 +164,12 @@ int x = 0, y = 1, size = cube.size();
     int width = (size * (cell_size + 1)) * 2;
     int height = size * (cell_size + 1);
 
-    print_face(faces[0], 1 + width, y, cell_size);
+    print_face(faces[0], 2 + width, y, cell_size);
     print_face(faces[1], 1, y + height, cell_size);
-    print_face(faces[2], 1 + width, y + height, cell_size);
-    print_face(faces[3], 1 + width * 2, y + height, cell_size);
-    print_face(faces[5], 1 + width * 3, y + height, cell_size);
-    print_face(faces[4], 1 + width, y + height * 2, cell_size);
+    print_face(faces[2], 2 + width, y + height, cell_size);
+    print_face(faces[3], 3 + width * 2, y + height, cell_size);
+    print_face(faces[5], 4 + width * 3, y + height, cell_size);
+    print_face(faces[4], 2 + width, y + height * 2, cell_size);
     cout << endl;
 }
 

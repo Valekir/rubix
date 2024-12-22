@@ -38,6 +38,7 @@ class Cube {
  public:
     explicit Cube(int);
     Cube();
+    Cube(int, vector<vector<int>>, vector<vector<Colors>>);
     vector<vector <Piece>> get_parts() { return parts; }
     /// @brief Возвращает размер кубика
     int size() { return dimension; }

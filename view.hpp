@@ -8,6 +8,7 @@
 
 #include <sys/ioctl.h>
 #include <unistd.h>
+#include <cstdlib>
 
 #include "cube.hpp"
 #include "utils.hpp"

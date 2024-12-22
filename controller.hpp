@@ -38,6 +38,8 @@ class Controller {
     int parse_console_commands(std::string& str);
 	// Ищет в строке команды для задания настроек
 	int parse_settings(std::string& str);
+	
+	Cube load_saved_cube(std::string filename);
 
 	void load_settings();
 
@@ -52,7 +54,7 @@ class Controller {
     void scramble();
 
     // Запускает игру
-    void game();
+	void game(bool from_save=false, std::string filename="");
     // Запускает меню
     void menu();
 	// Запускает меню настроек
@@ -65,4 +67,6 @@ class Controller {
 	// При открытии настроек выводит сообщение со всеми текущими настройками
 	void print_settings();
 	void clear() {console->clear();}
+	// Сохраняет текущую игру
+	void save();
 };

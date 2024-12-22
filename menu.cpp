@@ -1,5 +1,5 @@
 #include "menu.hpp"
-#include "utils.hpp"
+
 
 using std::string, std::vector, std::ifstream;
 
@@ -89,7 +89,7 @@ void settings_menu() {
             case '1':  // Изменение размера
             try {
                     size = std::stoi(prompt_input("Enter Size (2-5)", std::to_string(size)));
-                    if (size < 2) size = 2;
+                    if (size < 1) size = 1;
                     if (size > 5) size = 5;
                 }
                 catch(const std::exception& e) {
@@ -240,7 +240,7 @@ int menu_control() {
 // Функция для чтения сохранений из файла
 std::vector<std::string> load_saves() {
     vector<string> saves;
-    ifstream saveFile("save.txt");
+    ifstream saveFile("saves");
     if (saveFile.is_open()) {
         string line;
         while (getline(saveFile, line)) {
@@ -251,7 +251,36 @@ std::vector<std::string> load_saves() {
     return saves;
 }
 
-void save_menu() {
+// Cube load_saved_cube(std::string filename) {
+//     vector<vector<int>> angles;
+//     vector<vector<Colors>> colors;
+
+//     ifstream input(filename);
+//     int dim = static_cast<int>(getchar());
+
+//     for (int i = 0; i < dim; i++) {
+//         for (int j = 0; j < dim*dim; j++) {
+//             vector<int> temp_angles;
+//             vector<Colors> temp_colors;
+//             int temp;
+//             char ch;
+//             for (int k = 0; k < dim; k++) {
+//                 input >> temp;
+//                 temp_angles.push_back(temp);                
+//             }
+//             for (int k = 0; k < dim; k++) {
+//                 input >> ch;
+//                 temp_colors.push_back(chartocolor(ch));                
+//             }
+//             angles.push_back(temp_angles());
+//             colors.push_back(temp_colors());
+//         }
+//     }
+//     Cube cube(dim, angles, colors);
+//     return cube;
+// }
+
+std::string save_menu() {
     vector<string> saves = load_saves();
     int numSaves = saves.size();
 
@@ -260,7 +289,7 @@ void save_menu() {
     if (numSaves == 0) {
         center_text((LINES - 1) / 2, 0, "No saved games found!");
         getch();
-        return;
+        return "";
     }
 
     int startY = (LINES - 2 * numSaves - 1) / 2;
@@ -268,7 +297,7 @@ void save_menu() {
 
     while (true){
         clear();
-        center_text(startY - 1, 0, "Load Game");
+        center_text(startY - 2, 0, "Load Game");
 
         for (int i = 0; i < numSaves; ++i) {
             int y = startY + i * 2;
@@ -291,15 +320,11 @@ void save_menu() {
                 if (choice < numSaves) choice++;
                 break;
             case 10: // ENTER
-                // Load the selected save game
-                // ... your savegame loading logic here ...
                 clear();
                 center_text((LINES - 1) / 2, 0, "Loading save " + saves[choice - 1]);
-                refresh();
-                getch();
-                return;
+                return saves[choice - 1];
             case 27: // ESC
-                return;
+                return "";
             default:
                 break;
         }

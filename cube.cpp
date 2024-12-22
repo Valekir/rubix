@@ -53,6 +53,8 @@ void Piece::rotate_piece(char dir) {
     } 
 }
 
+//_______________________________________________Cube_____________________________________________________
+
 Cube::Cube() {
     dimension = 0;
     vector <int> angles{};
@@ -88,6 +90,23 @@ Cube::Cube(int n) {
                     new_piece = Piece(colors, angles, '0');
             }
             temp.push_back(new_piece);
+        }
+        parts.push_back(temp);
+    }
+}
+
+Cube::Cube(int n, vector<vector<int>> new_angles, vector<vector<Colors>> new_colors) {
+    dimension = n;
+    vector <int> angles;
+    vector <Colors> colors;
+    char type;
+    for (int i = 0; i < n; i++) {
+        vector<Piece> temp;
+        for (int j = 0; j < n*n; j++) {
+            angles = new_angles[i];
+            colors = new_colors[i];
+            type = '1';
+            temp.push_back(Piece(colors, angles, type));
         }
         parts.push_back(temp);
     }

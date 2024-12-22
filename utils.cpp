@@ -20,6 +20,41 @@ void Timer::stop() {
     }
 }
 
+// Colors -> char
+char colortochar(Colors col) {
+    if (col == Colors::W)
+        return 'W';
+    else if (col == Colors::G)
+        return 'G';
+    else if (col == Colors::R)
+        return 'R';
+    else if (col == Colors::O)
+        return 'O';
+    else if (col == Colors::B)
+        return 'B';
+    else if (col == Colors::Y)
+        return 'Y';
+    return 'K';
+}
+
+// char -> Colors
+Colors chartocolor(char col) {
+    if (col == 'W')
+        return Colors::W;
+    else if (col == 'G')
+        return Colors::G;
+    else if (col == 'R')
+        return Colors::R;
+    else if (col == 'O')
+        return Colors::O;
+    else if (col == 'B')
+        return Colors::B;
+    else if (col == 'Y')
+        return Colors::Y;
+    return Colors::K;
+}
+
+
 // Устанавливает 8-битный цвет заливки с кодом n
 void set_background_color(int n) {
     cout << "\033[48;5;" << (int) n << "m";

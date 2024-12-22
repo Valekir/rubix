@@ -7,10 +7,15 @@
 #include <iostream>
 #include <vector>
 
+#include "utils.hpp"
+#include "cube.hpp"
+
 void center_text(int y, int x, const std::string& text);
 
 // Функция для чтения сохранений из файла
 std::vector<std::string> load_saves();
+
+Cube load_saved_cube(std::string filename);
 
 bool toggle_checkbox(bool current);
 
@@ -22,6 +27,6 @@ void draw_menu(const std::string choices[], int highlight, int size);
 
 int menu_control();
 
-void save_menu();
+std::string save_menu();
 
 int getColorInput(const std::string& prompt);

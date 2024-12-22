@@ -35,6 +35,12 @@ enum class Colors {
     W, G, R, O, B, Y, K
 };
 
+/// @brief Приводит объект типа Colors к типу char
+char colortochar (Colors col);
+
+Colors chartocolor (char col);
+
+
 /// @brief Выводит вектор (vec*scale) цветов в окно консоли
 /// @param vec Исходный вектор 
 /// @param color Набор цветов
