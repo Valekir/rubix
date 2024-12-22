@@ -296,15 +296,17 @@ void Cube::rotate_y_axis(char face, int start_offset) {
         }
     }
 
+    int k = n/2;            // ОЧЕНЬ ВАЖНАЯ ШТУКА без нее ломаются большие кубы
+    if (n > 3) k -= 1;
     if (face == 'U' || face == 'd') {
         for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n / 2; j++) {
+            for (int j = 0; j < k; j++) {
                 swap(parts[so+slice][i*n + j], parts[so+slice][i*n + (n - 1 - j)]);
             }
         }
     } else if (face == 'u' || face == 'D') {
         for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n / 2; j++) {
+            for (int j = 0; j < k; j++) {
                 swap(parts[so+slice][i], parts[so+slice][(n - 1 - j) * n + i]);
             }
         }
