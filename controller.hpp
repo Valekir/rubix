@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <unistd.h>
+#include <cstdio>
 
 #include "cube.hpp"
 #include "utils.hpp"
@@ -39,7 +40,7 @@ class Controller {
 	// Ищет в строке команды для задания настроек
 	int parse_settings(std::string& str);
 	
-	Cube load_saved_cube(std::string filename);
+	void load_saved_cube(std::string filename);
 
 	void load_settings();
 
@@ -69,4 +70,5 @@ class Controller {
 	void clear() {console->clear();}
 	// Сохраняет текущую игру
 	void save();
+
 };

@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <iostream>
+#include <unistd.h>
 using std::vector;
 
 #include "utils.hpp"
@@ -36,9 +37,9 @@ class Cube {
     void rotate_y_axis(char face, int start_offset=0);
     void rotate_z_axis(char face, int start_offset=0); 
  public:
+    Cube(int, vector<vector<int>>, vector<vector<Colors>>);
     explicit Cube(int);
     Cube();
-    Cube(int, vector<vector<int>>, vector<vector<Colors>>);
     vector<vector <Piece>> get_parts() { return parts; }
     /// @brief Возвращает размер кубика
     int size() { return dimension; }

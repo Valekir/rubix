@@ -237,94 +237,64 @@ int menu_control() {
     }
 }
 
-// Функция для чтения сохранений из файла
-std::vector<std::string> load_saves() {
-    vector<string> saves;
-    ifstream saveFile("saves");
-    if (saveFile.is_open()) {
-        string line;
-        while (getline(saveFile, line)) {
-            saves.push_back(line);
+void draw_save_menu(std::vector<std::string> saves, int choice, int num_saves, int startY) {
+    clear();
+    center_text(startY - 2, 0, "Load Game");
+
+    for (int i = 0; i < num_saves; ++i) {
+        int y = startY + i * 2;
+        if (i + 1 == choice) {
+            center_text(y, 0, "> " + saves[i] + " <");
+        } else {
+            center_text(y, 0, saves[i]);
         }
-        saveFile.close();
     }
-    return saves;
+
+    center_text(startY + num_saves * 2 , 0, "Press Enter to load" );
+    center_text(startY + num_saves * 2 +  1, 0, "Press 'q' to to return" );
+    center_text(startY + num_saves * 2  + 2, 0, "Press 'd' delete to delete save" );
 }
-
-// Cube load_saved_cube(std::string filename) {
-//     vector<vector<int>> angles;
-//     vector<vector<Colors>> colors;
-
-//     ifstream input(filename);
-//     int dim = static_cast<int>(getchar());
-
-//     for (int i = 0; i < dim; i++) {
-//         for (int j = 0; j < dim*dim; j++) {
-//             vector<int> temp_angles;
-//             vector<Colors> temp_colors;
-//             int temp;
-//             char ch;
-//             for (int k = 0; k < dim; k++) {
-//                 input >> temp;
-//                 temp_angles.push_back(temp);                
-//             }
-//             for (int k = 0; k < dim; k++) {
-//                 input >> ch;
-//                 temp_colors.push_back(chartocolor(ch));                
-//             }
-//             angles.push_back(temp_angles());
-//             colors.push_back(temp_colors());
-//         }
-//     }
-//     Cube cube(dim, angles, colors);
-//     return cube;
-// }
 
 std::string save_menu() {
     vector<string> saves = load_saves();
-    int numSaves = saves.size();
-
+    int num_saves = saves.size();
     clear();
 
-    if (numSaves == 0) {
+    if (num_saves == 0) {
         center_text((LINES - 1) / 2, 0, "No saved games found!");
         getch();
         return "";
     }
 
-    int startY = (LINES - 2 * numSaves - 1) / 2;
+    int startY = (LINES - 2 * num_saves - 1) / 2;
     int choice = 1;
+    int last_num = num_saves;
 
     while (true){
-        clear();
-        center_text(startY - 2, 0, "Load Game");
-
-        for (int i = 0; i < numSaves; ++i) {
-            int y = startY + i * 2;
-            if (i + 1 == choice) {
-                center_text(y, 0, "> " + saves[i] + " <");
-            } else {
-                center_text(y, 0, saves[i]);
-            }
-        }
-
-        center_text(startY + numSaves * 2 , 0, "Press Enter to load or ESC to return" );
-
+        draw_save_menu(saves, choice, num_saves, startY);
         int ch = getch();
         switch (ch) {
 
             case KEY_UP:
                 if (choice > 1) choice--;
+                else choice = num_saves;
                 break;
             case KEY_DOWN:
-                if (choice < numSaves) choice++;
+                if (choice < num_saves) choice++;
+                else choice = 1;
                 break;
-            case 10: // ENTER
+            case 10: {  // ENTER
                 clear();
                 center_text((LINES - 1) / 2, 0, "Loading save " + saves[choice - 1]);
                 return saves[choice - 1];
-            case 27: // ESC
+                }
+            case 'q':   // ESC
                 return "";
+            case 'd':{
+                delete_save(saves[choice - 1]);
+                saves.erase(saves.begin() + choice - 1);
+                num_saves--;
+                }
             default:
                 break;
         }

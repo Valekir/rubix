@@ -1,5 +1,4 @@
 #include "controller.hpp"
-#include <unistd.h>
 
 using std::regex, std::sregex_iterator, std::smatch, std::string;
 
@@ -96,10 +95,10 @@ int Controller::parse_console_commands(string& str) {
 
 /// @brief Запускает игру
 void Controller::game(bool from_save, std::string filename) {
-    // if (from_save) {
-    //     load_saved_cube(filename);
-    // }
     load_settings();
+    if (from_save) {
+        load_saved_cube(filename);
+    }
     if (flags["show_help"]) {
         hello_game();
     } else {
@@ -107,7 +106,6 @@ void Controller::game(bool from_save, std::string filename) {
     }
     console->print_cube(current_cube, 7 * flags["show_help"]);
 
-    sleep(1);
     while (true) {
         string input;
         std::getline(std::cin, input);
@@ -227,7 +225,7 @@ void Controller::save() {
     std::string filename;
     std::cout << "Enter save name: ";
     std::cin >> filename;
-
+    bool flag = file_exists(filename);  // если существует, то не нужно добавлять в saves
     std::ofstream savefile(filename);
 
     if (!savefile) {
@@ -252,7 +250,10 @@ void Controller::save() {
     }
     savefile.close();
 
-    std::ofstream output("saves");
+    if (flag) 
+        return;
+
+    std::ofstream output("saves", std::ios::app);
     if (!output) {
         std::cerr << "Unable to open file: saves" << std::endl;
     }
@@ -260,4 +261,31 @@ void Controller::save() {
     output.close();
 }
 
+void Controller::load_saved_cube(std::string filename) {
+    std::vector<std::vector<int>> angles;
+    std::vector<std::vector<Colors>> colors;
+
+    std::ifstream input(filename);
+    int dim;
+    input >> dim;
+    for (int i = 0; i < dim; i++) {
+        for (int j = 0; j < dim*dim; j++) {
+            vector<int> temp_angles;
+            vector<Colors> temp_colors;
+            int temp;
+            char ch;
+            for (int k = 0; k < dim; k++) {
+                input >> temp;
+                temp_angles.push_back(temp);                
+            }
+            for (int k = 0; k < dim; k++) {
+                input >> ch;
+                temp_colors.push_back(chartocolor(ch));                
+            }
+            angles.push_back(temp_angles);
+            colors.push_back(temp_colors);
+        }
+    }
+    current_cube = Cube(dim, angles, colors);
+}
 

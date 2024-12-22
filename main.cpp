@@ -20,23 +20,34 @@ int main() {
         int choice = menu_control();
 
         switch (choice) {
-            case 0:     //game
+            case 0: {    //game
                 endwin();               // Завершаем работу с ncurses
                 _main.clear();
                 _main.game(false, "");                
                 refresh();
                 break;
-            case 1:     //saves
-                save_menu();
+                }
+            case 1: {    //saves
+                std::string savefile;
+                savefile = save_menu();
+                if (savefile == "")
+                    break;
+                
+                endwin();               // Завершаем работу с ncurses
+                _main.clear();
+                _main.game(true, savefile);
                 break;
-            case 2:     //settings
+                }
+            case 2: {    //settings
                 settings_menu();
                 break;
-            case 3:     //exit
-                _main.clear();
+                }
+            case 3: {    //exit
                 endwin();
+                _main.clear();
                 return 0;
                 break;
+                }
         }
     }
     endwin();               // Завершаем работу с ncurses

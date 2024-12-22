@@ -242,3 +242,59 @@ void update_config(const std::string& filename, const std::unordered_map<std::st
     }
 }
 
+// Функция для чтения сохранений из файла
+std::vector<std::string> load_saves() {
+    std::vector<std::string> saves;
+    std::ifstream saveFile("saves");
+    if (saveFile.is_open()) {
+        std::string line;
+        while (getline(saveFile, line)) {
+            saves.push_back(line);
+        }
+        saveFile.close();
+    }
+    return saves;
+}
+
+void remove_string(std::string filename, std::string str) {
+    std::ifstream input(filename);
+    std::stringstream buffer;
+
+    if (!input) {
+        return;
+    }
+
+    std::string line;
+    while (std::getline(input, line)) {
+        if (line != str) {
+            buffer << line << std::endl;
+        }
+    }
+
+    input.close();
+
+    std::ofstream output(filename);
+    if (!output) {
+        return;
+    }
+
+    output << buffer.str();
+    output.close();
+}
+
+void delete_save(std::string filename) {
+    std::vector<std::string> saves;
+    saves = load_saves();   // названия сохранений
+    if ((std::find(saves.begin(), saves.end(), filename)) == saves.end()) {
+        std::cerr << "File " << filename << " doesn't exist" << std::endl;
+        return;
+    }
+    remove_string("saves", filename);
+    remove(filename.c_str());
+}
+
+bool file_exists(std::string filename) {
+    std::ifstream file(filename);
+    return file.good();
+}
+

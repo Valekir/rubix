@@ -29,4 +29,4 @@ int menu_control();
 
 std::string save_menu();
 
-int getColorInput(const std::string& prompt);
+int color_input(const std::string& prompt);

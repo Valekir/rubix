@@ -8,12 +8,25 @@
 #include <chrono>
 #include <algorithm>
 #include <fstream>
+#include <sstream>
 
 #ifndef M_PI_2
 float M_PI_2 = 1.57079632679489661923;
 #endif
 
 using std::vector, std::swap;
+
+// Проверяет, существует ли файл
+bool file_exists(std::string filename);
+
+// Удаляет сохранение
+void delete_save(std::string filename);
+
+// Удаляет сроку str из файла filename
+void remove_string(std::string filename, std::string str);
+
+// Возвращает массив с именами всех сохранений
+std::vector<std::string> load_saves();
 
 // Функция для обновления конфиг файла
 void update_config(const std::string& filename, const std::unordered_map<std::string, std::string>& updates);

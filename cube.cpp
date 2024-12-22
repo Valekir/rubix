@@ -100,12 +100,27 @@ Cube::Cube(int n, vector<vector<int>> new_angles, vector<vector<Colors>> new_col
     vector <int> angles;
     vector <Colors> colors;
     char type;
-    for (int i = 0; i < n; i++) {
+    for (int layer = 0; layer < n; layer++) {
         vector<Piece> temp;
-        for (int j = 0; j < n*n; j++) {
-            angles = new_angles[i];
-            colors = new_colors[i];
-            type = '1';
+        for (int i = 0; i < n*n; i++) {
+            angles = new_angles[n*n*layer + i];
+            colors = new_colors[n*n*layer + i];
+            if (i == 0 || i == n-1 || i == n*n-n|| i == n*n-1) {
+                if (layer == 0 || layer == n-1)
+                    type = 'C';
+                else
+                    type = 'E';
+            } else if (i < n-1 || i > n*n-n || i % n == 0 || i % n == n-1) {
+                if (layer == 0 || layer == n-1)
+                    type = 'E';
+                else
+                    type = 'M';
+            } else {
+                if (layer == 0 || layer == n-1)
+                    type = 'M';
+                else
+                    type = '0';
+            }
             temp.push_back(Piece(colors, angles, type));
         }
         parts.push_back(temp);
