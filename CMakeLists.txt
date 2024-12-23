@@ -3,13 +3,25 @@ set(CMAKE_CXX_STANDARD 17)
 
 project(rubix)
 
-set(SOURCE_EXE main.cpp)
-set(SOURCE_LIB cube.cpp view.cpp utils.cpp controller.cpp menu.cpp)
+set(SOURCE_DIR src)
+set(INCLUDE_DIR include)
 
-add_library(rubix_lib STATIC ${SOURCE_LIB})
+file(GLOB SOURCE_FILES 
+	src/controller.cpp
+	src/cube.cpp
+	src/menu.cpp
+	src/test.cpp
+	src/utils.cpp
+	src/view.cpp
+)
+
+add_library(rubix_lib STATIC ${SOURCE_FILES})
+
+target_include_directories(rubix_lib PUBLIC ${INCLUDE_DIR})
+
+add_executable(main ${SOURCE_DIR}/main.cpp)
+
+target_link_libraries(main rubix_lib)
 
 find_package(Curses REQUIRED)
-
-add_executable(main ${SOURCE_EXE})
-
-target_link_libraries(main rubix_lib ${CURSES_LIBRARIES})
+target_link_libraries(main ${CURSES_LIBRARIES})

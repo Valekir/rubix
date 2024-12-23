@@ -44,7 +44,7 @@ int color_input(const std::string& prompt) {
 }
 
 void settings_menu() {
-    std::unordered_map<std::string, std::string> config = load_config("game.config");
+    std::unordered_map<std::string, std::string> config = load_config("saves/game.config");
     bool show_help = config["show_help"].find("true") != std::string::npos ? true : false;
     bool timer = config["timer"].find("true") != std::string::npos ? true : false;
     int size = std::stoi(config["size"]);
@@ -89,7 +89,7 @@ void settings_menu() {
             case '1':  // Изменение размера
             try {
                     size = std::stoi(prompt_input("Enter Size (2-5)", std::to_string(size)));
-                    if (size < 1) size = 1;
+                    if (size < 2) size = 2;
                     if (size > 5) size = 5;
                 }
                 catch(const std::exception& e) {
@@ -163,7 +163,7 @@ void settings_menu() {
                 for (auto item : config) {
                     std::cout << item.first << " "  << item.second << std::endl;
                 }
-                update_config("game.config", config);
+                update_config("saves/game.config", config);
                 return;
                 }
             case 'r': {

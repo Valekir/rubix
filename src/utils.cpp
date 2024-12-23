@@ -219,7 +219,7 @@ void update_config(const std::string& filename, const std::unordered_map<std::st
 // Функция для чтения сохранений из файла
 std::vector<std::string> load_saves() {
     std::vector<std::string> saves;
-    std::ifstream saveFile("saves");
+    std::ifstream saveFile("saves/saves_list");
     if (saveFile.is_open()) {
         std::string line;
         while (getline(saveFile, line)) {
@@ -263,12 +263,13 @@ void delete_save(std::string filename) {
         std::cerr << "File " << filename << " doesn't exist" << std::endl;
         return;
     }
-    remove_string("saves", filename);
+    remove_string("saves/saves_list", filename);
+    filename = "saves/" + filename;
     remove(filename.c_str());
 }
 
-bool file_exists(std::string filename) {
-    std::ifstream file(filename);
+bool file_exists(std::string path) {
+    std::ifstream file(path);
     return file.good();
 }
 
