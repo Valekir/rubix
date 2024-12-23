@@ -93,18 +93,12 @@ int Controller::parse_console_commands(string& str) {
 
 /// @brief Запускает игру
 void Controller::game(bool from_save, std::string filename) {
-
     signal(SIGWINCH, SIG_IGN);
     resize();
     sleep(0.01);
-    if (from_save) {
-        load_saved_cube(filename);
-    }
-    if (flags["show_help"]) {
-        hello_game();
-    } else {
-        console->clear();
-    }
+    if (from_save) { load_saved_cube(filename); }
+    
+    hello_game();
     console->find_scale(current_cube.size());
     console->print_cube(current_cube, 1 + 7 * flags["show_help"]);
 
@@ -135,8 +129,7 @@ void Controller::game(bool from_save, std::string filename) {
             console->clear();
             console->help();
             console->clear();
-            if (flags["show_help"])
-                hello_game();
+            hello_game();
             break;
             }
         case 3: {   // scramble
@@ -159,7 +152,6 @@ void Controller::game(bool from_save, std::string filename) {
             flags["show_help"] = true;
             updates["show_help"] = "true";
             update_config("game.config", updates);
-            console->clear();
             hello_game();
             console->find_scale(current_cube.size());
             console->clear_line();
@@ -170,7 +162,7 @@ void Controller::game(bool from_save, std::string filename) {
             break;
         }
         resize();
-	sleep(0.01);
+		sleep(0.01);
 
         console->print_cube(current_cube, 1 + 7 * flags["show_help"]);
         if (current_cube.is_solved() && timer.is_running()) {
@@ -185,7 +177,8 @@ void Controller::game(bool from_save, std::string filename) {
 
 /// @brief Выводит приветственное сообщение при старте игры
 void Controller::hello_game() {
-    std::cout << "\033[2J\033[1;1H";
+    if (!flags["show_help"]) return;
+    std::cout << "\033[H";
     std::cout << "To rotate sides enter commands: ex. RUR'U'" << std::endl;
     std::cout << "To read full information about moves notation use: \"moves\"" << std::endl;
     std::cout << "To scramble cube use: \"scramble\"" << std::endl;
@@ -306,12 +299,18 @@ void Controller::load_saved_cube(std::string filename) {
 }
 
 void Controller::resize() {
+    struct winsize w;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+    int cols = w.ws_col;
+    int lines = w.ws_row;
+    
     int size = current_cube.size();
     int x = 16*size + 5, y = 2 + 6*size + 7;
     x = x < 58 ? 58 : x;
-
-    if (LINES < y || COLS < x) {
-	std::cout << "\033[8;" << y << ";" << x << "t" << std::endl;
+    clear();
+    hello_game();
+    if (lines < y || cols < x) {
+		std::cout << "\033[8;" << y << ";" << x << "t" << std::endl;
     }
 }
 
