@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <cstdio>
+#include <ncurses.h>
 
 #include "cube.hpp"
 #include "utils.hpp"
@@ -43,8 +44,6 @@ class Controller {
 	
 	void load_saved_cube(std::string filename);
 
-	void load_settings();
-
   public:
     Controller() {current_cube = Cube(3); console = nullptr; }
 	~Controller() { if (console != nullptr) delete console; }
@@ -55,12 +54,9 @@ class Controller {
     // Запутывает кубик
     void scramble();
 
+	void resize(WINDOW*, int, int);
     // Запускает игру
 	void game(bool from_save=false, std::string filename="");
-    // Запускает меню
-    void menu();
-	// Запускает меню настроек
-	void settings();
 
     // При старте игры выводит сообщение, описывающее возможные команды для взаимодействия с кубиком
     void hello_game();
@@ -71,5 +67,5 @@ class Controller {
 	void clear() {console->clear();}
 	// Сохраняет текущую игру
 	void save();
-
+	void load_settings();
 };

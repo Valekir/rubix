@@ -2,6 +2,7 @@
 #include "menu.hpp"
 #include <csignal>
 
+
 void signal_handler(int sign) {
     endwin();
     system("clear");
@@ -10,20 +11,24 @@ void signal_handler(int sign) {
 
 int main() {
     Controller _main;
+
     initscr();               // Инициализация ncurses
     cbreak();                // Включаем режим распознавания символов
     noecho();                // Отключаем отображение нажатых клавиш
     keypad(stdscr, TRUE);    // Включаем работу с функцией клавиш
+
     signal(SIGINT, signal_handler);
 
     while (true) {
         int choice = menu_control();
-
+        
         switch (choice) {
             case 0: {    //game
                 endwin();               // Завершаем работу с ncurses
                 _main.clear();
-                _main.game(false, "");                
+                _main.load_settings();
+                _main.resize(stdscr, LINES, COLS);
+                _main.game(false, "");    
                 refresh();
                 break;
                 }
@@ -35,6 +40,8 @@ int main() {
                 
                 endwin();               // Завершаем работу с ncurses
                 _main.clear();
+                _main.load_settings();
+                _main.resize(stdscr, LINES, COLS);
                 _main.game(true, savefile);
                 break;
                 }

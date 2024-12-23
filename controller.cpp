@@ -95,7 +95,6 @@ int Controller::parse_console_commands(string& str) {
 
 /// @brief Запускает игру
 void Controller::game(bool from_save, std::string filename) {
-    load_settings();
     if (from_save) {
         load_saved_cube(filename);
     }
@@ -230,7 +229,7 @@ void Controller::save() {
     std::cout << "Do you want to save game? [y/n]" << std:: endl;
     char ans = 'n';
     std::cin >> ans;
-    if (ans == 'n' || ans == 'N')
+    if (ans != 'y' && ans != 'Y')
         return;
 
     std::string filename;
@@ -300,3 +299,12 @@ void Controller::load_saved_cube(std::string filename) {
     current_cube = Cube(dim, angles, colors);
 }
 
+void Controller::resize(WINDOW *win, int lines, int cols) {
+    int size = current_cube.size();
+    int x = 16*size + 1, y = 8 + 6*size;
+    x = x < 58 ? 58 : x;
+
+    if (lines < y || cols < x) {
+        wresize(win, y, x);
+    }
+}

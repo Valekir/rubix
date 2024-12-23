@@ -142,12 +142,16 @@ int ScalableWindow::find_scale(int size) {
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
     int x = w.ws_col;
     int y = w.ws_row - 7 * show_help;
+    bool flag = true;
 
     int new_scale_factor = 1;
+    if (((4 * size) * new_scale_factor * 2 + 25) >= x || ((4 * size) * new_scale_factor + 7) >= y) {
+        flag = false;
+    }
     while ((((4 * size) * new_scale_factor * 2 + 25) < x) && (((4 * size) * new_scale_factor + 7) < y)) {
         new_scale_factor++;
-    };
-    new_scale_factor -= 1;
+    }
+    new_scale_factor -= 1 * flag;
     scale_factor = new_scale_factor;
 	return scale_factor;
 }

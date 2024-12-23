@@ -301,3 +301,8 @@ std::string save_menu() {
         refresh();
     }
 }
+
+/// @param dim Размер кубика
+void check_win_size(int dim, bool ) {
+
+}
