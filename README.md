@@ -3,7 +3,7 @@
 Rubix is a C++ implementation of a Rubik’s Cube simulator. This project aims to provide a comprehensive tool for Rubik’s Cube enthusiasts, puzzle solvers, and anyone interested in the algorithmic aspects of solving complex puzzles. 
 
 ## Demo
-<img src='https://https://github.com/Valekir/rubix/other/demo.gif'/>
+<img src='https://github.com/Valekir/rubix/blob/master/other/example.gif'/>
 
 ## Installation
 ````

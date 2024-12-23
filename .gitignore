@@ -5,4 +5,5 @@
 *.exe
 *.config
 *.tmp
+*.Identifier
 test.cpp
