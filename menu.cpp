@@ -89,7 +89,7 @@ void settings_menu() {
             case '1':  // Изменение размера
             try {
                     size = std::stoi(prompt_input("Enter Size (2-5)", std::to_string(size)));
-                    if (size < 1) size = 1;
+                    if (size < 2) size = 2;
                     if (size > 5) size = 5;
                 }
                 catch(const std::exception& e) {
