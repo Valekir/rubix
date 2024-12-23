@@ -14,7 +14,6 @@ void Controller::move(char command) {
 
 /// @brief Случайно перемешивает кубик
 void Controller::scramble() {
-    // vector <char> moves = {'U', 'F', 'B', 'R', 'L', 'd', 'f', 'b', 'r', 'l'};
     vector <char> moves = {'U', 'D', 'F', 'B', 'R', 'L', 'u', 'd', 'f', 'b', 'r', 'l'};
     char move;
     std::srand(std::time(0));
@@ -96,7 +95,7 @@ void Controller::game(bool from_save, std::string filename) {
     signal(SIGWINCH, SIG_IGN);
     resize();
     sleep(0.01);
-    if (from_save) { load_saved_cube(filename); }
+    if (from_save) { load_saved_cube("saves/" + filename); }
     
     hello_game();
     console->find_scale(current_cube.size());
@@ -141,7 +140,7 @@ void Controller::game(bool from_save, std::string filename) {
             std::unordered_map<std::string, std::string> updates;
             flags["show_help"] = false;
             updates["show_help"] = "false";
-            update_config("game.config", updates);
+            update_config("saves/game.config", updates);
             console->clear();
             console->find_scale(current_cube.size());
             console->clear_line();
@@ -151,7 +150,7 @@ void Controller::game(bool from_save, std::string filename) {
             std::unordered_map<std::string, std::string> updates;
             flags["show_help"] = true;
             updates["show_help"] = "true";
-            update_config("game.config", updates);
+            update_config("saves/game.config", updates);
             hello_game();
             console->find_scale(current_cube.size());
             console->clear_line();
@@ -190,7 +189,7 @@ void Controller::hello_game() {
 /// @brief  Применяет настройки игры
 void Controller::load_settings() {
     std::unordered_map<std::string, std::string> config;
-    config = load_config("game.config");
+    config = load_config("saves/game.config");
 
     if (config["window"] == "scalable") {
         console = new ScalableWindow();
@@ -230,12 +229,15 @@ void Controller::save() {
     std::cin >> ans;
     if (ans != 'y' && ans != 'Y')
         return;
+	if (!std::filesystem::is_directory("saves"))
+		std::filesystem::create_directory("saves");
 
     std::string filename;
     std::cout << "Enter save name: ";
     std::cin >> filename;
-    bool flag = file_exists(filename);  // если существует, то не нужно добавлять в saves
-    std::ofstream savefile(filename);
+    bool flag = file_exists("saves/" + filename);  // если существует, то не нужно добавлять в saves
+
+    std::ofstream savefile("saves/" + filename);
 
     if (!savefile) {
         std::cerr << "Unable to  open file: " << filename << std::endl;
@@ -262,19 +264,19 @@ void Controller::save() {
     if (flag) 
         return;
 
-    std::ofstream output("saves", std::ios::app);
+    std::ofstream output("saves/saves_list", std::ios::app);
     if (!output) {
-        std::cerr << "Unable to open file: saves" << std::endl;
+        std::cerr << "Unable to open file: saves_list" << std::endl;
     }
     output << filename << std::endl;
     output.close();
 }
 
-void Controller::load_saved_cube(std::string filename) {
+void Controller::load_saved_cube(std::string path) {
     std::vector<std::vector<int>> angles;
     std::vector<std::vector<Colors>> colors;
 
-    std::ifstream input(filename);
+    std::ifstream input(path);
     int dim;
     input >> dim;
     for (int i = 0; i < dim; i++) {
@@ -283,11 +285,11 @@ void Controller::load_saved_cube(std::string filename) {
             vector<Colors> temp_colors;
             int temp;
             char ch;
-            for (int k = 0; k < dim; k++) {
+            for (int k = 0; k < 3; k++) {
                 input >> temp;
                 temp_angles.push_back(temp);                
             }
-            for (int k = 0; k < dim; k++) {
+            for (int k = 0; k < 3; k++) {
                 input >> ch;
                 temp_colors.push_back(chartocolor(ch));                
             }

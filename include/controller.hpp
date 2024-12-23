@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <ncurses.h>
 #include <csignal>
+#include <filesystem>
 
 #include "cube.hpp"
 #include "utils.hpp"
