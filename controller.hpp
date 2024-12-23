@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <cstdio>
 #include <ncurses.h>
+#include <csignal>
 
 #include "cube.hpp"
 #include "utils.hpp"
@@ -54,7 +55,7 @@ class Controller {
     // Запутывает кубик
     void scramble();
 
-	void resize(WINDOW*, int, int);
+	void resize();
     // Запускает игру
 	void game(bool from_save=false, std::string filename="");
 

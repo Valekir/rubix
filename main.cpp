@@ -27,7 +27,6 @@ int main() {
                 endwin();               // Завершаем работу с ncurses
                 _main.clear();
                 _main.load_settings();
-                _main.resize(stdscr, LINES, COLS);
                 _main.game(false, "");    
                 refresh();
                 break;
@@ -41,7 +40,6 @@ int main() {
                 endwin();               // Завершаем работу с ncurses
                 _main.clear();
                 _main.load_settings();
-                _main.resize(stdscr, LINES, COLS);
                 _main.game(true, savefile);
                 break;
                 }

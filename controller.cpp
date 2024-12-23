@@ -2,8 +2,6 @@
 
 using std::regex, std::sregex_iterator, std::smatch, std::string;
 
-
-
 /// @brief Поворачивает грань кубика, или весь кубик
 /// @param command Команда для поворота кубика
 void Controller::move(char command) {
@@ -95,6 +93,10 @@ int Controller::parse_console_commands(string& str) {
 
 /// @brief Запускает игру
 void Controller::game(bool from_save, std::string filename) {
+
+    signal(SIGWINCH, SIG_IGN);
+    resize();
+    sleep(0.01);
     if (from_save) {
         load_saved_cube(filename);
     }
@@ -103,7 +105,8 @@ void Controller::game(bool from_save, std::string filename) {
     } else {
         console->clear();
     }
-    console->print_cube(current_cube, 7 * flags["show_help"]);
+    console->find_scale(current_cube.size());
+    console->print_cube(current_cube, 1 + 7 * flags["show_help"]);
 
     while (true) {
         string input;
@@ -166,7 +169,10 @@ void Controller::game(bool from_save, std::string filename) {
             console->clear_line();
             break;
         }
-        console->print_cube(current_cube, 7 * flags["show_help"]);
+        resize();
+	sleep(0.01);
+
+        console->print_cube(current_cube, 1 + 7 * flags["show_help"]);
         if (current_cube.is_solved() && timer.is_running()) {
             timer.stop();
             std::cout << "To continue write anything in console: ";
@@ -299,12 +305,13 @@ void Controller::load_saved_cube(std::string filename) {
     current_cube = Cube(dim, angles, colors);
 }
 
-void Controller::resize(WINDOW *win, int lines, int cols) {
+void Controller::resize() {
     int size = current_cube.size();
-    int x = 16*size + 1, y = 8 + 6*size;
+    int x = 16*size + 5, y = 2 + 6*size + 7;
     x = x < 58 ? 58 : x;
 
-    if (lines < y || cols < x) {
-        wresize(win, y, x);
+    if (LINES < y || COLS < x) {
+	std::cout << "\033[8;" << y << ";" << x << "t" << std::endl;
     }
 }
+
