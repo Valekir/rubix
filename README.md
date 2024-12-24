@@ -9,7 +9,10 @@ Rubix is a C++ implementation of a Rubik’s Cube simulator. This project aims t
 ````
 git clone https://https://github.com/Valekir/rubix
 cd rubix
-bash setup.sh
+mkdir build
+cd build
+cmake ..
+make
 ````
 
 ## Features
@@ -34,3 +37,4 @@ This game also implements some additional features such as:
 - Unix
 - Ncurses
 - Git
+- Cmake
