@@ -3,7 +3,7 @@
 using std::regex, std::sregex_iterator, std::smatch, std::string;
 
 /// @brief Поворачивает грань кубика, или весь кубик
-/// @param command Команда для поворота кубика
+/// @param command Команда для поворота кубика (например: R L' M2)
 void Controller::move(char command) {
     char temp = tolower(command);
     if (temp == 'x' || temp == 'y' || temp == 'z')
@@ -223,6 +223,7 @@ void Controller::load_settings() {
     difficulty = std::stoi(config["difficulty"]);
 }
 
+/// @brief Предлагает пользователю сохранить текущую игру, записывает сохранение в файл с пользовательским названием
 void Controller::save() {
     std::cout << "Do you want to save game? [y/n]" << std:: endl;
     char ans = 'n';
@@ -272,6 +273,8 @@ void Controller::save() {
     output.close();
 }
 
+/// @brief Загружает сохранение из файла
+/// @param path Путь до файла с сохранением
 void Controller::load_saved_cube(std::string path) {
     std::vector<std::vector<int>> angles;
     std::vector<std::vector<Colors>> colors;
@@ -300,6 +303,7 @@ void Controller::load_saved_cube(std::string path) {
     current_cube = Cube(dim, angles, colors);
 }
 
+/// @brief Изменяет размер окна консоли, если оно меньше допустимого, растягивает до нужного размера
 void Controller::resize() {
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
@@ -315,4 +319,3 @@ void Controller::resize() {
 		std::cout << "\033[8;" << y << ";" << x << "t" << std::endl;
     }
 }
-

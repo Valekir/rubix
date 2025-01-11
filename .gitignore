@@ -1,6 +1,7 @@
 **/build
 **/.vscode
 **/html
+**/xml
 
 *.exe
 *.config

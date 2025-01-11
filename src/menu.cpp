@@ -9,6 +9,8 @@ void center_text(int y, int x, const std::string& text) {
     mvprintw(y, (COLS - len) / 2, "%s", text.c_str());
 }
 
+/// @brief Выводит сообщение prompt и читает пользовательский ввод
+/// @return Возвращает считанную строку или defaultValue, если ничего не введено
 std::string prompt_input(const std::string& prompt, const std::string& defaultValue) {
     echo();
     mvprintw(LINES - 2, (COLS - prompt.length() - 20) / 2, "%s: ", prompt.c_str());
@@ -18,6 +20,7 @@ std::string prompt_input(const std::string& prompt, const std::string& defaultVa
     return std::string(input).empty() ? defaultValue : std::string(input);
 }
 
+/// @brief Выводит сообщение об ошибочном вводе
 void error_message() {
     move(LINES - 2, 0);
     mvprintw(LINES - 2, (COLS - 40) / 2, "Invalid input. Please try again.");
@@ -25,6 +28,8 @@ void error_message() {
     clrtoeol(); 
 }
 
+/// @brief Считывает цвет из потока ввода, проверяет его валидность
+/// @return Код цвета
 int color_input(const std::string& prompt) {
     int input;
     std::string inputStr;
@@ -43,6 +48,7 @@ int color_input(const std::string& prompt) {
     }
 }
 
+/// @brief Обработка меню настроек
 void settings_menu() {
     std::unordered_map<std::string, std::string> config = load_config("saves/game.config");
     bool show_help = config["show_help"].find("true") != std::string::npos ? true : false;
@@ -187,6 +193,10 @@ void settings_menu() {
     }
 }
 
+/// @brief Отрисовывает основное меню
+/// @param choices Варианты выбора в меню
+/// @param highlight 
+/// @param size 
 void draw_menu(const std::string choices[], int highlight, int size) {
     int startY = (LINES - size) / 2;
     int startX = (COLS - 20) / 2;
@@ -302,7 +312,3 @@ std::string save_menu() {
     }
 }
 
-/// @param dim Размер кубика
-void check_win_size(int dim, bool ) {
-
-}

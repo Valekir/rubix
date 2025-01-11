@@ -64,6 +64,11 @@ void View::help() {
     clear();
 }
 
+/// @brief Отрисовывает в консоли одну грань кубика
+/// @param face Набор цветов, задающих эту грань
+/// @param x Координата х, от которой начинается закраска
+/// @param y Координата y, от которой начинается закраска
+/// @param cell_size Параметр, определяющий размер одной клетки
 void View::print_face(vector <vector<Colors>> face, int x, int y, int cell_size) {
     int n = face.size();
     int color = 0;
@@ -76,6 +81,7 @@ void View::print_face(vector <vector<Colors>> face, int x, int y, int cell_size)
     }
 }
 
+/// @brief Определяет набор цветов, в которые покрашены грани кубика
 vector<vector<vector<Colors>>> View::find_faces(Cube cube) {
 	vector <vector <vector <Colors>>> faces;
     vector <int> direction = main_direction;
@@ -102,6 +108,8 @@ vector<vector<vector<Colors>>> View::find_faces(Cube cube) {
 	return faces;
 }
 
+/// @brief Отрисовывает развертку кубика в консоли
+/// @param n Строка, с которой начнется отрисовка
 void View::print_cube(Cube cube, int n) {
     int x = 0, y = 1, size = cube.size();
     if (n > 0) { y += n; }
@@ -120,10 +128,12 @@ void View::print_cube(Cube cube, int n) {
     cout << endl;
 }
 
+/// @brief Обновляет цвета, в которые покрашен кубик на new_colors
 void View::set_colors(std::map<Colors, int> new_colors) {
     cube_colors = new_colors;
 }
 
+/// @brief Изменяет флаг show_help, который показывает, нужно ли выводить подсказки для управления игрой
 void View::set_help(bool help) {
     show_help = help;
 }
@@ -159,6 +169,7 @@ int ScalableWindow::find_scale(int size) {
 
 /// @brief Выводит на экран развертку кубика
 /// @param cube Кубик, который нужно отрисовать
+/// @param n Линия, с которой начинается отрисовка
 void ScalableWindow::print_cube(Cube cube, int n) {
 int x = 0, y = 1, size = cube.size();
     if (n > 0) { y += n; }
@@ -176,4 +187,3 @@ int x = 0, y = 1, size = cube.size();
     print_face(faces[4], 2 + width, y + height * 2, cell_size);
     cout << endl;
 }
-

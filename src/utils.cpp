@@ -2,7 +2,7 @@
 
 using std::cout, std::cerr, std::endl, std::cos, std::sin, std::string;
 
-
+/// @brief Запускает таймер
 void Timer::start() {
     if (!running) {
         start_time = std::chrono::high_resolution_clock::now();
@@ -10,6 +10,7 @@ void Timer::start() {
     }
 }
 
+/// @brief Останавливает таймер, если флаг print = true, то выводит значение таймера в консоль
 void Timer::stop(bool print) {
     if (running) {
         end_time = std::chrono::high_resolution_clock::now();

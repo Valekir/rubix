@@ -13,6 +13,7 @@ std::ostream& operator<<(std::ostream& out, Piece p) {
     return out;
 }
 
+/// @brief Конструктор по умолчанию, создает пустой объект, у которого все грани покращены в черный цвет
 Piece::Piece() {
     for (int i = 0; i < 3; i++) {
         color.push_back(Colors::K);
@@ -95,6 +96,11 @@ Cube::Cube(int n) {
     }
 }
 
+/// @brief Конструктор кубика для чтения кубика из сохранения
+/// @param n Размер кубика
+/// @param new_angles Набор векторов, задающих направление в пространстве для всех элементов
+/// @param new_colors Набор сочетаний цветов для всех элементов
+/// Создает кубик не в изначальном состоянии (в котором все грани собраны), а в заданном набором параметров new_angles и new_colors
 Cube::Cube(int n, vector<vector<int>> new_angles, vector<vector<Colors>> new_colors) {
     dimension = n;
     vector <int> angles;
@@ -296,7 +302,7 @@ void Cube::rotate_y_axis(char face, int start_offset) {
         }
     }
 
-    int k = n/2;            // ОЧЕНЬ ВАЖНАЯ ШТУКА без нее ломаются большие кубы
+    int k = n/2;            // ОЧЕНЬ ВАЖНО. без этого ломаются большие кубы
     if (n > 3) k -= 1;
     if (face == 'U' || face == 'd') {
         for (int i = 0; i < n; i++) {
@@ -358,6 +364,9 @@ void Cube::rotate_z_axis(char face, int start_offset) {
     }
 }
 
+/// @brief Проверка того, собран ли кубик
+/// @return True, если все грани правильно собраны, иначе false 
+/// Проверяет по очереди все грани на то, что все цвета одинаковые
 bool Cube::is_solved() {
     vector <vector <Colors>> face;
     vector <int> main_direction = {0, 1, 0};
