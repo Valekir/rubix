@@ -53,7 +53,8 @@ class View {
    vector<vector<vector<Colors>>> find_faces(Cube cube);
 };
 
-
+/// @brief Класс, ответственный за отрисовку кубика в окне консоли
+/// @details Является наследником View. Изменяет размер развертки кубика (1 клетка может занимать не только 1х1, но и 2х2, 3х3 и больше) в зависимости от размера окна консоли 
 class ScalableWindow : public View {
  private:
     int scale_factor = 3;
