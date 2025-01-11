@@ -38,3 +38,4 @@ This game also implements some additional features such as:
 - Unix
 - Ncurses
 - Git
+- Cmake 3.10 or higher
