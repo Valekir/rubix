@@ -3,23 +3,24 @@
 Rubix is a C++ implementation of a Rubik’s Cube simulator. This project aims to provide a comprehensive tool for Rubik’s Cube enthusiasts, puzzle solvers, and anyone interested in the algorithmic aspects of solving complex puzzles. 
 
 ## Demo
-<img src='https://github.com/Valekir/rubix/blob/master/other/example.gif'/>
+<img src='https://github.com/Valekir/rubix/other/demo.gif'/>
 
 ## Installation
 ````
-git clone https://https://github.com/Valekir/rubix
+git clone https://github.com/Valekir/rubix
 cd rubix
-mkdir build
+mkdir -p build
 cd build
 cmake ..
 make
+./main
 ````
 
 ## Features
 
 This game also implements some additional features such as:
 
-1. Storage of user data, possibility of saving game and continuing it later;
+1. Ability to save the game and continue from the same position;
 
 2. Customizable cube scramble - you can choose number of moves for scramble (difficulty);
 
@@ -37,4 +38,3 @@ This game also implements some additional features such as:
 - Unix
 - Ncurses
 - Git
-- Cmake
