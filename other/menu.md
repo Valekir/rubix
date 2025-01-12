@@ -17,9 +17,9 @@ This menu allows you to change the cube however you want. You can:
 + Change difficulty (number of steps in scromble) from 1 to 20
 + Toggle cube scaling: size of sweep adjusts to size of console window and scales to the maximum size. By default each cell on cube is 1x1
 + Toggle timer: if on it will start automatically when player does first move after scramble. It stops when the cube is solved and shows time spent to solve
-+ Change colors of each side (colors are 8-bit, you can check all the colors at: <img src='https://user-images.githubusercontent.com/995050/47952855-ecb12480-df75-11e8-89d4-ac26c50e80b9.png?raw=true'>)
++ Change colors of each side. Colors are 8-bit, here is table that shows every color:
+ <img src='https://user-images.githubusercontent.com/995050/47952855-ecb12480-df75-11e8-89d4-ac26c50e80b9.png?raw=true'>
 
-Also you can reset to default settings by simply pressing 'r'. 
 All the settings are stored in the 'saves/game.config'
 
 <img src='https://github.com/Valekir/rubix/blob/master/other/menu.gif?raw=true' />
