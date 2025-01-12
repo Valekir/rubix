@@ -10,6 +10,10 @@
 #include <fstream>
 #include <sstream>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #ifndef M_PI_2
 float M_PI_2 = 1.57079632679489661923;
 #endif

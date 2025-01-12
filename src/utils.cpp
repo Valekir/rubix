@@ -2,7 +2,7 @@
 
 using std::cout, std::cerr, std::endl, std::cos, std::sin, std::string;
 
-/// @brief Запускает таймер
+
 void Timer::start() {
     if (!running) {
         start_time = std::chrono::high_resolution_clock::now();
@@ -10,7 +10,6 @@ void Timer::start() {
     }
 }
 
-/// @brief Останавливает таймер, если флаг print = true, то выводит значение таймера в консоль
 void Timer::stop(bool print) {
     if (running) {
         end_time = std::chrono::high_resolution_clock::now();
@@ -189,9 +188,16 @@ std::unordered_map<std::string, std::string> load_config(const std::string& file
 /// @param filename Название конфиг файла 
 /// @param updates Список измененных настроек
 void update_config(const std::string& filename, const std::unordered_map<std::string, std::string>& updates) {
+	struct stat st = {0};
+
+	if (stat("saves", &st) == -1) {
+    	mkdir("saves", 0700);
+	}
+    
     auto config = load_config(filename);
     std::string tempFilename = filename + ".tmp";
-    std::ofstream tempFile(tempFilename, std::ios::out);
+    std::ofstream tempFile(tempFilename, std::ios::app);
+    
     
     if (!tempFile.is_open()) {
         std::cerr << "Failed to create temporary file" << tempFilename << std::endl;

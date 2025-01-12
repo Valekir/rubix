@@ -19,9 +19,9 @@ add_library(rubix_lib STATIC ${SOURCE_FILES})
 
 target_include_directories(rubix_lib PUBLIC ${INCLUDE_DIR})
 
-add_executable(main ${SOURCE_DIR}/main.cpp)
+add_executable(rubix ${SOURCE_DIR}/main.cpp)
 
-target_link_libraries(main rubix_lib)
+target_link_libraries(rubix rubix_lib)
 
 find_package(Curses REQUIRED)
-target_link_libraries(main ${CURSES_LIBRARIES})
+target_link_libraries(rubix ${CURSES_LIBRARIES})
