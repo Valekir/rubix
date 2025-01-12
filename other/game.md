@@ -22,12 +22,9 @@ During the game, the user can save or load the session, as well as go to the men
 + E (equator): the middle layer parallel to the U & D faces.
 + S (side): the middle layer parallel to the F & B faces.
 
-The letter means turning a single turn, (90 degrees), clockwise, the corresponding face.\
-
-Letter followed by an apostrophe mark (') means turning the corresponding face a single turn, (90 degrees), counter-clockwise. (ex. R' U')\
-
-Letter followed by "2" means turning the corresponding face 2 single turns (180 degrees) (ex. R2 = R R)\
-
+The letter means turning a single turn, (90 degrees), clockwise, the corresponding face.   
+Letter followed by an apostrophe mark (') means turning the corresponding face a single turn, (90 degrees), counter-clockwise. (ex. R' U')   
+Letter followed by "2" means turning the corresponding face 2 single turns (180 degrees) (ex. R2 = R R)   
 Command can be written with or without delimitters
 ex. RURU = R U R U = R_U_R_U
 
