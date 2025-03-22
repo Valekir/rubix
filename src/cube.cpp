@@ -397,3 +397,8 @@ bool Cube::is_solved() {
     if (!is_equal(face)) return false;
     return true;
 }
+
+Colors Cube::get_center_color(std::vector<int> direction) {
+    auto face = face_to_print(direction);
+    return face[1][1]; // Центральный элемент для 3x3
+}

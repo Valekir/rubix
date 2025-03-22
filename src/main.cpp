@@ -2,6 +2,21 @@
 #include "menu.hpp"
 #include <csignal>
 
+#include "solver.hpp"
+#include "cube.hpp"
+#include <iostream>
+
+int main() {
+    Cube cube(3);
+
+    cube.rotate_side('U');
+    cube.rotate_side('R');
+    cube.rotate_side('d');
+    cube.rotate_side('l');
+    cube.rotate_side('u');
+    cube.rotate_side('F');
+}
+
 
 void signal_handler(int sign) {
     endwin();
@@ -9,7 +24,7 @@ void signal_handler(int sign) {
     exit(0);
 }
 
-int main() {
+int game() {
     Controller _main;
 
     initscr();               // Инициализация ncurses
