@@ -135,7 +135,7 @@ pair<int, string> ida_search(Node node, int threshold, char last_move) {
 
 // Основная функция решения
 string solve_cube(Cube cube) {
-    int threshold = CubeUtils::heuristic(cube);
+    int threshold = heuristic(cube);
     
     while (true) {
         Node start_node(cube, "", 0);
