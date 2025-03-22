@@ -10,9 +10,9 @@ file(GLOB SOURCE_FILES
 	src/controller.cpp
 	src/cube.cpp
 	src/menu.cpp
-	src/test.cpp
 	src/utils.cpp
 	src/view.cpp
+	src/solver.cpp
 )
 
 add_library(rubix_lib STATIC ${SOURCE_FILES})
