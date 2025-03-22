@@ -41,9 +41,11 @@ class Cube {
     explicit Cube(int);
     Cube();
     
-    Colors Cube::get_center_color(std::vector<int> direction);
-    int size() { return dimension; }
+    Colors get_center_color(std::vector<int> direction);
     vector <vector <Colors>> face_to_print(vector <int> direction);
+    vector <vector <Piece>> get_parts() { return parts; }
+
+    int size() { return dimension; }
 
     void rotate_side(char side);
     void change_direction(char dir);
