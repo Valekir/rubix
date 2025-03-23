@@ -4,8 +4,6 @@ using std::string, std::pair;
 
 
 
-
-// Вспомогательные функции
 std::string vector_to_key(std::vector<int> vec) {
     return std::to_string(vec[0]) + "," + std::to_string(vec[1]) + "," + std::to_string(vec[2]);
 }
@@ -83,8 +81,6 @@ int heuristic(Cube cube) {
     return (h + 3) / 4; // Округление вверх
 }
 
-
-
 // Рекурсивный поиск с ограничением глубины
 pair<int, string> ida_search(Node node, int threshold, char last_move) {
     // Проверка на решенное состояние
@@ -130,8 +126,6 @@ pair<int, string> ida_search(Node node, int threshold, char last_move) {
     
     return { min_threshold, "" };
 }
-
-
 
 // Основная функция решения
 string solve_cube(Cube cube) {
