@@ -22,9 +22,12 @@ int heuristic(const SCube& cube) {
 
     int h = 0;
     const auto& parts = cube.getParts();
+    const int n = cube.size();
 
-    for (const auto& layer : parts) {
-        for (const auto& piece : layer) {
+    for (int layer = 0; layer < n; layer++) {
+        for (int i = 0; i < n*n; i++) {
+            SPiece piece = parts[layer][i];
+            
             if (piece.getType() == 'C') {
                 const auto& colors = piece.getColor();
                 const auto& pos = piece.getPosition();

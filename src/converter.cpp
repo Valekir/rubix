@@ -13,7 +13,7 @@ SPiece::SPiece() {
 SPiece::SPiece(std::array <Colors, 3> _color, std::array <int, 3> _position, char _type) {
     for (int i = 0; i < 3; i++) {
         color[i]  = _color[i];
-        position[i] = position[i];
+        position[i] = _position[i];
     }
     type = _type;
 }
@@ -32,7 +32,7 @@ void SPiece::rotatePiece(char dir) {
 
 //____________________________________________SCube________________________________________________
 
-SCube::SCube(Cube& cube) {
+SCube::SCube(Cube cube) {
 	dimension = cube.size();
 
 	if (dimension > MAX_SIZE) {
@@ -42,47 +42,109 @@ SCube::SCube(Cube& cube) {
 	auto cube_parts = cube.get_parts();
 
 	for (int layer = 0; layer < dimension; ++layer) {
-		for (int pos = 0; pos < dimension * dimension; ++pos) {
-			auto piece = cube_parts[layer][pos];
+		for (int i = 0; i < dimension * dimension; ++i) {
+			auto piece = cube_parts[layer][i];
+			
+			
+	        auto colors = piece.get_color();
+            auto pos = piece.get_pos();
+            auto type = piece.get_type();
 
-			parts[layer][pos] = SPiece(
-				{piece.get_color()[0], piece.get_color()[1], piece.get_color()[2]},
-				{piece.get_pos()[0], piece.get_pos()[1], piece.get_pos()[2]},
-				piece.get_type()
+           	parts[layer][i] = SPiece(
+				{colors[0], colors[1], colors[2]},
+				{pos[0], pos[1], pos[2]},
+				type
 			);
-		}
+		}		
 	}
 }
 
 Colors SCube::getCenterColor(std::array<int, 3> direction) const {
    	int layer = 0;
     int pos = 0;
+    int dir = 0;
+    if (direction[0] != 0) dir = 0;
+    if (direction[1] != 0) dir = 1;
+    if (direction[2] != 0) dir = 2;
 
     if (direction[0] == 1) {       		// Правая грань
-        layer = dimension - 1;
-        pos = (dimension * dimension) / 2;
+        layer = 1;
+        pos = 5;
     } else if (direction[0] == -1) { 	// Левая грань
-        layer = 0;
-        pos = (dimension * dimension) / 2;
+        layer = 1;
+        pos = 3;
     } else if (direction[1] == 1) {  	// Верхняя грань
-        layer = dimension / 2;
-        pos = dimension * (dimension - 1) + dimension / 2;
+        layer = 0;
+        pos = 5;
     } else if (direction[1] == -1) { 	// Нижняя грань
-        layer = dimension / 2;
-        pos = dimension / 2;
+        layer = 2;
+        pos = 5;
     } else if (direction[2] == 1) {  	// Передняя грань
-        layer = dimension / 2;
-        pos = (dimension * dimension) - dimension / 2 - 1;
+        layer = 1;
+        pos = 7;
     } else if (direction[2] == -1) { 	// Задняя грань
-        layer = dimension / 2;
-        pos = dimension / 2;
+        layer = 1;
+        pos = 1;
+    }
+    
+    return parts[layer][pos].getColor()[dir];
+}
+
+
+//___________________________________________Is solved______________________________________________
+
+
+
+// Вспомогательная функция для получения элементов грани
+std::vector<SPiece> SCube::getFaceElements(const std::array<int, 3>& dir) const {
+    std::vector<SPiece> elements;
+    int axis = -1;
+    int value = 0;
+
+    // Определяем ось и значение направления
+    for (int i = 0; i < 3; ++i) {
+        if (dir[i] != 0) {
+            axis = i;
+            value = dir[i];
+            break;
+        }
     }
 
-    return parts[layer][pos].getColor()[1]; // Центральный цвет
+    // Собираем элементы для каждой грани
+    switch (axis) {
+        case 0: {
+            const int layer = (value > 0) ? dimension - 1 : 0;
+            for (int x = 0; x < dimension; ++x) {
+                for (int y = 0; y < dimension; ++y) {
+                    elements.push_back(parts[x][y * dimension + layer]);
+                }
+            }
+            break;
+        }
+        case 1: {
+            const int layer = (value > 0) ? 0 : dimension - 1;
+            for (int y = 0; y < dimension; ++y) {
+                for (int z = 0; z < dimension; ++z) {
+                    elements.push_back(parts[layer][y * dimension + z]);
+                }
+            }
+            break;
+        }
+        case 2: {
+            const int layer = (value > 0) ? dimension - 1 : 0;
+            for (int x = 0; x < dimension; ++x) {
+                for (int z = 0; z < dimension; ++z) {
+                    elements.push_back(parts[x][layer * dimension + z]);
+                }
+            }
+            break;
+        }
+    }
+
+    return elements;
 }
 
 bool SCube::isSolved() {
-    // Список всех направлений граней
     constexpr std::array<std::array<int, 3>, 6> directions = {{
         {0, 1, 0},  // Верх
         {0, -1, 0}, // Низ
@@ -93,42 +155,25 @@ bool SCube::isSolved() {
     }};
 
     for (const auto& dir : directions) {
-        // Получаем цвет центра текущей грани
-        const Colors center = getCenterColor(dir);
+        const Colors center_color = getCenterColor(dir);
+        const auto face_elements = getFaceElements(dir);
         
-        // Определяем индекс цвета для направления
-        int axis = 0;
-        while (axis < 3 && dir[axis] == 0) ++axis;
-        const int color_idx = axis;
+        int index = 0;
+        if (dir[1] != 0) index = 1;
+        if (dir[2] != 0) index = 2;
+        
+        
+        for (const auto& piece : face_elements) {
+            auto colors = piece.getColor();
 
-        // Проверяем элементы грани
-        if (dir[1] != 0) { // Верх/Низ
-            const int layer = (dir[1] > 0) ? 0 : dimension-1;
-            for (const auto& piece : parts[layer]) {
-                if (piece.getColor()[color_idx] != center) return false;
-            }
-        } 
-        else if (dir[0] != 0) { // Право/Лево
-            const int layer = (dir[0] > 0) ? dimension-1 : 0;
-            const int offset = (dir[0] > 0) ? dimension-1 : 0;
-            for (int i = 0; i < dimension; ++i) {
-                const int pos = i * dimension + offset;
-                if (parts[layer][pos].getColor()[color_idx] != center) return false;
-            }
-        } 
-        else { // Перед/Зад
-            const int start = (dir[2] > 0) ? dimension*(dimension-1) : 0;
-            const int end = start + dimension;
-            for (int layer = 0; layer < dimension; ++layer) {
-                for (int pos = start; pos < end; ++pos) {
-                    if (parts[layer][pos].getColor()[color_idx] != center) return false;
-                }
-            }
+                if (colors[index] != center_color) return false;
+
         }
     }
-    
     return true;
 }
+
+
 
 //_____________________________________Rotating cube sides_________________________________________
 void SCube::rotateSide(char side) {

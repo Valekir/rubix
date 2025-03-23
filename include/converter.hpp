@@ -23,18 +23,19 @@ class SPiece {
 
 class SCube {
   private:
-	static const int MAX_SIZE = 5;
+	static const int MAX_SIZE = 3;
 	int dimension;
-	std::array<std::array<SPiece, MAX_SIZE>, MAX_SIZE> parts;
+	SPiece parts[3][9];
 	
 	void rotateX(char face, int start_offset=0);
 	void rotateY(char face, int start_offset=0);
 	void rotateZ(char face, int start_offset=0);
   public:
-	SCube(Cube&);
+	SCube(Cube);
 	Colors getCenterColor(std::array<int, 3> direction) const;
+	std::vector<SPiece> getFaceElements(const std::array<int, 3>& dir) const;
 
-	std::array<std::array<SPiece, MAX_SIZE>, MAX_SIZE> getParts() const { return parts; }
+	auto getParts() const { return parts; }
 	int size() const { return dimension; }
 
 	bool isSolved();

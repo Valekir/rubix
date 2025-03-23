@@ -1,18 +1,5 @@
 #include "cube.hpp"
 
-std::ostream& operator<<(std::ostream& out, Piece p) {
-    out << "Type: " << p.get_type();
-    out << "\tColors: ";
-    for (auto i : p.get_color()) {
-        out << (int) i << ' ';
-    }
-    out << "\tPos: ";
-    for (auto i : p.get_pos()) {
-        out << i;
-    }
-    return out;
-}
-
 /// @brief Конструктор по умолчанию, создает пустой объект, у которого все грани покращены в черный цвет
 Piece::Piece() {
     for (int i = 0; i < 3; i++) {
