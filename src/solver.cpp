@@ -1,23 +1,26 @@
 #include "solver.hpp"
+#include "converter.cpp"
 
-using std::string, std::pair;
+using std::string, std::pair, std::vector, std::map;
+
+std::unordered_set visited;
 
 
-
-std::string vector_to_key(std::vector<int> vec) {
+string vector_to_key(vector<int> vec) {
     return std::to_string(vec[0]) + "," + std::to_string(vec[1]) + "," + std::to_string(vec[2]);
 }
 
 int heuristic(Cube cube) {
-    std::vector<std::vector<int>> main_directions = {
+    static vector<vector<int>> main_directions = {
         {0,1,0}, {0,-1,0}, {1,0,0}, 
         {-1,0,0}, {0,0,1}, {0,0,-1}
     };
-
-    // Собираем цвета центров
-    std::map<std::string, Colors> center_colors;
-    for (auto dir : main_directions) {
-        center_colors[vector_to_key(dir)] = cube.get_center_color(dir);
+    static map<string, Colors> center_colors;
+    
+    if (center_colors.empty()) {
+        for (auto dir : main_directions) {
+            center_colors[vector_to_key(dir)] = cube.get_center_color(dir);
+        }
     }
 
     int h = 0;
@@ -32,10 +35,10 @@ int heuristic(Cube cube) {
             auto pos = piece.get_pos();
             
             // Определение связанных граней
-            std::vector<std::string> faces;
+            vector<string> faces;
             for (int i = 0; i < 3; ++i) {
                 if (pos[i] != 0) {
-                    std::vector<int> dir(3, 0);
+                    vector<int> dir(3, 0);
                     dir[i] = pos[i];
                     faces.push_back(vector_to_key(dir));
                 }
@@ -58,10 +61,10 @@ int heuristic(Cube cube) {
             auto colors = piece.get_color();
             auto pos = piece.get_pos();
             
-            std::vector<std::string> faces;
+            vector<string> faces;
             for (int i = 0; i < 3; ++i) {
                 if (pos[i] != 0) {
-                    std::vector<int> dir(3, 0);
+                    vector<int> dir(3, 0);
                     dir[i] = pos[i];
                     faces.push_back(vector_to_key(dir));
                 }
@@ -83,12 +86,10 @@ int heuristic(Cube cube) {
 
 // Рекурсивный поиск с ограничением глубины
 pair<int, string> ida_search(Node node, int threshold, char last_move) {
-    // Проверка на решенное состояние
     if (node.cube.is_solved()) {
         return { -1, node.moves };
     }
     
-    // Проверка превышения порога стоимости
     if (node.cost > threshold) {
         return { node.cost, "" };
     }
@@ -96,21 +97,16 @@ pair<int, string> ida_search(Node node, int threshold, char last_move) {
     int min_threshold = INT_MAX;
     string solution;
 
-    // Перебор всех возможных ходов
     for (char move : ALL_MOVES) {
-        // Пропуск обратного предыдущему ходу
         if (last_move != 0 && INVERSE_MOVE.at(last_move) == move) {
             continue;
         }
 
-        // Применение хода к кубику
         Cube new_cube = node.cube;
         new_cube.rotate_side(move);
         
-        // Создание нового узла
-        Node child(new_cube, node.moves + move, node.moves.size() + 1);
+        Node child(std::move(new_cube), node.moves + move, node.moves.size() + 1);
         
-        // Рекурсивный поиск
         auto result = ida_search(child, threshold, move);
         
         // Проверка найденного решения
@@ -138,6 +134,7 @@ string solve_cube(Cube cube) {
         if (result.first == -1) {
             return result.second;
         }
+
         if (threshold >= 40) { // Ограничение максимальной глубины
             return "Solution not found within limit";
         }

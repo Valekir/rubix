@@ -135,6 +135,30 @@ vector <int> rotate_vector(vector<int> vec, char dir) {
     return vec;
 }
 
+// Поворачивает единичный вектор по осям xyz, в соответствии с командой. 
+std::array <int, 3> rotateArray(std::array<int, 3> arr, char dir) {
+    int x = arr[0], y = arr[1], z = arr[2];
+    double angle = tolower(dir) == dir ? M_PI_2 : -M_PI_2;
+    int c = cos(angle);
+    int s = sin(angle);
+
+    if (dir == 'x' || dir == 'X') {
+        y = arr[1]*c - arr[2]*s;
+        z = arr[1]*s + arr[2]*c;
+    } else if (dir == 'y' || dir == 'Y') {
+        x = arr[0]*c - arr[2]*s;
+        z = arr[0]*s + arr[2]*c;
+    } else if (dir == 'z' || dir == 'Z') {
+        x = arr[0]*c - arr[1]*s;
+        y = arr[0]*s + arr[1]*c;
+    } else {
+        cerr << "Something went wrong!\n";
+        return arr;
+    }
+
+    return {x, y, z};
+}
+
 //______________________________________________Config___________________________________________________
 
 

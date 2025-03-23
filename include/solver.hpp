@@ -1,9 +1,10 @@
 #pragma once
 #include "cube.hpp"
 #include <map>
-#include <utility>
 #include <string>
 #include <vector>
+#include <unordered_set>
+#include <utility>
 #include <climits>
 
 
@@ -15,8 +16,7 @@ struct Node {
     std::string moves;
     int cost;
     
-    Node(Cube c, std::string m, int g) 
-        : cube(c), moves(m), cost(g + heuristic(c)) {}
+    Node(Cube c, std::string m, int g) : cube(c), moves(m), cost(g + heuristic(c)) {}
 };
 
 // Таблица обратных ходов
