@@ -15,6 +15,10 @@ int main() {
     cube.rotate_side('l');
     cube.rotate_side('u');
     cube.rotate_side('F');
+
+    std::cout << solve_cube(cube) << std::endl;
+
+    return 0;
 }
 
 
