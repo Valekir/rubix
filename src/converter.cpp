@@ -2,7 +2,6 @@
 #include "utils.hpp"
 
 
-
 //____________________________________________SPiece_______________________________________________
 
 SPiece::SPiece() {
@@ -129,6 +128,148 @@ bool SCube::isSolved() {
     }
     
     return true;
+}
+
+//_____________________________________Rotating cube sides_________________________________________
+void SCube::rotate_side(char side) {
+    int n = dimension;
+    char t_side = tolower(side);
+    
+    if (t_side == 'f' || t_side == 'b') {
+        rotateZ(side);
+    } else if (t_side == 's') {
+        char t_dir = side == 's' ? 'F': 'f';
+        for (int i = 1; i <= n-2; i++) {
+            rotateZ(t_dir, i);
+        }
+    } else if (t_side == 'r' || t_side == 'l') {
+        rotateX(side);
+    } else if (t_side == 'm') {
+        char t_dir = side == 'm' ? 'r': 'R';
+        for (int i = 1; i <= n-2; i++) {
+            rotateX(t_dir, i);
+        }
+    } else if (t_side == 'u' || t_side == 'd') {
+        rotateY(side);
+    } else if (t_side == 'e') {
+        char t_dir = side == 'e' ? 'u': 'U';
+        for (int i = 1; i <= n-2; i++) {
+            rotateY(t_dir, i);
+        }
+    }
+}
+
+void SCube::rotateX(char face, int start_offset) {
+    int n = dimension, offset = 0, k = 0;
+
+    if (face == 'r' || face == 'R') {
+        offset = n - 1 - start_offset;
+    } else {
+        offset = 0;
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
+            swap(parts[i][n*j + offset], parts[j][n*i + offset]);
+        }
+    }
+
+    if (face == 'r' || face == 'L') {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n/2; j++) {
+                swap(parts[i][n*j + offset], parts[i][(n - 1 - j) * n + offset]);
+            }
+        }
+    } else if (face == 'R' || face == 'l') {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n/2; j++) {
+                swap(parts[j][(n-i-1)*n + offset], parts[n - 1 - j][(n-i-1)*n + offset]);
+            }
+        }
+    }
+
+    char dir = (face == 'R' || face == 'l') ? 'X' : 'x';
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            parts[i][n*j + offset].rotate_piece(dir);
+        }
+    }
+}
+
+void SCube::rotateY(char face, int start_offset) {
+    int n = dimension;
+    int slice = 0;
+    int so = start_offset;
+
+    if (tolower(face) == 'u') {
+        slice = 0;
+    } else if (tolower(face) == 'd') {
+        slice = n - 1;
+    } 
+
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
+            swap(parts[so+slice][j*n + i], parts[so+slice][i*n + j]);
+        }
+    }
+
+    int k = n/2;            // ОЧЕНЬ ВАЖНО. без этого ломаются большие кубы
+    if (n > 3) k -= 1;
+    if (face == 'U' || face == 'd') {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < k; j++) {
+                swap(parts[so+slice][i*n + j], parts[so+slice][i*n + (n - 1 - j)]);
+            }
+        }
+    } else if (face == 'u' || face == 'D') {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < k; j++) {
+                swap(parts[so+slice][i], parts[so+slice][(n - 1 - j) * n + i]);
+            }
+        }
+    }
+
+    char dir = (face == 'U' || face == 'd') ? 'Y' : 'y';
+    for (int i = 0; i < n*n; i++) {
+        parts[so+slice][i].rotate_piece(dir);
+    }
+}
+
+void SCube::rotateZ(char face, int start_offset) {
+    int n = dimension, offset = 0;
+
+    if (tolower(face) == 'f') {
+        offset = n*n - n - n*start_offset;
+    } else if (tolower(face) == 'b') {
+        offset = 0 + n*start_offset;
+    }
+
+    for (int i = 0; i < n; i++) {
+         for (int j = i + 1; j < n; j++) {
+             swap(parts[i][j + offset], parts[j][i + offset]);
+         }
+    }
+
+    if (face == 'f' || face == 'B')  {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n/2; j++) {
+                swap(parts[j][i + offset], parts[n - j - 1][i + offset]);
+            }
+        }
+    } else if (face == 'F' || face == 'b') {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n/2; j++) {
+                swap(parts[i][offset + j], parts[i][offset + n - 1 - j]);
+            }
+        }
+    }
+
+    char dir = (face == 'F' || face == 'b') ? 'z' : 'Z';
+    for (int i = 0; i < n; i++) {
+        for (int j = offset; j < offset + n; j++) {
+            parts[i][j].rotate_piece(dir);
+        }
+    }
 }
 
 //___________________________________________Hashing_______________________________________________

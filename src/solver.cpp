@@ -1,100 +1,88 @@
 #include "solver.hpp"
 #include "converter.cpp"
 
-using std::string, std::pair, std::vector, std::map;
+using std::string, std::pair, std::vector, std::map, std::array;
 
-std::unordered_set visited;
+static std::unordered_set<size_t> visited_states;
 
 
 string vector_to_key(vector<int> vec) {
     return std::to_string(vec[0]) + "," + std::to_string(vec[1]) + "," + std::to_string(vec[2]);
 }
 
-int heuristic(Cube cube) {
-    static vector<vector<int>> main_directions = {
+int heuristic(const SCube& cube) {
+    static const vector<array<int, 3>> MAIN_DIRECTIONS = {
         {0,1,0}, {0,-1,0}, {1,0,0}, 
         {-1,0,0}, {0,0,1}, {0,0,-1}
     };
-    static map<string, Colors> center_colors;
     
+    static map<array<int, 3>, Colors> center_colors;
     if (center_colors.empty()) {
-        for (auto dir : main_directions) {
-            center_colors[vector_to_key(dir)] = cube.get_center_color(dir);
+        for (const auto& dir : MAIN_DIRECTIONS) {
+            center_colors[dir] = cube.getCenterColor(dir);
         }
     }
 
     int h = 0;
-    auto parts = cube.get_parts();
+    const auto& parts = cube.getParts();
 
-    // Анализ угловых элементов
-    for (auto layer : parts) {
-        for (auto piece : layer) {
-            if (piece.get_type() != 'C') continue;
-
-            auto colors = piece.get_color();
-            auto pos = piece.get_pos();
-            
-            // Определение связанных граней
-            vector<string> faces;
-            for (int i = 0; i < 3; ++i) {
-                if (pos[i] != 0) {
-                    vector<int> dir(3, 0);
-                    dir[i] = pos[i];
-                    faces.push_back(vector_to_key(dir));
+    for (const auto& layer : parts) {
+        for (const auto& piece : layer) {
+            if (piece.getType() == 'C') {
+                const auto& colors = piece.getColor();
+                const auto& pos = piece.getPosition();
+                
+                for (int i = 0; i < 3; ++i) {
+                    if (pos[i] != 0) {
+                        array<int, 3> dir = {0};
+                        dir[i] = pos[i];
+                        if (std::find(colors.begin(), colors.end(), center_colors[dir]) == colors.end()) {
+                            h += 2;
+                        }
+                    }
                 }
             }
-
-            // Проверка соответствия цветов
-            for (auto f : faces) {
-                if (std::find(colors.begin(), colors.end(), center_colors[f]) == colors.end()) {
-                    h += 2;
+            else if (piece.getType() == 'E') {
+                const auto& colors = piece.getColor();
+                const auto& pos = piece.getPosition();
+                bool correct = true;
+                
+                for (int i = 0; i < 3; ++i) {
+                    if (pos[i] != 0) {
+                        array<int, 3> dir = {0};
+                        dir[i] = pos[i];
+                        if (std::find(colors.begin(), colors.end(), center_colors[dir]) == colors.end()) {
+                            correct = false;
+                            break;
+                        }
+                    }
                 }
+                
+                if (!correct) h += 1;
             }
         }
     }
 
-    // Анализ рёберных элементов
-    for (auto layer : parts) {
-        for (auto piece : layer) {
-            if (piece.get_type() != 'E') continue;
-
-            auto colors = piece.get_color();
-            auto pos = piece.get_pos();
-            
-            vector<string> faces;
-            for (int i = 0; i < 3; ++i) {
-                if (pos[i] != 0) {
-                    vector<int> dir(3, 0);
-                    dir[i] = pos[i];
-                    faces.push_back(vector_to_key(dir));
-                }
-            }
-
-            bool is_correct = true;
-            for (auto f : faces) {
-                if (std::find(colors.begin(), colors.end(), center_colors[f]) == colors.end()) {
-                    is_correct = false;
-                    break;
-                }
-            }
-            if (!is_correct) h += 1;
-        }
-    }
-
-    return (h + 3) / 4; // Округление вверх
+    return (h + 3) / 4;
 }
 
-// Рекурсивный поиск с ограничением глубины
+
 pair<int, string> ida_search(Node node, int threshold, char last_move) {
-    if (node.cube.is_solved()) {
-        return { -1, node.moves };
+    if (node.cube.isSolved()) {
+        return {-1, node.moves};
     }
-    
+
+    const size_t current_hash = node.cube.hash();
+    if (visited_states.count(current_hash)) {
+        return {INT_MAX, ""};
+    }
+    visited_states.insert(current_hash);
+
     if (node.cost > threshold) {
-        return { node.cost, "" };
+        return {node.cost, ""};
     }
-    
-    int min_threshold = INT_MAX;
+
+    int min_thresh = INT_MAX;
     string solution;
 
     for (char move : ALL_MOVES) {
@@ -102,42 +90,35 @@ pair<int, string> ida_search(Node node, int threshold, char last_move) {
             continue;
         }
 
-        Cube new_cube = node.cube;
+        SCube new_cube = node.cube;
         new_cube.rotate_side(move);
         
-        Node child(std::move(new_cube), node.moves + move, node.moves.size() + 1);
-        
-        auto result = ida_search(child, threshold, move);
-        
-        // Проверка найденного решения
-        if (result.first == -1) {
-            return result;
-        }
-        
-        // Обновление минимального порога
-        if (result.first < min_threshold) {
-            min_threshold = result.first;
-        }
+        Node child(new_cube, node.moves + move, node.moves.size() + 1);
+        auto result = ida_search(std::move(child), threshold, move);
+
+        if (result.first == -1) return result;
+        if (result.first < min_thresh) min_thresh = result.first;
     }
-    
-    return { min_threshold, "" };
+
+    visited_states.erase(current_hash);
+    return {min_thresh, ""};
 }
 
-// Основная функция решения
-string solve_cube(Cube cube) {
+string solve_cube(const SCube& cube) {
     int threshold = heuristic(cube);
-    
-    while (true) {
+    visited_states.clear();
+
+    for (int depth = 0; depth <= 40; ++depth) {
         Node start_node(cube, "", 0);
         auto result = ida_search(start_node, threshold, 0);
         
         if (result.first == -1) {
             return result.second;
         }
-
-        if (threshold >= 40) { // Ограничение максимальной глубины
-            return "Solution not found within limit";
-        }
+        
+        if (threshold >= 40) break;
         threshold = result.first;
     }
+    
+    return "Solution not found";
 }

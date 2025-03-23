@@ -221,26 +221,6 @@ void Cube::rotate_side(char side) {
     }
 }
 
-/// @brief Поворачивает кубик в пространстве
-/// @param dir Направление поворота
-void Cube::change_direction(char dir) {
-    if (tolower(dir) == 'x') {
-        char t_dir = dir == 'x' ? 'R' : 'r';
-        for (int i = 0; i < dimension; i++) {
-            rotate_x_axis(t_dir, i);
-        }
-    } else if(tolower(dir) == 'y') {
-        char t_dir = dir == 'y' ? 'U' : 'u';
-        for (int i = 0; i < dimension; i++) {
-            rotate_y_axis(t_dir, i);
-        } 
-    } else if(tolower(dir) == 'z') {
-        char t_dir = dir == 'z' ? 'F' : 'f';
-        for (int i = 0; i < dimension; i++) {
-            rotate_z_axis(t_dir, i);
-        } 
-    }
-}
 
 /// @brief Поворачивает сторону, направленную по оси х
 /// @param face Поворачиваемая сторона
@@ -324,6 +304,7 @@ void Cube::rotate_y_axis(char face, int start_offset) {
     }
 }
 
+
 /// @brief Поворачивает сторону, направленную по оси z
 /// @param face Поворачиваемая сторона
 /// @param start_offset Отступ от начала массива 
@@ -364,6 +345,29 @@ void Cube::rotate_z_axis(char face, int start_offset) {
     }
 }
 
+
+/// @brief Поворачивает кубик в пространстве
+/// @param dir Направление поворота
+void Cube::change_direction(char dir) {
+    if (tolower(dir) == 'x') {
+        char t_dir = dir == 'x' ? 'R' : 'r';
+        for (int i = 0; i < dimension; i++) {
+            rotate_x_axis(t_dir, i);
+        }
+    } else if(tolower(dir) == 'y') {
+        char t_dir = dir == 'y' ? 'U' : 'u';
+        for (int i = 0; i < dimension; i++) {
+            rotate_y_axis(t_dir, i);
+        } 
+    } else if(tolower(dir) == 'z') {
+        char t_dir = dir == 'z' ? 'F' : 'f';
+        for (int i = 0; i < dimension; i++) {
+            rotate_z_axis(t_dir, i);
+        } 
+    }
+}
+
+
 /// @brief Проверка того, собран ли кубик
 /// @return True, если все грани правильно собраны, иначе false 
 /// Проверяет по очереди все грани на то, что все цвета одинаковые
@@ -396,9 +400,4 @@ bool Cube::is_solved() {
     face = face_to_print(direction);				// задняя сторона
     if (!is_equal(face)) return false;
     return true;
-}
-
-Colors Cube::get_center_color(std::vector<int> direction) {
-    auto face = face_to_print(direction);
-    return face[1][1]; // Центральный элемент для 3x3
 }
