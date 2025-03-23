@@ -21,21 +21,21 @@ int heuristic(const SCube& cube) {
     }
 
     int h = 0;
-    const auto& parts = cube.getParts();
-    const int n = cube.size();
+    auto parts = cube.getParts();
+    int n = cube.size();
 
     for (int layer = 0; layer < n; layer++) {
         for (int i = 0; i < n*n; i++) {
             SPiece piece = parts[layer][i];
             
             if (piece.getType() == 'C') {
-                const auto& colors = piece.getColor();
-                const auto& pos = piece.getPosition();
+                auto colors = piece.getColor();
+                auto pos = piece.getPosition();
                 
                 for (int i = 0; i < 3; ++i) {
                     if (pos[i] != 0) {
-                        array<int, 3> dir = {0};
-                        dir[i] = pos[i];
+                        array<int, 3> dir = {0, 0, 0};
+                        dir[i] = (pos[i] > 0) ? 1 : -1;
                         if (find(colors.begin(), colors.end(), center_colors[dir]) == colors.end()) {
                             h += 2;
                         }
@@ -43,8 +43,8 @@ int heuristic(const SCube& cube) {
                 }
             }
             else if (piece.getType() == 'E') {
-                const auto& colors = piece.getColor();
-                const auto& pos = piece.getPosition();
+                auto colors = piece.getColor();
+                auto pos = piece.getPosition();
                 bool correct = true;
                 
                 for (int i = 0; i < 3; ++i) {
@@ -72,12 +72,6 @@ pair<int, string> ida_search(Node node, int threshold, char last_move) {
         return {-1, node.moves};
     }
 
-    const size_t current_hash = node.cube.hash();
-    if (visited_states.count(current_hash)) {
-        return {INT_MAX, ""};
-    }
-    visited_states.insert(current_hash);
-
     if (node.cost > threshold) {
         return {node.cost, ""};
     }
@@ -85,7 +79,7 @@ pair<int, string> ida_search(Node node, int threshold, char last_move) {
     int min_thresh = INT_MAX;
     string solution;
 
-    for (char move : ALL_MOVES) {
+    for (char move : {'R','L','F','B','U','D','r','l','f','b','u','d'}) {
         if (last_move != 0 && INVERSE_MOVE.at(last_move) == move) {
             continue;
         }
@@ -99,8 +93,7 @@ pair<int, string> ida_search(Node node, int threshold, char last_move) {
         if (result.first == -1) return result;
         if (result.first < min_thresh) min_thresh = result.first;
     }
-
-    visited_states.erase(current_hash);
+    
     return {min_thresh, ""};
 }
 
@@ -109,7 +102,7 @@ string solve_cube(const SCube& cube) {
     int threshold = heuristic(cube);
     visited_states.clear();
 
-    for (int depth = 0; depth <= 40; ++depth) {
+    for (int depth = 0; depth <= 40; depth++) {
         Node start_node(cube, "", 0);
         auto result = ida_search(start_node, threshold, 0);
         

@@ -63,7 +63,7 @@ Colors SCube::getCenterColor(std::array<int, 3> direction) const {
    	int layer = 0;
     int pos = 0;
     int dir = 0;
-    if (direction[0] != 0) dir = 0;
+
     if (direction[1] != 0) dir = 1;
     if (direction[2] != 0) dir = 2;
 

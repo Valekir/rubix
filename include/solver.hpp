@@ -1,5 +1,4 @@
 #pragma once
-#include "cube.hpp"
 #include "converter.hpp"
 #include <map>
 #include <string>
@@ -32,7 +31,7 @@ const std::map<char, char> INVERSE_MOVE = {
     {'D', 'd'}, {'d', 'D'}
 };
 
-const std::vector<char> ALL_MOVES = {'R','L','F','B','U','D','r','l','f','b','u','d'};
+const std::array<char, 12> ALL_MOVES = {'R','L','F','B','U','D','r','l','f','b','u','d'};
 
 
 std::string solve_cube(const SCube& cube);
