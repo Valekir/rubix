@@ -1,14 +1,11 @@
 #include "solver.hpp"
-#include "converter.cpp"
+#include <unordered_set>
+#include <algorithm>
 
-using std::string, std::pair, std::vector, std::map, std::array;
+using std::unordered_set, std::array, std::map, std::pair, std::string, std::find;
 
-static std::unordered_set<size_t> visited_states;
+static unordered_set<size_t> visited_states;
 
-
-string vector_to_key(vector<int> vec) {
-    return std::to_string(vec[0]) + "," + std::to_string(vec[1]) + "," + std::to_string(vec[2]);
-}
 
 int heuristic(const SCube& cube) {
     static const vector<array<int, 3>> MAIN_DIRECTIONS = {
@@ -36,7 +33,7 @@ int heuristic(const SCube& cube) {
                     if (pos[i] != 0) {
                         array<int, 3> dir = {0};
                         dir[i] = pos[i];
-                        if (std::find(colors.begin(), colors.end(), center_colors[dir]) == colors.end()) {
+                        if (find(colors.begin(), colors.end(), center_colors[dir]) == colors.end()) {
                             h += 2;
                         }
                     }
@@ -51,7 +48,7 @@ int heuristic(const SCube& cube) {
                     if (pos[i] != 0) {
                         array<int, 3> dir = {0};
                         dir[i] = pos[i];
-                        if (std::find(colors.begin(), colors.end(), center_colors[dir]) == colors.end()) {
+                        if (find(colors.begin(), colors.end(), center_colors[dir]) == colors.end()) {
                             correct = false;
                             break;
                         }
@@ -91,7 +88,7 @@ pair<int, string> ida_search(Node node, int threshold, char last_move) {
         }
 
         SCube new_cube = node.cube;
-        new_cube.rotate_side(move);
+        new_cube.rotateSide(move);
         
         Node child(new_cube, node.moves + move, node.moves.size() + 1);
         auto result = ida_search(std::move(child), threshold, move);
@@ -103,6 +100,7 @@ pair<int, string> ida_search(Node node, int threshold, char last_move) {
     visited_states.erase(current_hash);
     return {min_thresh, ""};
 }
+
 
 string solve_cube(const SCube& cube) {
     int threshold = heuristic(cube);

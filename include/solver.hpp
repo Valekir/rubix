@@ -18,7 +18,8 @@ struct Node {
     std::string moves;
     int cost;
     
-    Node(SCube c, std::string m, int g) : cube(c), moves(m), cost(g + heuristic(c)) {}
+    Node(SCube c, std::string m, int g) 
+        : cube(c), moves(m), cost(g + heuristic(c)) {}
 };
 
 // Таблица обратных ходов
@@ -31,10 +32,9 @@ const std::map<char, char> INVERSE_MOVE = {
     {'D', 'd'}, {'d', 'D'}
 };
 
-// Все базовые движения
 const std::vector<char> ALL_MOVES = {'R','L','F','B','U','D','r','l','f','b','u','d'};
 
 
-std::string solve_cube(Cube cube);
+std::string solve_cube(const SCube& cube);
 
 std::pair<int, std::string> ida_search(Node node, int threshold, char last_move);

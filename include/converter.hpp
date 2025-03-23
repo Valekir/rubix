@@ -2,7 +2,7 @@
 #include "utils.hpp"
 #include "cube.hpp"
 
-class SPiece : public Piece {
+class SPiece {
   protected:
 	std::array <Colors, 3> color;
 	std::array <int , 3> position;
@@ -21,7 +21,7 @@ class SPiece : public Piece {
 	size_t hash() const;
 };
 
-class SCube : public Cube {
+class SCube {
   private:
 	static const int MAX_SIZE = 5;
 	int dimension;
@@ -39,5 +39,5 @@ class SCube : public Cube {
 
 	bool isSolved();
 	size_t hash() const;
-	void rotate_side(char side);
+	void rotateSide(char side);
 };

@@ -131,7 +131,7 @@ bool SCube::isSolved() {
 }
 
 //_____________________________________Rotating cube sides_________________________________________
-void SCube::rotate_side(char side) {
+void SCube::rotateSide(char side) {
     int n = dimension;
     char t_side = tolower(side);
     
@@ -191,7 +191,7 @@ void SCube::rotateX(char face, int start_offset) {
     char dir = (face == 'R' || face == 'l') ? 'X' : 'x';
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            parts[i][n*j + offset].rotate_piece(dir);
+            parts[i][n*j + offset].rotatePiece(dir);
         }
     }
 }
@@ -231,7 +231,7 @@ void SCube::rotateY(char face, int start_offset) {
 
     char dir = (face == 'U' || face == 'd') ? 'Y' : 'y';
     for (int i = 0; i < n*n; i++) {
-        parts[so+slice][i].rotate_piece(dir);
+        parts[so+slice][i].rotatePiece(dir);
     }
 }
 
@@ -267,7 +267,7 @@ void SCube::rotateZ(char face, int start_offset) {
     char dir = (face == 'F' || face == 'b') ? 'z' : 'Z';
     for (int i = 0; i < n; i++) {
         for (int j = offset; j < offset + n; j++) {
-            parts[i][j].rotate_piece(dir);
+            parts[i][j].rotatePiece(dir);
         }
     }
 }
