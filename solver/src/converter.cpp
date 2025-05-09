@@ -213,8 +213,11 @@ void SCube::rotateSide(char side) {
     }
 }
 
+// Для хранения предвычесленных индексов поворота
+static constexpr std::array<int, 9> CW_INDICES = {6,3,0,7,4,1,8,5,2};
+static constexpr std::array<int, 9> CCW_INDICES = {2,5,8,1,4,7,0,3,6};
 
-// Для хранения предвычисленных индексов граней
+// Для хранения предвычисленных индексов граней по оси X
 static constexpr std::array<std::pair<int, int>, 9> RIGHT_FACE_INDICES = {{
     {0, 2}, {0, 5}, {0, 8},
     {1, 2}, {1, 5}, {1, 8},
@@ -227,123 +230,101 @@ static constexpr std::array<std::pair<int, int>, 9> LEFT_FACE_INDICES = {{
     {2, 0}, {2, 3}, {2, 6}
 }};
 
+// Для хранения предвычисленных индексов граней по оси Y
+static constexpr std::array<std::pair<int, int>, 9> TOP_INDICES = {
+    {{0,0}, {0,1}, {0,2},
+    {0,3}, {0,4}, {0,5},
+    {0,6}, {0,7}, {0,8},}
+};
 
-void SCube::rotateX(char face, int start_offset) {
-    constexpr int n = 3;
-    const bool is_right = (face == 'R' || face == 'r');
+static constexpr std::array<std::pair<int, int>, 9> BOTTOM_INDICES = {
+    {{2,0}, {2,1}, {2,2},
+    {2,3}, {2,4}, {2,5},
+    {2,6}, {2,7}, {2,8},}
+};
+
+// Для хранения предвычисленных индексов граней по оси Z
+static constexpr std::array<std::pair<int, int>, 9> FRONT_INDICES = {
+    {{0,6}, {0,7}, {0,8},
+        {1,6}, {1,7}, {1,8},
+        {2,6}, {2,7}, {2,8}}
+};
+
+static constexpr std::array<std::pair<int, int>, 9> BACK_INDICES = {
+    {{0,0}, {0,1}, {0,2},
+        {1,0}, {1,1}, {1,2},
+        {2,0}, {2,1}, {2,2}}
+};
+
+void SCube::rotateX(char face, int layer) {
     const bool clockwise = (face == 'R' || face == 'l');
-    
-    const auto& indices = is_right ? RIGHT_FACE_INDICES : LEFT_FACE_INDICES;
+    const auto& indices = (face == 'R' || face == 'r') ? RIGHT_FACE_INDICES : LEFT_FACE_INDICES;
 
-    // 1. Собираем элементы грани
-    std::array<SPiece, 9> face_pieces;
+    std::array<SPiece, 9> buffer;
     for (int i = 0; i < 9; ++i) {
-        face_pieces[i] = parts[indices[i].first][indices[i].second];
+        const auto& [row, col] = indices[i];
+        buffer[i] = parts[row][col + layer];
     }
 
-    // 2. Применяем поворот
-    constexpr std::array<int, 9> ROT_CW = {6, 3, 0, 7, 4, 1, 8, 5, 2};
-    constexpr std::array<int, 9> ROT_CCW = {2, 5, 8, 1, 4, 7, 0, 3, 6};
-    const auto& rot_indices = clockwise ? ROT_CW : ROT_CCW;
-
-    std::array<SPiece, 9> rotated;
+    const auto& map = clockwise ? CW_INDICES : CCW_INDICES;
     for (int i = 0; i < 9; ++i) {
-        rotated[i] = face_pieces[rot_indices[i]];
+        const auto& [row, col] = indices[i];
+        parts[row][col + layer] = buffer[map[i]];
     }
 
-    // 3. Обновляем элементы в кубе
+    char dir = (face == 'R' || face == 'l') ? 'X' : 'x';
     for (int i = 0; i < 9; ++i) {
-        parts[indices[i].first][indices[i].second] = rotated[i];
-    }
-
-    // 4. Поворачиваем ориентацию
-    const char dir = is_right ? (clockwise ? 'X' : 'x') : (clockwise ? 'x' : 'X');
-    for (auto& piece : rotated) {
-        piece.rotatePiece(dir);
+        const auto& [row, col] = indices[i];
+        parts[row][col + layer].rotatePiece(dir);
     }
 }
 
-
-void SCube::rotateY(char face, int /*start_offset*/) {
-    constexpr int n = 3;
-    const bool is_upper = (face == 'U' || face == 'u');
+void SCube::rotateY(char face, int layer) {
     const bool clockwise = (face == 'U' || face == 'd');
-    const int layer = is_upper ? 0 : 2;
+    const auto& indices = (face == 'U' || face == 'u') ? TOP_INDICES : BOTTOM_INDICES;
 
-    // Предопределенные индексы для поворотов
-    static constexpr std::array<int, 9> CW_INDICES = {6,3,0,7,4,1,8,5,2};
-    static constexpr std::array<int, 9> CCW_INDICES = {2,5,8,1,4,7,0,3,6};
-    
-    // Временное хранилище для элементов грани
-    std::array<SPiece, 9> temp;
-    
-    // Копируем элементы грани
+    std::array<SPiece, 9> buffer;
     for (int i = 0; i < 9; ++i) {
-        temp[i] = parts[layer][i];
+        const auto& [row, col] = indices[i];
+        buffer[i] = parts[row + layer][col];
     }
 
-    // Применяем поворот
-    const auto& indices = clockwise ? CW_INDICES : CCW_INDICES;
+    const auto& map = clockwise ? CW_INDICES : CCW_INDICES;
     for (int i = 0; i < 9; ++i) {
-        parts[layer][i] = temp[indices[i]];
+        const auto& [row, col] = indices[i];
+        parts[row + layer][col] = buffer[map[i]];
     }
 
-    // Поворачиваем ориентацию элементов
-    const char dir = clockwise ? 'Y' : 'y';
-    for (auto& piece : parts[layer]) {
-        piece.rotatePiece(dir);
+    char dir = clockwise ? 'Y' : 'y';
+    for (int i = 0; i < 9; ++i) {
+        const auto& [row, col] = indices[i];
+        parts[row + layer][col].rotatePiece(dir);
     }
 }
 
-void SCube::rotateZ(char face, int /*start_offset*/) {
-    constexpr int n = 3;
-    const bool is_front = (face == 'F' || face == 'f');
+
+void SCube::rotateZ(char face, int layer) {
     const bool clockwise = (face == 'F' || face == 'b');
-    
-    // Предопределенные индексы граней
-    static constexpr std::array<std::pair<int, int>, 9> FRONT_INDICES = {
-        {{0,6}, {0,7}, {0,8},
-         {1,6}, {1,7}, {1,8},
-         {2,6}, {2,7}, {2,8}}
-    };
-    
-    static constexpr std::array<std::pair<int, int>, 9> BACK_INDICES = {
-        {{0,0}, {0,1}, {0,2},
-         {1,0}, {1,1}, {1,2},
-         {2,0}, {2,1}, {2,2}}
-    };
+    const auto& indices = (face == 'F' || face == 'f') ? FRONT_INDICES : BACK_INDICES;
 
-    // Индексы для поворота
-    static constexpr std::array<int, 9> CW_INDICES = {6,3,0,7,4,1,8,5,2};
-    static constexpr std::array<int, 9> CCW_INDICES = {2,5,8,1,4,7,0,3,6};
-
-    // Выбираем нужную грань
-    const auto& face_indices = is_front ? FRONT_INDICES : BACK_INDICES;
-    
-    // Временное хранилище
-    std::array<SPiece, 9> temp;
-    
-    // Копируем элементы грани
+    std::array<SPiece, 9> buffer;
     for (int i = 0; i < 9; ++i) {
-        const auto& [layer, pos] = face_indices[i];
-        temp[i] = parts[layer][pos];
+        const auto& [row, col] = indices[i];
+        buffer[i] = parts[row][col + layer];
     }
 
-    // Применяем поворот
-    const auto& rot_indices = clockwise ? CW_INDICES : CCW_INDICES;
+    const auto& map = clockwise ? CW_INDICES : CCW_INDICES;
     for (int i = 0; i < 9; ++i) {
-        const auto& [layer, pos] = face_indices[i];
-        parts[layer][pos] = temp[rot_indices[i]];
+        const auto& [row, col] = indices[i];
+        parts[row][col + layer] = buffer[map[i]];
     }
 
-    // Поворачиваем ориентацию элементов
-    const char dir = (is_front == clockwise) ? 'z' : 'Z';
+    char dir = clockwise ? 'Z' : 'z';
     for (int i = 0; i < 9; ++i) {
-        const auto& [layer, pos] = face_indices[i];
-        parts[layer][pos].rotatePiece(dir);
+        const auto& [row, col] = indices[i];
+        parts[row][col + layer].rotatePiece(dir);
     }
 }
-
 
 //___________________________________________Hashing_______________________________________________
 
@@ -380,207 +361,3 @@ size_t SCube::hash() const {
 
     return hash;
 }
-
-
-
-// void SCube::rotateY(char face, int start_offset) {
-//     int n = dimension;
-//     int so = start_offset;
-//     int slice = 0;
-
-//     int ind1, ind2, ind3;
-
-//     if (tolower(face) == 'u') {
-//         slice = 0;
-//     } else if (tolower(face) == 'd') {
-//         slice = n - 1;
-//     } 
-
-//     for (int i = 0; i < n; i++) {
-//         for (int j = i + 1; j < n; j++) {
-//             // a = parts[][];
-
-//             // parts[][] = parts[][];
-//             // parts[][] = a;
-
-//             swap(parts[so+slice][j*n + i], parts[so+slice][i*n + j]);
-//         }
-//     }
-
-//     int k = n/2;            // ОЧЕНЬ ВАЖНО. без этого ломаются большие кубы
-//     if (n > 3) k -= 1;
-//     if (face == 'U' || face == 'd') {
-//         for (int i = 0; i < n; i++) {
-//             for (int j = 0; j < k; j++) {
-//                                 // ind1 = ;
-//                 // ind2 = ;
-//                 // a = parts[][];
-
-//                 // parts[][] = parts[][];
-//                 // parts[][] = a;
-//                 swap(parts[so+slice][i*n + j], parts[so+slice][i*n + (n - 1 - j)]);
-//             }
-//         }
-//     } else if (face == 'u' || face == 'D') {
-//         for (int i = 0; i < n; i++) {
-//             for (int j = 0; j < k; j++) {
-//                 swap(parts[so+slice][i], parts[so+slice][(n - 1 - j) * n + i]);
-//             }
-//         }
-//     }
-
-//     char dir = (face == 'U' || face == 'd') ? 'Y' : 'y';
-//     for (int i = 0; i < n*n; i++) {
-//         parts[so+slice][i].rotatePiece(dir);
-//     }
-// }
-
-
-// void SCube::rotateZ(char face, int start_offset) {
-//     int n = dimension, offset = 0;
-
-//     if (tolower(face) == 'f') {
-//         offset = n*n - n - n*start_offset;
-//     } else if (tolower(face) == 'b') {
-//         offset = 0 + n*start_offset;
-//     }
-
-//     for (int i = 0; i < n; i++) {
-//          for (int j = i + 1; j < n; j++) {
-//              swap(parts[i][j + offset], parts[j][i + offset]);
-//          }
-//     }
-
-//     if (face == 'f' || face == 'B')  {
-//         for (int i = 0; i < n; i++) {
-//             for (int j = 0; j < n/2; j++) {
-//                 swap(parts[j][i + offset], parts[n - j - 1][i + offset]);
-//             }
-//         }
-//     } else if (face == 'F' || face == 'b') {
-//         for (int i = 0; i < n; i++) {
-//             for (int j = 0; j < n/2; j++) {
-//                 swap(parts[i][offset + j], parts[i][offset + n - 1 - j]);
-//             }
-//         }
-//     }
-
-//     char dir = (face == 'F' || face == 'b') ? 'z' : 'Z';
-//     for (int i = 0; i < n; i++) {
-//         for (int j = offset; j < offset + n; j++) {
-//             parts[i][j].rotatePiece(dir);
-//         }
-//     }
-// }
-
-// void SCube::rotateX(char face, int start_offset) {
-//     int n = dimension;
-
-//     int offset = (face == 'r' || face == 'R') ? n - 1 - start_offset : 0;
-
-//     for (int i = 0; i < n; i++) {
-//         for (int j = i + 1; j < n; j++) {
-//             swap(parts[i][n*j + offset], parts[j][n*i + offset]);
-//         }
-//     }
-
-//     bool clockwise = (face == 'R' || face == 'l');
-
-//     if (!clockwise) {
-//         for (int i = 0; i < n; i++) {
-//             for (int j = 0; j < n/2; j++) {
-//                 swap(parts[i][n*j + offset], parts[i][(n - 1 - j) * n + offset]);
-//             }
-//         }
-//     } else if (clockwise) {
-//         for (int i = 0; i < n; i++) {
-//             for (int j = 0; j < n/2; j++) {
-//                 swap(parts[j][(n-i-1)*n + offset], parts[n - 1 - j][(n-i-1)*n + offset]);
-//             }
-//         }
-//     }
-
-//     char dir = (face == 'R' || face == 'l') ? 'X' : 'x';
-//     for (int i = 0; i < n; i++) {
-//         for (int j = 0; j < n; j++) {
-//             parts[i][n*j + offset].rotatePiece(dir);
-//         }
-//     }
-// }
-
-// void SCube::rotateY(char face, int start_offset) {
-//     int n = dimension;
-//     int so = start_offset;
-//     int slice = 0;
-
-//     if (tolower(face) == 'u') {
-//         slice = 0;
-//     } else if (tolower(face) == 'd') {
-//         slice = n - 1;
-//     } 
-
-//     for (int i = 0; i < n; i++) {
-//         for (int j = i + 1; j < n; j++) {
-//             swap(parts[so+slice][j*n + i], parts[so+slice][i*n + j]);
-//         }
-//     }
-
-//     int k = n/2;            // ОЧЕНЬ ВАЖНО. без этого ломаются большие кубы
-//     if (n > 3) k -= 1;
-//     if (face == 'U' || face == 'd') {
-//         for (int i = 0; i < n; i++) {
-//             for (int j = 0; j < k; j++) {
-//                 swap(parts[so+slice][i*n + j], parts[so+slice][i*n + (n - 1 - j)]);
-//             }
-//         }
-//     } else if (face == 'u' || face == 'D') {
-//         for (int i = 0; i < n; i++) {
-//             for (int j = 0; j < k; j++) {
-//                 swap(parts[so+slice][i], parts[so+slice][(n - 1 - j) * n + i]);
-//             }
-//         }
-//     }
-
-//     char dir = (face == 'U' || face == 'd') ? 'Y' : 'y';
-//     for (int i = 0; i < n*n; i++) {
-//         parts[so+slice][i].rotatePiece(dir);
-//     }
-// }
-
-// void SCube::rotateZ(char face, int start_offset) {
-//     int n = dimension, offset = 0;
-
-//     if (tolower(face) == 'f') {
-//         offset = n*n - n - n*start_offset;
-//     } else if (tolower(face) == 'b') {
-//         offset = 0 + n*start_offset;
-//     }
-
-//     for (int i = 0; i < n; i++) {
-//          for (int j = i + 1; j < n; j++) {
-//              swap(parts[i][j + offset], parts[j][i + offset]);
-//          }
-//     }
-
-//     if (face == 'f' || face == 'B')  {
-//         for (int i = 0; i < n; i++) {
-//             for (int j = 0; j < n/2; j++) {
-//                 swap(parts[j][i + offset], parts[n - j - 1][i + offset]);
-//             }
-//         }
-//     } else if (face == 'F' || face == 'b') {
-//         for (int i = 0; i < n; i++) {
-//             for (int j = 0; j < n/2; j++) {
-//                 swap(parts[i][offset + j], parts[i][offset + n - 1 - j]);
-//             }
-//         }
-//     }
-
-//     char dir = (face == 'F' || face == 'b') ? 'z' : 'Z';
-//     for (int i = 0; i < n; i++) {
-//         for (int j = offset; j < offset + n; j++) {
-//             parts[i][j].rotatePiece(dir);
-//         }
-//     }
-// }
-
