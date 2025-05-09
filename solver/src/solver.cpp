@@ -81,39 +81,6 @@ int heuristic(const SCube& cube) {
 }
 
 
-// pair<int, string> ida_search(SCube& cube, const string& moves, int g, int threshold, char last_move) {
-//     int current_h = heuristic(cube);
-//     int current_cost = g + current_h;
-
-//     if (current_cost > threshold) {
-//         return {current_cost, ""};
-//     }
-
-//     if (cube.isSolved()) {
-//         return {-1, moves};
-//     }
-
-//     int min_thresh = INT_MAX;
-//     string solution;
-
-//     for (char move : ALL_MOVES) {
-//     if (last_move != 0 && (INVERSE_MOVE.at(last_move) == move || OPPOSITE_MOVE.at(last_move) == move)) {            continue;
-//         }
-
-//         cube.rotateSide(move);
-//         auto result = ida_search(cube, moves + move, g + 1, threshold, move);
-//         cube.rotateSide(INVERSE_MOVE.at(move));
-
-//         if (result.first == -1) return result;
-//         if (result.first < min_thresh) {
-//             min_thresh = result.first;
-//             solution = result.second;
-//         }
-//     }
-
-//     return {min_thresh, solution};
-// }
-
 pair<int, string> ida_search(SCube& cube, string& moves, int g, int threshold, char last_move) {
     const size_t current_hash = cube.hash();
     if (visited_states.count(current_hash)) {
@@ -152,7 +119,7 @@ pair<int, string> ida_search(SCube& cube, string& moves, int g, int threshold, c
 }
 
 string solve_cube(const SCube& cube) {
-    for (int depth = 0; depth <= 6; ++depth) {
+    for (int depth = 0; depth <= 20; ++depth) {
         SCube work_cube = cube;
         std::string moves;
         visited_states.clear();
