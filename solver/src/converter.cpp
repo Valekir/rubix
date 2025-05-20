@@ -106,12 +106,13 @@ void SCube::scramble(int n) {
     std::array<char, 12> moves = {'F','f','B','b','D','d','U','u','R','r','L','l'};
     char move;
     std::srand(std::time(0));
+    std::cout << "\033[32m" << "\nScramble: ";
     for (int i = 0; i < n; i++) {
         move = moves[std::rand() % 12];
         std::cout << move;
         rotateSide(move);
     }
-    std::cout << std::endl;
+    std::cout << "\033[0m\n" << std::endl;
 }
 
 //___________________________________________Is solved______________________________________________

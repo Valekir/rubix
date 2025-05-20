@@ -1,11 +1,11 @@
 #include "solver.hpp"
 #include "converter.hpp"
 #include <unordered_set>
+#include <optional>
 #include <algorithm>
-#include <future>
 #include <climits>
 
-using std::unordered_set, std::array, std::map, std::pair, std::string, std::find;
+using std::unordered_set, std::array, std::map, std::pair, std::string, std::find, std::queue;
 
 const std::map<char, char> INVERSE_MOVE = {
     {'R', 'r'}, {'r', 'R'},
@@ -29,6 +29,11 @@ const std::array<char, 12> ALL_MOVES = {'R','F','U','L','B','D','r','f','u','l',
 
 static unordered_set<size_t> visited_states;
 
+struct BFSNode {
+    SCube cube;
+    string path;
+    char last_move;
+};
 
 int heuristic(const SCube& cube) {
     static constexpr std::array<std::array<int, 3>, 6> MAIN_DIRECTIONS = {{
@@ -59,7 +64,7 @@ int heuristic(const SCube& cube) {
                     if (pos[j] != 0) {
                         const int dir_idx = (pos[j] > 0) ? j*2 : j*2+1;
                         if (std::find(colors.begin(), colors.end(), center_colors[dir_idx]) == colors.end()) {
-                            h += 1; // было h += 2;
+                            h += 2;
                         }
                     }
                 }
@@ -81,6 +86,108 @@ int heuristic(const SCube& cube) {
 }
 
 
+//______________________________________________BFS___________________________________________
+
+string bfs_search(const SCube& start_cube) {
+    unordered_set<size_t> visited;
+    queue<BFSNode> q;
+
+    q.push({start_cube, "", 0});
+    visited.insert(start_cube.hash());
+
+    while (!q.empty()) {
+        BFSNode current = q.front();
+        q.pop();
+
+        if (current.cube.isSolved()) {
+            return current.path;
+        }
+
+        for (char move : ALL_MOVES) {
+            if (current.last_move && INVERSE_MOVE.at(current.last_move) == move) continue;
+
+            SCube next_cube = current.cube;
+            next_cube.rotateSide(move);
+            size_t h = next_cube.hash();
+
+            if (visited.count(h)) continue;
+
+            visited.insert(h);
+            q.push({next_cube, current.path + move, move});
+        }
+    }
+
+    return "";
+}
+
+
+string solve_cube_bfs(const SCube& cube) {
+    std::cout << "Solving with BFS:" << std::endl;
+
+    string result = bfs_search(cube);
+    return result.empty() ? "" : result;
+}
+
+//_________________________________________DFS________________________________________________
+
+
+pair<int, string> dfs_search(SCube& cube, string& moves, int depth, int max_depth, char last_move) {
+    if (cube.isSolved()) return {-1, moves};
+    if (depth >= max_depth) return {INT_MAX, ""};
+
+    size_t hash = cube.hash();
+    if (visited_states.count(hash)) return {INT_MAX, ""};
+    visited_states.insert(hash);
+
+    int min_result = INT_MAX;
+    string best_path;
+
+    for (char move : ALL_MOVES) {
+        if (last_move != 0 && INVERSE_MOVE.at(last_move) == move) continue;
+
+        cube.rotateSide(move);
+        moves.push_back(move);
+
+        auto result = dfs_search(cube, moves, depth + 1, max_depth, move);
+
+        if (result.first == -1) {
+            visited_states.erase(hash);
+            return result;
+        }
+
+        if (result.first < min_result) {
+            min_result = result.first;
+            best_path = result.second;
+        }
+
+        moves.pop_back();
+        cube.rotateSide(INVERSE_MOVE.at(move));
+    }
+
+    visited_states.erase(hash);
+    return {min_result, best_path};
+}
+
+string solve_cube_dfs(const SCube& cube) {
+    const int max_depth_limit = heuristic(cube);
+
+    std::cout << "\nSolving with DFS:" << std::endl;
+
+    for (int depth = 1; depth <= max_depth_limit; ++depth) {
+        SCube work_cube = cube;
+        string moves;
+        visited_states.clear();
+        auto result = dfs_search(work_cube, moves, 0, depth, 0);
+        if (result.first == -1)
+            return result.second;
+    }
+    return "";
+}
+
+
+//_________________________________________IDA*_______________________________________________
+
+
 pair<int, string> ida_search(SCube& cube, string& moves, int g, int threshold, char last_move) {
     const size_t current_hash = cube.hash();
     if (visited_states.count(current_hash)) {
@@ -99,7 +206,6 @@ pair<int, string> ida_search(SCube& cube, string& moves, int g, int threshold, c
     string solution;
 
     for (char move : ALL_MOVES) {
-        // Пропускаем обратные и противоположные ходы, а также последовательные ходы на одной оси
         if (last_move != 0 && INVERSE_MOVE.at(last_move) == move) continue;
         else if (moves.length() >= 2) {
             if (moves[moves.length() - 2] == move && moves[moves.length() - 1] == move) continue;
@@ -118,8 +224,12 @@ pair<int, string> ida_search(SCube& cube, string& moves, int g, int threshold, c
     return {min_thresh, solution};
 }
 
-string solve_cube(const SCube& cube) {
-    for (int depth = 0; depth <= 20; ++depth) {
+
+string solve_cube_IDAstar(const SCube& cube) {
+    std::cout << "\nSolving with IDA*:" << std::endl;
+    const int max_depth_limit = heuristic(cube);
+
+    for (int depth = 0; max_depth_limit <= 20; ++depth) {
         SCube work_cube = cube;
         std::string moves;
         visited_states.clear();
@@ -130,5 +240,5 @@ string solve_cube(const SCube& cube) {
         }
     }
     
-    return "Solution not found";
+    return "";
 }
