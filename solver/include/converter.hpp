@@ -38,7 +38,7 @@ class SCube {
 	auto getParts() const { return parts; }
 	int size() const { return dimension; }
 
-	bool isSolved();
+	bool isSolved() const;
 	size_t hash() const;
 	void rotateSide(char side);
 

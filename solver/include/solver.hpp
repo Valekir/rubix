@@ -15,22 +15,11 @@ using std::unordered_set, std::array, std::map, std::pair, std::string, std::fin
 int heuristic(const SCube& cube);
 
 
-// Структура узла поиска
-struct Node {
-    SCube cube;
-    std::string moves;
-    int cost;
-    
-    Node(SCube c, std::string m, int g) 
-        : cube(c), moves(m), cost(g + heuristic(c)) {}
-};
-
-
 string bfs_search(const SCube& start_cube);
 string solve_cube_bfs(const SCube& cube);
 
 
-string dfs_search(SCube& cube, int max_depth, std::string& moves, char last_move);
+pair<int, string> dfs_search(SCube& cube, string& moves, int depth, int max_depth, char last_move);
 string solve_cube_dfs(const SCube& input_cube);
 
 

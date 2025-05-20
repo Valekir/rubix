@@ -27,13 +27,6 @@ const std::map<char, char> OPPOSITE_MOVE = {
 
 const std::array<char, 12> ALL_MOVES = {'R','F','U','L','B','D','r','f','u','l','b','d'};
 
-static unordered_set<size_t> visited_states;
-
-struct BFSNode {
-    SCube cube;
-    string path;
-    char last_move;
-};
 
 int heuristic(const SCube& cube) {
     static constexpr std::array<std::array<int, 3>, 6> MAIN_DIRECTIONS = {{
@@ -88,6 +81,13 @@ int heuristic(const SCube& cube) {
 
 //______________________________________________BFS___________________________________________
 
+struct BFSNode {
+    SCube cube;
+    string path;
+    char last_move;
+};
+
+
 string bfs_search(const SCube& start_cube) {
     unordered_set<size_t> visited;
     queue<BFSNode> q;
@@ -130,14 +130,16 @@ string solve_cube_bfs(const SCube& cube) {
 
 //_________________________________________DFS________________________________________________
 
+static unordered_set<size_t> visited_states_DFS;
+
 
 pair<int, string> dfs_search(SCube& cube, string& moves, int depth, int max_depth, char last_move) {
     if (cube.isSolved()) return {-1, moves};
     if (depth >= max_depth) return {INT_MAX, ""};
 
     size_t hash = cube.hash();
-    if (visited_states.count(hash)) return {INT_MAX, ""};
-    visited_states.insert(hash);
+    if (visited_states_DFS.count(hash)) return {INT_MAX, ""};
+    visited_states_DFS.insert(hash);
 
     int min_result = INT_MAX;
     string best_path;
@@ -151,7 +153,7 @@ pair<int, string> dfs_search(SCube& cube, string& moves, int depth, int max_dept
         auto result = dfs_search(cube, moves, depth + 1, max_depth, move);
 
         if (result.first == -1) {
-            visited_states.erase(hash);
+            visited_states_DFS.erase(hash);
             return result;
         }
 
@@ -164,11 +166,12 @@ pair<int, string> dfs_search(SCube& cube, string& moves, int depth, int max_dept
         cube.rotateSide(INVERSE_MOVE.at(move));
     }
 
-    visited_states.erase(hash);
+    visited_states_DFS.erase(hash);
     return {min_result, best_path};
 }
 
 string solve_cube_dfs(const SCube& cube) {
+    visited_states_DFS.clear();
     const int max_depth_limit = heuristic(cube);
 
     std::cout << "\nSolving with DFS:" << std::endl;
@@ -176,7 +179,7 @@ string solve_cube_dfs(const SCube& cube) {
     for (int depth = 1; depth <= max_depth_limit; ++depth) {
         SCube work_cube = cube;
         string moves;
-        visited_states.clear();
+        visited_states_DFS.clear();
         auto result = dfs_search(work_cube, moves, 0, depth, 0);
         if (result.first == -1)
             return result.second;
@@ -188,9 +191,12 @@ string solve_cube_dfs(const SCube& cube) {
 //_________________________________________IDA*_______________________________________________
 
 
+static unordered_set<size_t> visited_states_IDAstar;
+
+
 pair<int, string> ida_search(SCube& cube, string& moves, int g, int threshold, char last_move) {
     const size_t current_hash = cube.hash();
-    if (visited_states.count(current_hash)) {
+    if (visited_states_IDAstar.count(current_hash)) {
         return {INT_MAX, ""}; // Состояние уже посещено
     }
 
@@ -198,7 +204,7 @@ pair<int, string> ida_search(SCube& cube, string& moves, int g, int threshold, c
     const int current_cost = g + current_h;
 
 
-    visited_states.insert(current_hash);
+    visited_states_IDAstar.insert(current_hash);
     if (cube.isSolved()) return {-1, moves};
     if (current_cost > threshold) return {current_cost, ""};
 
@@ -226,13 +232,13 @@ pair<int, string> ida_search(SCube& cube, string& moves, int g, int threshold, c
 
 
 string solve_cube_IDAstar(const SCube& cube) {
+    visited_states_IDAstar.clear();
     std::cout << "\nSolving with IDA*:" << std::endl;
-    const int max_depth_limit = heuristic(cube);
 
-    for (int depth = 0; max_depth_limit <= 20; ++depth) {
+    for (int depth = 0; depth <= 20; ++depth) {
         SCube work_cube = cube;
         std::string moves;
-        visited_states.clear();
+        visited_states_IDAstar.clear();
         auto result = ida_search(work_cube, moves, 0, depth, 0);
 
         if (result.first == -1) {

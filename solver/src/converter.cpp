@@ -1,6 +1,16 @@
 #include "converter.hpp"
 
 
+const std::map<char, char> INVERSE_MOVE = {
+    {'R', 'r'}, {'r', 'R'},
+    {'L', 'l'}, {'l', 'L'},
+    {'F', 'f'}, {'f', 'F'},
+    {'B', 'b'}, {'b', 'B'},
+    {'U', 'u'}, {'u', 'U'},
+    {'D', 'd'}, {'d', 'D'}
+};
+
+
 //____________________________________________SPiece_______________________________________________
 
 SPiece::SPiece() {
@@ -105,12 +115,19 @@ Colors SCube::getCenterColor(std::array<int, 3> direction) const {
 void SCube::scramble(int n) {
     std::array<char, 12> moves = {'F','f','B','b','D','d','U','u','R','r','L','l'};
     char move;
+    char last_move = 'w';
     std::srand(std::time(0));
     std::cout << "\033[32m" << "\nScramble: ";
     for (int i = 0; i < n; i++) {
         move = moves[std::rand() % 12];
-        std::cout << move;
-        rotateSide(move);
+
+        if (i > 0 && INVERSE_MOVE.at(last_move) == move) {
+            i--;
+        } else {
+            std::cout << move;
+            rotateSide(move);
+            last_move = move;
+        }
     }
     std::cout << "\033[0m\n" << std::endl;
 }
@@ -168,7 +185,7 @@ std::vector<SPiece> SCube::getFaceElements(const std::array<int, 3>& dir) const 
     return elements;
 }
 
-bool SCube::isSolved() {
+bool SCube::isSolved() const {
     constexpr std::array<std::array<int, 3>, 6> directions = {{
         {0, 1, 0},  // Верх
         {0, -1, 0}, // Низ
