@@ -27,56 +27,86 @@ const std::map<char, char> OPPOSITE_MOVE = {
 
 const std::array<char, 12> ALL_MOVES = {'R','F','U','L','B','D','r','f','u','l','b','d'};
 
-
+// Эвристическая функция, которая рассчитывает количество неправильных стикеров на каждой грани
+// плохо подходит для IDA*, потому что сильно переоценивает глубину решения
 int heuristic(const SCube& cube) {
+    if (cube.isSolved()) {
+        return 0; // Если кубик решен, эвристика равна 0
+    }
+
     static constexpr std::array<std::array<int, 3>, 6> MAIN_DIRECTIONS = {{
-        {0,1,0}, {0,-1,0}, {1,0,0}, {-1,0,0}, {0,0,1}, {0,0,-1}
+        {0, 1, 0},
+        {0, -1, 0},
+        {1, 0, 0},
+        {-1, 0, 0},
+        {0, 0, 1},
+        {0, 0, -1}
     }};
     
-    static std::array<Colors, 6> center_colors;
-    static bool initialized = false;
-    if (!initialized) {
-        for (int i = 0; i < 6; ++i) {
-            center_colors[i] = cube.getCenterColor(MAIN_DIRECTIONS[i]);
-        }
-        initialized = true;
-    }
-
     int h = 0;
-    const auto& parts = cube.getParts();
-    const int n = cube.size();
 
-    for (int layer = 0; layer < n; layer++) {
-        for (int i = 0; i < n*n; i++) {
-            const auto& piece = parts[layer][i];
-            const auto& colors = piece.getColor();
-            const auto& pos = piece.getPosition();
-            
-            if (piece.getType() == 'C') {
-                for (int j = 0; j < 3; ++j) {
-                    if (pos[j] != 0) {
-                        const int dir_idx = (pos[j] > 0) ? j*2 : j*2+1;
-                        if (std::find(colors.begin(), colors.end(), center_colors[dir_idx]) == colors.end()) {
-                            h += 2;
-                        }
-                    }
-                }
+    for (const auto& dir : MAIN_DIRECTIONS) {
+        // 1. Получаем центральный цвет текущей грани
+        const Colors center_color = cube.getCenterColor(dir);
+        
+        // 2. Получаем все элементы на текущей грани
+        const auto face_elements = cube.getFaceElements(dir);
+
+        // 3. Определяем, какая координата (и, соответственно, какой индекс цвета) 
+        int color_index_on_piece = -1;
+        for (int i = 0; i < 3; ++i) {
+            if (dir[i] != 0) {
+                color_index_on_piece = i;
+                break;
             }
-            else if (piece.getType() == 'E') {
-                for (int j = 0; j < 3; ++j) {
-                    if (pos[j] != 0) {
-                        const int dir_idx = (pos[j] > 0) ? j*2 : j*2+1;
-                        if (std::find(colors.begin(), colors.end(), center_colors[dir_idx]) == colors.end()) {
-                            h += 1;
-                            break;
-                        }
-                    }
-                }
+        }
+
+        if (color_index_on_piece == -1) {
+            continue; 
+        }
+
+        // 4. Проверяем каждый элемент на грани
+        for (const auto& piece : face_elements) {
+            if (piece.getColor()[color_index_on_piece] != center_color) {
+                h++;
             }
         }
     }
-    return (h + 3) / 4;
+
+    return (h + 3) / 4; 
 }
+
+
+// const SCube SOLVED_CUBE = SCube(Cube(3));
+
+// Эвристическая функция, которая рассчитывает количество неправильно расположенных элементов
+// плохо подходит для DFS, потому что сильно недооценивает глубину решения
+// int heuristic(const SCube& cube) {
+//     if (cube.isSolved()) {
+//         return 0; 
+//     }
+
+//     int misplaced_pieces_count = 0;
+//     const auto& current_parts = cube.getParts();
+//     const auto& solved_parts = SOLVED_CUBE.getParts();
+
+//     const int dimension = cube.size();
+
+//     for (int layer = 0; layer < dimension; ++layer) {
+//         for (int i = 0; i < dimension * dimension; ++i) { 
+//             const SPiece& current_piece = current_parts[layer][i];
+//             const SPiece& solved_piece = solved_parts[layer][i];
+
+//             if (current_piece.getPosition() != solved_piece.getPosition()
+//                 || current_piece.getColor() != solved_piece.getColor()
+//                 ) {
+//                 misplaced_pieces_count++;
+//             }
+//         }
+//     }
+
+//     return misplaced_pieces_count / 8; 
+// }
 
 
 //______________________________________________BFS___________________________________________

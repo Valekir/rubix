@@ -206,9 +206,7 @@ bool SCube::isSolved() const {
         
         for (const auto& piece : face_elements) {
             auto colors = piece.getColor();
-
-                if (colors[index] != center_color) return false;
-
+            if (colors[index] != center_color) return false;
         }
     }
     return true;
