@@ -13,6 +13,7 @@ file(GLOB SOURCE_FILES
 	src/utils.cpp
 	src/view.cpp
 	src/solver.cpp
+	src/converter.cpp
 )
 
 add_library(rubix_lib STATIC ${SOURCE_FILES})

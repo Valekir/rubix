@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <fstream>
 #include <sstream>
+#include <array>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -19,6 +20,9 @@ float M_PI_2 = 1.57079632679489661923;
 #endif
 
 using std::vector, std::swap;
+
+// Поворачивает вектор по направлению dir
+std::array <int, 3> rotateArray(std::array<int, 3> arr, char dir);
 
 // Проверяет, существует ли файл
 bool file_exists(std::string filename);

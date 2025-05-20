@@ -40,11 +40,13 @@ class Cube {
     Cube(int, vector<vector<int>>, vector<vector<Colors>>);
     explicit Cube(int);
     Cube();
-    vector<vector <Piece>> get_parts() { return parts; }
+    
     Colors get_center_color(std::vector<int> direction);
+    vector <vector <Colors>> face_to_print(vector <int> direction);
+    vector <vector <Piece>> get_parts() { return parts; }
 
     int size() { return dimension; }
-    vector <vector <Colors>> face_to_print(vector <int> direction);
+
     void rotate_side(char side);
     void change_direction(char dir);
     bool is_solved();
