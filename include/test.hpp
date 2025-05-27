@@ -18,12 +18,15 @@ struct test_result {
 };
 
 
+void run_test(int test);
+size_t get_current_rss();
+
+
 template <typename Func>
 test_result benchmark(Func func);
 
 template <typename Func>
 void single_function_test(std::string name, Func func);
 
-void run_test(int test);
-size_t get_current_rss();
-
+template <typename Func>
+void test_IDAstar(Func func);
