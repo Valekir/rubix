@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include <random>
 #include "cube.hpp"
 
 class SPiece {
@@ -42,6 +43,6 @@ class SCube {
 	size_t hash() const;
 	void rotateSide(char side);
 
-	void scramble(int n);
+	void scramble(int n, bool silent = false);
 };
 

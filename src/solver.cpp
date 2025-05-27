@@ -152,7 +152,7 @@ string bfs_search(const SCube& start_cube) {
 
 
 string solve_cube_bfs(const SCube& cube) {
-    std::cout << "Solving with BFS:" << std::endl;
+    // std::cout << "Solving with BFS:" << std::endl;
 
     string result = bfs_search(cube);
     return result.empty() ? "" : result;
@@ -204,7 +204,7 @@ string solve_cube_dfs(const SCube& cube) {
     visited_states_DFS.clear();
     const int max_depth_limit = heuristic(cube);
 
-    std::cout << "\nSolving with DFS:" << std::endl;
+    // std::cout << "\nSolving with DFS:" << std::endl;
 
     for (int depth = 1; depth <= max_depth_limit; ++depth) {
         SCube work_cube = cube;
@@ -263,7 +263,7 @@ pair<int, string> ida_search(SCube& cube, string& moves, int g, int threshold, c
 
 string solve_cube_IDAstar(const SCube& cube) {
     visited_states_IDAstar.clear();
-    std::cout << "\nSolving with IDA*:" << std::endl;
+    // std::cout << "\nSolving with IDA*:" << std::endl;
 
     for (int depth = 0; depth <= 20; ++depth) {
         SCube work_cube = cube;

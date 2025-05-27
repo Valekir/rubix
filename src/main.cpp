@@ -7,21 +7,21 @@
 
 #include "solver.hpp"
 #include "cube.hpp"
-
-
+#include "test.hpp"
 
 
 int game();
 void solver();
+void run_benchmark();
 
 int main(int argc, char** argv) {
     int mode = 0;
 
-    std::cout << "Choose mode: \n(1): game\n(2): solver" << std::endl;
-    while (mode != 1 && mode != 2) {
+    std::cout << "Choose mode: \n(1): game\n(2): solver\n(3): benchmark" << std::endl;
+    while (mode <= 0 || mode > 3) {
         std::cin >> mode;
-        if (mode != 1 && mode != 2) {
-            std::cout << "Mode has to be 1 (game) or 2 (solver)" << std::endl;
+        if (mode <= 0 || mode > 3) {
+            std::cout << "Mode has to be 1 (game) 2 (solver) or 3 (benchmark)" << std::endl;
         }
     }
 
@@ -31,6 +31,10 @@ int main(int argc, char** argv) {
 
     if (mode == 2) {
         solver();
+    }
+
+    if (mode == 3) {
+        run_benchmark();
     }
 
     return 0;
@@ -47,6 +51,7 @@ void scramble_cube(SCube& cube) {
         std::cin >> n;
         if (n <= 0 || n >= 20) {
             std::cout << "number of moves must be between 1 and 20" << std::endl;
+
         }
     }
     cube.scramble(n);
@@ -114,7 +119,18 @@ void solver() {
     }
 }
 
+void run_benchmark() {
+        int test = 0;
+        std::cout << "Choose algorithm to benchmark \n(1): BFS\n(2): DFS\n(3): IDA*" << std::endl;
+        while (test <= 0 || test > 3) {
+            std::cin >> test;
+            if (test <= 0 || test > 3) {
+                std::cout << "Chhoose 1 (BFS) 2 (DFS) or 3 (IDA*)" << std::endl;
+            }
+        }
 
+        run_test(test);
+}
 
 void signal_handler(int sign) {
     endwin();
