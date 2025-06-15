@@ -8,9 +8,9 @@
 using std::unordered_set, std::array, std::map, std::pair, std::string, std::find, std::queue;
 
 
-
-// Эвристическая функция, которая рассчитывает количество неправильных стикеров на каждой грани
-// плохо подходит для IDA*, потому что сильно переоценивает глубину решения
+/// @brief Эвристическая функция, которая рассчитывает количество неправильных стикеров на каждой грани
+/// @param cube Кубик, для которого рассчитывается значение эвристической функции 
+/// @return Оценка расстояния до решения
 int Solver::heuristic(const SCube& cube) {
     if (cube.isSolved()) {
         return 0; // Если кубик решен, эвристика равна 0
@@ -52,8 +52,9 @@ int Solver::heuristic(const SCube& cube) {
 
 const SCube SOLVED_CUBE = SCube(Cube(3));
 
-// Эвристическая функция, которая рассчитывает количество неправильно расположенных элементов
-// плохо подходит для DFS, потому что сильно недооценивает глубину решения
+/// @brief Эвристическая функция, которая рассчитывает количество неправильно расположенных элементов 
+/// @param cube Кубик, для которого рассчитывается значение эвристической функции 
+/// @return Оценка расстояния до решения
 int Solver::heuristic_misplaced(const SCube& cube) {
     if (cube.isSolved()) {
         return 0; 
@@ -84,13 +85,9 @@ int Solver::heuristic_misplaced(const SCube& cube) {
 
 //______________________________________________BFS___________________________________________
 
-struct BFSNode {
-    SCube cube;
-    string path;
-    char last_move;
-};
-
-
+/// @brief Функция для выполнения поиска в ширину
+/// @param start_cube Кубик, по которому ведется поиск
+/// @return Решение, если найдено
 string Solver::bfs_search(const SCube& start_cube) {
     unordered_set<size_t> visited;
     queue<BFSNode> q;
@@ -123,7 +120,9 @@ string Solver::bfs_search(const SCube& start_cube) {
     return "";
 }
 
-
+/// @brief Ищет решение кубика с помощью BFS
+/// @param cube Кубик, который нужно решить
+/// @return Решение, если найдено
 string Solver::solve_cube_bfs(const SCube& cube) {
     // std::cout << "Solving with BFS:" << std::endl;
 
@@ -135,7 +134,9 @@ string Solver::solve_cube_bfs(const SCube& cube) {
 
 static unordered_set<size_t> visited_states_DFS;
 
-
+/// @brief Функция для выполнения поиска в глубину
+/// @param start_cube Кубик, по которому ведется поиск
+/// @return Решение, если найдено
 pair<int, string> Solver::dfs_search(SCube& cube, string& moves, int depth, int max_depth, char last_move) {
     if (cube.isSolved()) return {-1, moves};
     if (depth >= max_depth) return {INT_MAX, ""};
@@ -173,6 +174,9 @@ pair<int, string> Solver::dfs_search(SCube& cube, string& moves, int depth, int 
     return {min_result, best_path};
 }
 
+/// @brief Ищет решение кубика с помощью DFS
+/// @param cube Кубик, который нужно решить
+/// @return Решение, если найдено
 string Solver::solve_cube_dfs(const SCube& cube) {
     visited_states_DFS.clear();
     const int max_depth_limit = heuristic(cube);
@@ -196,7 +200,9 @@ string Solver::solve_cube_dfs(const SCube& cube) {
 
 static unordered_set<size_t> visited_states_IDAstar;
 
-
+/// @brief Функция для выполнения поиск с итеративным углублением
+/// @param start_cube Кубик, по которому ведется поиск
+/// @return Решение, если найдено
 pair<int, string> Solver::ida_search(SCube& cube, string& moves, int g, int threshold, char last_move) {
     const size_t current_hash = cube.hash();
     if (visited_states_IDAstar.count(current_hash)) {
@@ -233,7 +239,9 @@ pair<int, string> Solver::ida_search(SCube& cube, string& moves, int g, int thre
     return {min_thresh, solution};
 }
 
-
+/// @brief Ищет решение кубика с помощью IDA*
+/// @param cube Кубик, который нужно решить
+/// @return Решение, если найдено
 string Solver::solve_cube_IDAstar(const SCube& cube) {
     visited_states_IDAstar.clear();
     // std::cout << "\nSolving with IDA*:" << std::endl;
@@ -254,6 +262,8 @@ string Solver::solve_cube_IDAstar(const SCube& cube) {
 
 //__________________________________Running__________________________________________________
 
+/// @brief Перемешивает кубик
+/// @param cube 
 void Solver::scramble_cube(SCube& cube) {
     int n = 0;
 
@@ -270,6 +280,7 @@ void Solver::scramble_cube(SCube& cube) {
     cube.scramble(n);
 }
 
+/// @brief Выбирает алгоритм для решения кубика
 void Solver::select_mode() {
     search_mode = -1;
     string result = "";
@@ -291,6 +302,7 @@ void Solver::select_mode() {
     }
 }
 
+/// @brief Ищет решение кубика
 void Solver::solve_cube() {
     scramble_cube(cube);
 

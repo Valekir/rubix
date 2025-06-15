@@ -35,6 +35,12 @@ class Solver {
     void select_mode();
 };
 
+struct BFSNode {
+    SCube cube;
+    string path;
+    char last_move;
+};
+
 const std::map<char, char> INVERSE_MOVE = {
     {'R', 'r'}, {'r', 'R'},
     {'L', 'l'}, {'l', 'L'},

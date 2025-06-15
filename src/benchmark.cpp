@@ -1,5 +1,6 @@
 #include "benchmark.hpp"
 
+/// @brief Выбирает алгоритм для тестирования
 void Benchmark::select_test() {
     int test = 0;
     std::cout << "Choose algorithm to benchmark \n(1): BFS\n(2): DFS\n(3): IDA*" << std::endl;
@@ -12,6 +13,7 @@ void Benchmark::select_test() {
     current_test = test;
 }
 
+/// @brief Выполняет тесты
 void Benchmark::run() {
     Solver solver;
 
@@ -40,6 +42,7 @@ void Benchmark::run() {
     }
 }
 
+/// @brief Получает текущее значениие занятой памяти из /proc/self/status
 size_t Benchmark::get_current_rss() {
     std::ifstream ifs("/proc/self/status");
     std::string line;

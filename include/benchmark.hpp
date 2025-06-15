@@ -30,7 +30,9 @@ class Benchmark {
     void test_IDAstar(Func func);
 };
 
-
+/// @brief Выполняет один тест функции
+/// @param name Название функции
+/// @param func Тестируемая функция
 template <typename Func>
 void Benchmark::single_function_test(std::string name, Func func) {
     SCube cube(Cube(3));
@@ -76,9 +78,7 @@ void Benchmark::single_function_test(std::string name, Func func) {
     }
 }
 
-/// @brief 
-/// @tparam Func 
-/// @param func 
+/// @brief Тестирует IDA*
 template <typename Func>
 void Benchmark::test_IDAstar(Func func) {
     SCube cube(Cube(3));
@@ -103,10 +103,9 @@ void Benchmark::test_IDAstar(Func func) {
     }
 }
 
-/// @brief 
-/// @tparam Func 
-/// @param func 
-/// @return 
+/// @brief Замеряет время и используемую память при выполнении функции
+/// @param func Исполняемая функция 
+/// @return Время и используемую память
 template <typename Func>
 test_result Benchmark::benchmark(Func func) {
     size_t rss_before = get_current_rss();
