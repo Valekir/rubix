@@ -70,4 +70,6 @@ class Controller {
 	// Сохраняет текущую игру
 	void save();
 	void load_settings();
+
+	void open_game_menu();
 };

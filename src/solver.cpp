@@ -7,41 +7,14 @@
 
 using std::unordered_set, std::array, std::map, std::pair, std::string, std::find, std::queue;
 
-const std::map<char, char> INVERSE_MOVE = {
-    {'R', 'r'}, {'r', 'R'},
-    {'L', 'l'}, {'l', 'L'},
-    {'F', 'f'}, {'f', 'F'},
-    {'B', 'b'}, {'b', 'B'},
-    {'U', 'u'}, {'u', 'U'},
-    {'D', 'd'}, {'d', 'D'}
-};
 
-const std::map<char, char> OPPOSITE_MOVE = {
-    {'R', 'L'}, {'L', 'R'},
-    {'r', 'l'}, {'l', 'r'},
-    {'F', 'B'}, {'B', 'F'},
-    {'f', 'b'}, {'b', 'f'},
-    {'U', 'D'}, {'D', 'U'},
-    {'u', 'd'}, {'d', 'u'},
-};
-
-const std::array<char, 12> ALL_MOVES = {'R','F','U','L','B','D','r','f','u','l','b','d'};
 
 // Эвристическая функция, которая рассчитывает количество неправильных стикеров на каждой грани
 // плохо подходит для IDA*, потому что сильно переоценивает глубину решения
-int heuristic(const SCube& cube) {
+int Solver::heuristic(const SCube& cube) {
     if (cube.isSolved()) {
         return 0; // Если кубик решен, эвристика равна 0
     }
-
-    static constexpr std::array<std::array<int, 3>, 6> MAIN_DIRECTIONS = {{
-        {0, 1, 0},
-        {0, -1, 0},
-        {1, 0, 0},
-        {-1, 0, 0},
-        {0, 0, 1},
-        {0, 0, -1}
-    }};
     
     int h = 0;
 
@@ -77,36 +50,36 @@ int heuristic(const SCube& cube) {
 }
 
 
-// const SCube SOLVED_CUBE = SCube(Cube(3));
+const SCube SOLVED_CUBE = SCube(Cube(3));
 
 // Эвристическая функция, которая рассчитывает количество неправильно расположенных элементов
 // плохо подходит для DFS, потому что сильно недооценивает глубину решения
-// int heuristic(const SCube& cube) {
-//     if (cube.isSolved()) {
-//         return 0; 
-//     }
+int Solver::heuristic_misplaced(const SCube& cube) {
+    if (cube.isSolved()) {
+        return 0; 
+    }
 
-//     int misplaced_pieces_count = 0;
-//     const auto& current_parts = cube.getParts();
-//     const auto& solved_parts = SOLVED_CUBE.getParts();
+    int misplaced_pieces_count = 0;
+    const auto& current_parts = cube.getParts();
+    const auto& solved_parts = SOLVED_CUBE.getParts();
 
-//     const int dimension = cube.size();
+    const int dimension = cube.size();
 
-//     for (int layer = 0; layer < dimension; ++layer) {
-//         for (int i = 0; i < dimension * dimension; ++i) { 
-//             const SPiece& current_piece = current_parts[layer][i];
-//             const SPiece& solved_piece = solved_parts[layer][i];
+    for (int layer = 0; layer < dimension; ++layer) {
+        for (int i = 0; i < dimension * dimension; ++i) { 
+            const SPiece& current_piece = current_parts[layer][i];
+            const SPiece& solved_piece = solved_parts[layer][i];
 
-//             if (current_piece.getPosition() != solved_piece.getPosition()
-//                 || current_piece.getColor() != solved_piece.getColor()
-//                 ) {
-//                 misplaced_pieces_count++;
-//             }
-//         }
-//     }
+            if (current_piece.getPosition() != solved_piece.getPosition()
+                || current_piece.getColor() != solved_piece.getColor()
+                ) {
+                misplaced_pieces_count++;
+            }
+        }
+    }
 
-//     return misplaced_pieces_count / 8; 
-// }
+    return misplaced_pieces_count / 8; 
+}
 
 
 //______________________________________________BFS___________________________________________
@@ -118,7 +91,7 @@ struct BFSNode {
 };
 
 
-string bfs_search(const SCube& start_cube) {
+string Solver::bfs_search(const SCube& start_cube) {
     unordered_set<size_t> visited;
     queue<BFSNode> q;
 
@@ -151,7 +124,7 @@ string bfs_search(const SCube& start_cube) {
 }
 
 
-string solve_cube_bfs(const SCube& cube) {
+string Solver::solve_cube_bfs(const SCube& cube) {
     // std::cout << "Solving with BFS:" << std::endl;
 
     string result = bfs_search(cube);
@@ -163,7 +136,7 @@ string solve_cube_bfs(const SCube& cube) {
 static unordered_set<size_t> visited_states_DFS;
 
 
-pair<int, string> dfs_search(SCube& cube, string& moves, int depth, int max_depth, char last_move) {
+pair<int, string> Solver::dfs_search(SCube& cube, string& moves, int depth, int max_depth, char last_move) {
     if (cube.isSolved()) return {-1, moves};
     if (depth >= max_depth) return {INT_MAX, ""};
 
@@ -200,7 +173,7 @@ pair<int, string> dfs_search(SCube& cube, string& moves, int depth, int max_dept
     return {min_result, best_path};
 }
 
-string solve_cube_dfs(const SCube& cube) {
+string Solver::solve_cube_dfs(const SCube& cube) {
     visited_states_DFS.clear();
     const int max_depth_limit = heuristic(cube);
 
@@ -224,7 +197,7 @@ string solve_cube_dfs(const SCube& cube) {
 static unordered_set<size_t> visited_states_IDAstar;
 
 
-pair<int, string> ida_search(SCube& cube, string& moves, int g, int threshold, char last_move) {
+pair<int, string> Solver::ida_search(SCube& cube, string& moves, int g, int threshold, char last_move) {
     const size_t current_hash = cube.hash();
     if (visited_states_IDAstar.count(current_hash)) {
         return {INT_MAX, ""}; // Состояние уже посещено
@@ -261,7 +234,7 @@ pair<int, string> ida_search(SCube& cube, string& moves, int g, int threshold, c
 }
 
 
-string solve_cube_IDAstar(const SCube& cube) {
+string Solver::solve_cube_IDAstar(const SCube& cube) {
     visited_states_IDAstar.clear();
     // std::cout << "\nSolving with IDA*:" << std::endl;
 
@@ -277,4 +250,84 @@ string solve_cube_IDAstar(const SCube& cube) {
     }
     
     return "";
+}
+
+//__________________________________Running__________________________________________________
+
+void Solver::scramble_cube(SCube& cube) {
+    int n = 0;
+
+    cube = SCube(Cube(3));
+
+    std::cout << "Enter number of moves to scramble between 1 and 20: ";
+    while (n <= 0 || n > 20) {
+        std::cin >> n;
+        if (n <= 0 || n >= 20) {
+            std::cout << "number of moves must be between 1 and 20" << std::endl;
+
+        }
+    }
+    cube.scramble(n);
+}
+
+void Solver::select_mode() {
+    search_mode = -1;
+    string result = "";
+
+    std::cout << "Enter 4 to re-scramble cube" << std::endl;
+    std::cout << "Choose search algorithm:\n(1): BFS\n(2): DFS\n(3): IDA*" << std::endl;
+    std::cout << "Enter 0 to exit program" << std::endl;
+    
+    while (search_mode < 0 || search_mode > 3) {
+        std::cin >> search_mode;
+
+        if (search_mode == 4) {
+            scramble_cube(cube);
+        }
+        
+        if (search_mode < 0 || search_mode > 3) {
+            std::cout << "Search mode must be 1 (BFS) or 2 (DFS) or 3 (IDA*)" << std::endl;
+        }
+    }
+}
+
+void Solver::solve_cube() {
+    scramble_cube(cube);
+
+    while (1) {
+        string result = "";
+        select_mode();
+        timer.start();
+    
+        switch (search_mode) {
+            case 1:
+            {
+                result = solve_cube_bfs(cube);
+                break;
+            }
+            case 2:
+            {
+                result = solve_cube_dfs(cube);
+                break;
+            }
+            case 3:
+            {
+                result = solve_cube_IDAstar(cube);
+                break;
+            }
+            default:
+            {
+                return;
+            }
+        }
+
+        if (result != "") {
+            std::cout << "\n\033[32mSolution: " << result  << "\033[0m" << std::endl;
+        } else {
+            std::cout << "\n\033[31mSolution not found\033[0m" << std::endl;
+        }
+    
+        timer.stop(result != "");
+        std::cout << std::endl;
+    }
 }

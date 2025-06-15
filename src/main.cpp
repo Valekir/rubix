@@ -7,14 +7,15 @@
 
 #include "solver.hpp"
 #include "cube.hpp"
-#include "test.hpp"
+#include "benchmark.hpp"
 
 
-int game();
-void solver();
-void run_benchmark();
+// int game();
+// void solver();
+
 
 int main(int argc, char** argv) {
+    Controller controller;
     int mode = 0;
 
     std::cout << "Choose mode: \n(1): game\n(2): solver\n(3): benchmark" << std::endl;
@@ -26,164 +27,97 @@ int main(int argc, char** argv) {
     }
 
     if (mode == 1) {
-        game();
+        controller.open_game_menu();
     }
 
     if (mode == 2) {
-        solver();
+        Solver solver;
+        solver.solve_cube();
+        // solver();
     }
 
     if (mode == 3) {
-        run_benchmark();
+        Benchmark benchmark;
+        benchmark.select_test();
+        benchmark.run();
     }
 
     return 0;
 }
 
+// void scramble_cube(SCube& cube) {
+//     int n = 0;
 
-void scramble_cube(SCube& cube) {
-    int n = 0;
+//     cube = SCube(Cube(3));
 
-    cube = SCube(Cube(3));
+//     std::cout << "Enter number of moves to scramble between 1 and 20: ";
+//     while (n <= 0 || n > 20) {
+//         std::cin >> n;
+//         if (n <= 0 || n >= 20) {
+//             std::cout << "number of moves must be between 1 and 20" << std::endl;
 
-    std::cout << "Enter number of moves to scramble between 1 and 20: ";
-    while (n <= 0 || n > 20) {
-        std::cin >> n;
-        if (n <= 0 || n >= 20) {
-            std::cout << "number of moves must be between 1 and 20" << std::endl;
+//         }
+//     }
+//     cube.scramble(n);
+// }
 
-        }
-    }
-    cube.scramble(n);
-}
-
-
-void solver() {
-    SCube cube(Cube(3));
-    Timer timer;
+// void solver() {
+//     SCube cube(Cube(3));
+//     Timer timer;
     
-    scramble_cube(cube);
+//     scramble_cube(cube);
 
-    while (1) {
-    int search_mode = -1;
-        string result = "";
+//     while (1) {
+//         int search_mode = -1;
+//         string result = "";
 
-        std::cout << "Enter 4 to re-scramble cube" << std::endl;
-        std::cout << "Choose search algorithm:\n(1): BFS\n(2): DFS\n(3): IDA*" << std::endl;
-        std::cout << "Enter 0 to exit program" << std::endl;
+//         std::cout << "Enter 4 to re-scramble cube" << std::endl;
+//         std::cout << "Choose search algorithm:\n(1): BFS\n(2): DFS\n(3): IDA*" << std::endl;
+//         std::cout << "Enter 0 to exit program" << std::endl;
         
-        while (search_mode < 0 || search_mode > 3) {
-            std::cin >> search_mode;
+//         while (search_mode < 0 || search_mode > 3) {
+//             std::cin >> search_mode;
 
-            if (search_mode == 4) {
-                scramble_cube(cube);
-            }
+//             if (search_mode == 4) {
+//                 scramble_cube(cube);
+//             }
             
-            if (search_mode < 0 || search_mode > 3) {
-                std::cout << "Search mode must be 1 (BFS) or 2 (DFS) or 3 (IDA*)" << std::endl;
-            }
-        }
+//             if (search_mode < 0 || search_mode > 3) {
+//                 std::cout << "Search mode must be 1 (BFS) or 2 (DFS) or 3 (IDA*)" << std::endl;
+//             }
+//         }
     
-        timer.start();
+//         timer.start();
     
-        switch (search_mode) {
-            case 0: 
-            {
-                return;
-            }
-            case 1:
-            {
-                result = solve_cube_bfs(cube);
-                break;
-            }
-            case 2:
-            {
-                result = solve_cube_dfs(cube);
-                break;
-            }
-            case 3:
-            {
-                result = solve_cube_IDAstar(cube);
-                break;
-            }
-        }
+//         switch (search_mode) {
+//             case 0: 
+//             {
+//                 return;
+//             }
+//             case 1:
+//             {
+//                 result = solve_cube_bfs(cube);
+//                 break;
+//             }
+//             case 2:
+//             {
+//                 result = solve_cube_dfs(cube);
+//                 break;
+//             }
+//             case 3:
+//             {
+//                 result = solve_cube_IDAstar(cube);
+//                 break;
+//             }
+//         }
 
-        if (result != "") {
-            std::cout << "\n\033[32mSolution: " << result  << "\033[0m" << std::endl;
-        } else {
-            std::cout << "\n\033[31mSolution not found\033[0m" << std::endl;
-        }
+//         if (result != "") {
+//             std::cout << "\n\033[32mSolution: " << result  << "\033[0m" << std::endl;
+//         } else {
+//             std::cout << "\n\033[31mSolution not found\033[0m" << std::endl;
+//         }
     
-        timer.stop(result != "");
-        std::cout << std::endl;
-    }
-}
-
-void run_benchmark() {
-        int test = 0;
-        std::cout << "Choose algorithm to benchmark \n(1): BFS\n(2): DFS\n(3): IDA*" << std::endl;
-        while (test <= 0 || test > 3) {
-            std::cin >> test;
-            if (test <= 0 || test > 3) {
-                std::cout << "Chhoose 1 (BFS) 2 (DFS) or 3 (IDA*)" << std::endl;
-            }
-        }
-
-        run_test(test);
-}
-
-void signal_handler(int sign) {
-    endwin();
-    system("clear");
-    exit(0);
-}
-
-int game() {
-    Controller _main;
-
-    initscr();               // Инициализация ncurses
-    cbreak();                // Включаем режим распознавания символов
-    noecho();                // Отключаем отображение нажатых клавиш
-    keypad(stdscr, TRUE);    // Включаем работу с функцией клавиш
-
-    signal(SIGINT, signal_handler);
-
-    while (true) {
-        int choice = menu_control();
-        
-        switch (choice) {
-            case 0: {    //game
-                endwin();               // Завершаем работу с ncurses
-                _main.clear();
-                _main.load_settings();
-                _main.game(false, "");    
-                refresh();
-                break;
-                }
-            case 1: {    //saves
-                std::string savefile;
-                savefile = save_menu();
-                if (savefile == "")
-                    break;
-                
-                endwin();               // Завершаем работу с ncurses
-                _main.clear();
-                _main.load_settings();
-                _main.game(true, savefile);
-                break;
-                }
-            case 2: {    //settings
-                settings_menu();
-                break;
-                }
-            case 3: {    //exit
-                endwin();
-                _main.clear();
-                return 0;
-                break;
-                }
-        }
-    }
-    endwin();               // Завершаем работу с ncurses
-    return 0;
-}
+//         timer.stop(result != "");
+//         std::cout << std::endl;
+//     }
+// }

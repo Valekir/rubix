@@ -1,62 +1,38 @@
-#include "test.hpp"
+#include <iostream>
+#include <fstream>
+#include <string>
 #include "solver.hpp"
 
 #define NUM_TESTS 100
 #define MAX_DEPTH 8
 
-void run_test(int test) {
-    switch (test) {
-        case 1:
-        {
-            single_function_test("BFS", solve_cube_bfs);
-            break;
-        
-        }
-        case 2:
-        {
-            single_function_test("DFS", solve_cube_dfs);
-            break;
-        }
-        case 3:
-        {
-            // single_function_test("IDA*", solve_cube_IDAstar);
-            test_IDAstar(solve_cube_IDAstar);
-            break;
-        }
-    }
-}
+struct test_result {
+    double time;
+    size_t memory;
+    test_result(double t, size_t h) : time(t), memory(h) {};
+};
 
+class Benchmark {
+  private:
+    size_t get_current_rss();
+    int current_test = 0;
+  public:
+    void select_test();
+    void run();
+    
+    template <typename Func>
+    void single_function_test(std::string name, Func func);
 
-// Функция для чтения VmRSS из /proc/<pid>/status
-size_t get_current_rss() {
-    std::ifstream ifs("/proc/self/status");
-    std::string line;
-    long rss = 0L;
+    template <typename Func>
+    test_result benchmark(Func func);
 
-    if (!ifs.is_open()) {
-        return 0;
-    }
-
-    while (std::getline(ifs, line)) {
-        if (line.rfind("VmRSS:", 0) == 0) {
-            size_t colon_pos = line.find(':');
-            if (colon_pos != std::string::npos) {
-                try {
-                    rss = std::stol(line.substr(colon_pos + 1));
-                } catch (const std::exception& e) {
-                    std::cerr << "Error parsing VmRSS: " << e.what() << std::endl;
-                    rss = 0;
-                }
-            }
-            break;
-        }
-    }
-    return rss;
-}
+    template <typename Func>
+    void test_IDAstar(Func func);
+};
 
 
 template <typename Func>
-void single_function_test(std::string name, Func func) {
+void Benchmark::single_function_test(std::string name, Func func) {
     SCube cube(Cube(3));
 
     std:: cout << "\ntesting " << name << std::endl << std::endl;
@@ -100,8 +76,11 @@ void single_function_test(std::string name, Func func) {
     }
 }
 
+/// @brief 
+/// @tparam Func 
+/// @param func 
 template <typename Func>
-void test_IDAstar(Func func) {
+void Benchmark::test_IDAstar(Func func) {
     SCube cube(Cube(3));
 
     std:: cout << "\ntesting IDA*"  << std::endl << std::endl;
@@ -124,9 +103,12 @@ void test_IDAstar(Func func) {
     }
 }
 
-
+/// @brief 
+/// @tparam Func 
+/// @param func 
+/// @return 
 template <typename Func>
-test_result benchmark(Func func) {
+test_result Benchmark::benchmark(Func func) {
     size_t rss_before = get_current_rss();
     auto start = std::chrono::high_resolution_clock::now();
 
